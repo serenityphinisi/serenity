@@ -20,7 +20,7 @@ export default function Page() {
       {/* <LivingSpaces/> */}
       <DeckAndSpecs/>
       {/* <Closing/> */}
-      <Gallery/>
+      {/* <Gallery/> */}
       <Reservation/>
       <Footer/>
     </main>
@@ -154,49 +154,62 @@ function About() {
 function Experience() {
   return (
     <section className="bg-[#F4F5F2] pt-[140px] pb-[140px] px-6 border-t border-[#2D3C68]/10">
-      
-      
 
       <div className="max-w-[1000px] mx-auto">
 
-        {/* ================= BLOCK 1 ================= */}
-        <div className="mb-[160px] grid md:grid-cols-2 gap-16 items-center">
+        {/* ================= BLOCK 1 (PRIMARY) ================= */}
+        <div className="mb-[180px] grid md:grid-cols-2 gap-20 items-center">
 
-          {/* TEXT */}
-          <div className="max-w-[520px]">
-            <h2 className="font-[Gambarino]  text-[36px] md:text-[44px] leading-[1.2] text-[#2D3C68]">
+          {/* IMAGE (LEFT) */}
+          <div className="relative w-full aspect-[4/5]">
+            <img
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp"
+              className="w-full h-full object-cover"
+            />
+
+            <img
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp"
+              className="absolute -bottom-14 -left-14 w-[240px] h-[280px] object-cover shadow-[0_24px_70px_rgba(0,0,0,0.16)]"
+            />
+          </div>
+
+          {/* TEXT (RIGHT) */}
+          <div className="max-w-[520px] md:ml-auto">
+            <h2 className="font-[Gambarino] text-[38px] md:text-[46px] leading-[1.18] text-[#2D3C68]">
               Life Happens
               <br />
               On the Open Deck
             </h2>
 
-            <p className="mt-8 text-[15px] text-[#2D3C68]/80 leading-[1.7]">
-              Meals stretch into conversations. People move between sun and shade
-              without thinking about it. Everything stays open, shared, and effortless.
+            <p className="mt-7 text-[15px] text-[#2D3C68]/75 leading-[1.7]">
+              Breakfast stretches longer than planned. Someone moves to the shade,
+              another stays in the sun. Nothing needs arranging — the day unfolds on its own.
             </p>
-          </div>
-
-          {/* IMAGE */}
-          <div className="relative">
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp"
-              className="w-full h-[420px] object-cover"
-            />
-
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp"
-              className="absolute -bottom-12 -left-12 w-[220px] h-[260px] object-cover shadow-[0_20px_60px_rgba(0,0,0,0.15)]"
-            />
           </div>
 
         </div>
 
 
-        {/* ================= BLOCK 2 ================= */}
-        <div className="mb-[160px] grid md:grid-cols-2 gap-16 items-center">
+        {/* ================= BLOCK 2 (SECONDARY) ================= */}
+        <div className="mb-[140px] grid md:grid-cols-2 gap-16 items-center">
 
-          {/* IMAGE */}
-          <div className="relative h-[460px]">
+          {/* TEXT (LEFT) */}
+          <div className="max-w-[480px]">
+            <h2 className="font-[Gambarino] text-[32px] md:text-[38px] leading-[1.22] text-[#2D3C68]">
+              A Space Between
+              <br />
+              Outside and Inside
+            </h2>
+
+            <p className="mt-6 text-[15px] text-[#2D3C68]/70 leading-[1.7]">
+              You step inside, but nothing really separates you from the sea.
+              Air moves through, light stays present, and conversations continue
+              without needing to start over.
+            </p>
+          </div>
+
+          {/* IMAGE (RIGHT) */}
+          <div className="relative w-full aspect-[4/5]">
             <img
               src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/04_fqtqkn.webp"
               className="w-full h-full object-cover"
@@ -204,33 +217,17 @@ function Experience() {
 
             <img
               src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/08_noz6qg.webp"
-              className="absolute top-12 -right-12 w-[200px] h-[240px] object-cover shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+              className="absolute top-10 -right-10 w-[180px] h-[220px] object-cover shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
             />
-          </div>
-
-          {/* TEXT */}
-          <div className="max-w-[520px] md:ml-auto">
-            <h2 className="font-[Gambarino]  text-[36px] md:text-[44px] leading-[1.2] text-[#2D3C68]">
-              A Space Between
-              <br />
-              Outside and Inside
-            </h2>
-
-            <p className="mt-8 text-[15px] text-[#2D3C68]/80 leading-[1.7]">
-              You come in without disconnecting. The sea stays visible, the air still moves.
-              Conversations soften, but never fully stop.
-            </p>
           </div>
 
         </div>
 
- 
-
 
         {/* ================= CLOSING ================= */}
-        <div className="text-center max-w-[720px] mx-auto mb-[48px]">
+        <div className="text-center max-w-[680px] mx-auto mb-[56px]">
 
-          <h2 className="font-[Gambarino] text-[44px] md:text-[52px] leading-[1.1] text-[#2D3C68]">
+          <h2 className="font-[Gambarino] text-[42px] md:text-[50px] leading-[1.12] text-[#2D3C68]">
             Always Connected
             <br />
             to What Surrounds You
@@ -239,7 +236,7 @@ function Experience() {
         </div>
 
         {/* FULL BLEED */}
-        <div className="w-full h-[520px] overflow-hidden">
+        <div className="w-full h-[540px] overflow-hidden">
           <img
             src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/06_f2yr7e.webp"
             className="w-full h-full object-cover"
@@ -411,12 +408,13 @@ function Cabins() {
   const cabins = [
     {
       name: "Forward Cabin",
-      location: "Front Section",
+      location: "Front Section · Bow",
+      desc: "Closest to the bow. The movement of the sea is felt more directly here — subtle shifts, gentle rises, constant presence. Morning light arrives first, unobstructed.",
+      note: "More movement. Closer to the ocean.",
+      units: "1",
       occupancy: "2 Guests",
-      units: "1 Cabin",
-      description:
-        "Near the bow. Movement is most noticeable when lying down. Direct front light during daytime.",
-      note: "For those who want to feel the sea more directly.",
+      deck: "Main",
+      beds: "Twin",
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068960/34_nlkpdq.webp",
       detail:
@@ -425,11 +423,12 @@ function Cabins() {
     {
       name: "Mid Cabin",
       location: "Center of Vessel",
+      desc: "Positioned at the center, where movement settles into balance. Close to shared spaces, yet acoustically and physically removed from them.",
+      note: "Most stable. Most balanced.",
+      units: "2",
       occupancy: "2 Guests",
-      units: "2 Cabins",
-      description:
-        "Center of the vessel. Least movement. Close to shared spaces without direct noise.",
-      note: "Most stable option on board.",
+      deck: "Main",
+      beds: "Twin",
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068959/26_uyo84o.webp",
       detail:
@@ -438,11 +437,12 @@ function Cabins() {
     {
       name: "Lower Cabin",
       location: "Lower Deck",
+      desc: "Below the main deck, where external motion softens. Light becomes more controlled, and sound from above fades into the background.",
+      note: "Quieter. More contained.",
+      units: "1",
       occupancy: "2 Guests",
-      units: "1 Cabin",
-      description:
-        "Lower deck. More enclosed, less light. Quieter and less affected by surface activity.",
-      note: "Best for uninterrupted rest.",
+      deck: "Lower",
+      beds: "Twin",
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068955/23_1_gcmciz.webp",
       detail:
@@ -451,195 +451,171 @@ function Cabins() {
   ];
 
   const [active, setActive] = useState(0);
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    setAnimate(false);
-    const t = setTimeout(() => setAnimate(true), 50);
-    return () => clearTimeout(t);
-  }, [active]);
+  const [show, setShow] = useState(true);
+  const [imgKey, setImgKey] = useState(0);
 
   const current = cabins[active];
 
+  const select = (i) => {
+    if (i === active) return;
+    setShow(false);
+    setTimeout(() => {
+      setActive(i);
+      setImgKey((k) => k + 1);
+      setShow(true);
+    }, 300);
+  };
+
+  const specs = [
+    { label: "Units", value: current.units },
+    { label: "Occupancy", value: current.occupancy },
+    { label: "Deck", value: current.deck },
+    { label: "Beds", value: current.beds },
+  ];
+
   return (
-    <section className="relative bg-[#F4F5F2] py-[50px] px-6 overflow-hidden">
-      <div className="max-w-[1000px] mx-auto">
+    <section className="relative bg-[#2D3C68] overflow-hidden">
 
-        {/* HEADER */}
-        <div className="mb-[60px] max-w-[520px]">
+      {/* HEADER */}
+      <div className="max-w-[1200px] mx-auto px-6 pt-[100px] pb-[48px]">
+        <p className="text-[10px] tracking-[0.36em] uppercase text-white/30 mb-4">
+          Cabins
+        </p>
 
-<p className="text-[11px] tracking-[0.32em] text-[#2D3C68]/40 uppercase">
-  Cabins
-</p>
+        <div className="flex items-end justify-between gap-8">
+          <h2 className="font-[Gambarino] text-[52px] md:text-[60px] leading-[1.06] text-white">
+            Where You Stay
+            <br />
+            Shapes the Journey
+          </h2>
 
-<h2 className="mt-4 font-[Gambarino] text-[40px] md:text-[48px] leading-[1.1] text-[#2D3C68]">
-  On Board Layout
-</h2>
+          <p className="hidden md:block text-[13px] leading-[1.75] text-white/45 max-w-[260px] pb-2">
+            Each cabin offers a different way of experiencing the sea.
+          </p>
+        </div>
+      </div>
 
-</div>
-
-        <div className="grid md:grid-cols-[1.1fr_0.9fr] gap-[60px] items-start">
-
-          {/* LEFT */}
-          <div>
-
-            {/* SELECTOR */}
-            <div className="mb-[24px] flex flex-wrap gap-6">
-              {cabins.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  className="group relative"
-                >
-                  <span
-                    className={`text-[12px] tracking-[0.2em] uppercase transition ${
-                      active === i
-                        ? "text-[#2D3C68]"
-                        : "text-[#2D3C68]/40 group-hover:text-[#2D3C68]/70"
-                    }`}
-                  >
-                    {item.name}
-                  </span>
-
-                  <div
-                    className={`absolute left-0 -bottom-1 h-[1px] bg-[#2D3C68] transition-all duration-500 ${
-                      active === i ? "w-full" : "w-0"
-                    }`}
-                  />
-                </button>
-              ))}
-            </div>
-
-            {/* IMAGE */}
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <img
-                key={current.image}
-                src={current.image}
-                alt=""
-                className={`w-full h-full object-cover transition-all duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  animate ? "scale-[1.05] opacity-100" : "scale-[1.1] opacity-0"
-                }`}
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-
-              {/* DETAIL — FIXED */}
-              <div
-                className={`absolute bottom-[16px] right-[16px] w-[180px] aspect-square overflow-hidden shadow-xl transition-all duration-[1200ms] ${
-                  animate
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-[20px]"
+      {/* TABS */}
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex gap-8 border-b border-white/10">
+          {cabins.map((c, i) => (
+            <button
+              key={i}
+              onClick={() => select(i)}
+              className="relative pb-4 text-left"
+            >
+              <span
+                className={`block text-[13px] tracking-[0.08em] uppercase transition ${
+                  active === i
+                    ? "text-white"
+                    : "text-white/35 hover:text-white/60"
                 }`}
               >
+                {c.name.replace(" Cabin", "")}
+              </span>
+
+              <span
+                className={`absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-500 ${
+                  active === i ? "w-full opacity-100" : "w-0 opacity-0"
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+ 
+      </div>
+
+      {/* SPLIT */}
+      <div className="grid md:grid-cols-2">
+
+        {/* IMAGE */}
+        <div className="relative h-[520px] md:h-[640px] overflow-hidden">
+          <img
+            key={imgKey}
+            src={current.image}
+            alt=""
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1400ms] ${
+              show ? "opacity-100 scale-100" : "opacity-0 scale-[1.04]"
+            }`}
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+
+          <div
+            className={`absolute bottom-6 right-6 transition-all duration-700 ${
+              show ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <div className="p-[2px] bg-white/20">
+              <div className="w-[108px] h-[108px] overflow-hidden">
                 <img
                   src={current.detail}
-                  alt=""
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="relative z-[2] pt-[20px] pl-[40px] max-w-[460px]">
-
-            <div
-              className={`mb-[24px] transition-all duration-[800ms] ${
-                animate
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-[20px]"
-              }`}
-            >
-              <h3 className="font-serif text-[30px] text-[#2D3C68]">
-                {current.name}
-              </h3>
-
-              <p className="mt-2 text-[10px] tracking-[0.32em] uppercase text-[#2D3C68]/50">
-                {current.location}
-              </p>
-            </div>
-
-            <div
-              className={`mb-[24px] transition-all duration-[900ms] delay-[100ms] ${
-                animate
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-[20px]"
-              }`}
-            >
-              <p className="text-[14px] leading-[1.7] text-[#2D3C68]/80">
-                {current.description}
-              </p>
-            </div>
-
-            <div
-              className={`mb-[40px] transition-all duration-[900ms] delay-[200ms] ${
-                animate
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-[20px]"
-              }`}
-            >
-              <p className="text-[13px] text-[#2D3C68]/60">
-                {current.note}
-              </p>
-            </div>
-
-            <div
-              className={`space-y-3 mb-[48px] transition-all duration-[900ms] delay-[300ms] ${
-                animate
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-[20px]"
-              }`}
-            >
-              <div className="flex justify-between border-b border-[#2D3C68]/10 pb-2">
-                <span className="text-[10px] tracking-[0.3em] text-[#2D3C68]/40 uppercase">
-                  Units
-                </span>
-                <span className="text-[15px] text-[#2D3C68]">
-                  {current.units}
-                </span>
-              </div>
-
-              <div className="flex justify-between border-b border-[#2D3C68]/10 pb-2">
-                <span className="text-[10px] tracking-[0.3em] text-[#2D3C68]/40 uppercase">
-                  Occupancy
-                </span>
-                <span className="text-[15px] text-[#2D3C68]">
-                  {current.occupancy}
-                </span>
-              </div>
-            </div>
-
-            <div
-              className={`flex items-center gap-6 transition-all duration-[900ms] delay-[400ms] ${
-                animate
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-[20px]"
-              }`}
-            >
-              <button className="px-10 py-3 rounded-full bg-[#2D3C68] text-white text-[12px] tracking-[0.16em] uppercase hover:bg-[#2D3C68]/90 transition">
-                Reserve
-              </button>
-
-              <button className="text-[12px] tracking-[0.16em] uppercase text-[#2D3C68]/60 hover:text-[#2D3C68] transition">
-                View Layout
-              </button>
-            </div>
+            <p className="mt-[6px] text-[9px] text-white/40 text-right uppercase tracking-[0.28em]">
+              Interior
+            </p>
           </div>
         </div>
 
-        {/* BACKGROUND */}
-        <div
-          className="absolute right-[-20%] top-[10%] w-[700px] h-[700px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(45,60,104,0.05), transparent 70%)",
-            filter: "blur(140px)",
-          }}
-        />
+        {/* CONTENT */}
+        <div className="bg-[#2D3C68] flex flex-col px-10 md:px-16 py-14 md:py-20">
+
+          <div className={`transition duration-500 ${show ? "opacity-100" : "opacity-0"}`}>
+            <h3 className="font-[Gambarino] text-[42px] md:text-[48px] text-white">
+              {current.name}
+            </h3>
+            <p className="mt-[6px] text-[10px] text-white/35 uppercase tracking-[0.32em]">
+              {current.location}
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <p className="text-[15px] leading-[1.9] text-white/65">
+              {current.desc}
+            </p>
+          </div>
+
+          <div className="mt-5 flex gap-3">
+            <span className="w-[14px] h-[1px] bg-white/20 mt-[6px]" />
+            <p className="text-[12px] italic text-white/35">
+              {current.note}
+            </p>
+          </div>
+
+          <div className="mt-auto pt-10">
+            {specs.map((s) => (
+              <div
+                key={s.label}
+                className="flex justify-between py-[12px] border-t border-white/10 text-white/70"
+              >
+                <span className="text-[10px] uppercase tracking-[0.3em] text-white/30">
+                  {s.label}
+                </span>
+                <span>{s.value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex gap-8">
+            <button className="bg-white text-[#2D3C68] px-9 py-[14px] text-[11px] uppercase tracking-[0.18em]">
+              Reserve
+            </button>
+
+            <button className="text-white/40 text-[11px] uppercase tracking-[0.16em] hover:text-white">
+              Floor Plan →
+            </button>
+          </div>
+
+        </div>
       </div>
+
     </section>
   );
 }
+ 
 
 function Gallery() {
   const images = [
@@ -825,6 +801,17 @@ function LivingSpaces() {
 
 function DeckAndSpecs() {
   const [deck, setDeck] = useState("main");
+  const [visible, setVisible] = useState({
+    header: false,
+    image: false,
+    peak: false,
+    specs: false,
+  });
+
+  const headerRef = useRef(null);
+  const imageRef = useRef(null);
+  const peakRef = useRef(null);
+  const specsRef = useRef(null);
 
   const decks = {
     lower:
@@ -839,12 +826,6 @@ function DeckAndSpecs() {
 
   const deckList = ["lower", "main", "upper", "top"];
 
-  const primary = [
-    ["Length", "40.75 m"],
-    ["Cabins", "4"],
-    ["Crew", "10"],
-  ];
-
   const specs = [
     ["Vessel Type", "Phinisi Sailing Yacht"],
     ["Flag", "Indonesia"],
@@ -857,168 +838,179 @@ function DeckAndSpecs() {
     ["Navigation", "Garmin Navigation System"],
   ];
 
+  useEffect(() => {
+    const observe = (ref, key) => {
+      const o = new IntersectionObserver(
+        ([e]) => {
+          if (e.isIntersecting) {
+            setVisible((prev) => ({ ...prev, [key]: true }));
+          }
+        },
+        { threshold: 0.15 }
+      );
+
+      if (ref.current) o.observe(ref.current);
+      return o;
+    };
+
+    const observers = [
+      observe(headerRef, "header"),
+      observe(imageRef, "image"),
+      observe(peakRef, "peak"),
+      observe(specsRef, "specs"),
+    ];
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
   return (
-    <section className="bg-[#F4F5F2] py-[160px] px-6 overflow-hidden">
+    <section className="bg-[#F4F5F2] py-[160px] px-6">
       <div className="max-w-[1200px] mx-auto">
 
-        {/* HEADER */}
-        <div className="text-center mb-[80px]">
-          <p className="text-[11px] tracking-[0.35em] text-[#2D3C68]/40 uppercase">
+        {/* ================= HEADER ================= */}
+        <div
+          ref={headerRef}
+          className={`text-center mb-[80px] transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]
+          ${visible.header ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}
+        >
+          <p className="text-[11px] tracking-[0.35em] uppercase text-[#2D3C68]/40">
             Vessel Overview
           </p>
 
-          <h2 className="mt-6 font-serif text-[52px] md:text-[60px] leading-[1.15] text-[#2D3C68]">
+          <h2 className="mt-6 font-[Gambarino] text-[46px] md:text-[60px] leading-[1.15] text-[#2D3C68]">
             Understand the Vessel
           </h2>
         </div>
 
-        {/* SELECTOR */}
-        <div className="flex justify-center gap-10 mb-[60px]">
+        {/* ================= SELECTOR ================= */}
+        <div
+          className={`flex justify-center gap-10 mb-[60px] transition-all duration-[800ms]
+          ${visible.image ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
+        >
           {deckList.map((key) => (
             <button
               key={key}
               onClick={() => setDeck(key)}
-              className="relative text-[11px] tracking-[0.3em] uppercase group"
+              className={`text-[11px] tracking-[0.3em] uppercase pb-2 transition
+              ${
+                deck === key
+                  ? "text-[#2D3C68] border-b border-[#2D3C68]"
+                  : "text-[#2D3C68]/30 hover:text-[#2D3C68]/60"
+              }`}
             >
-              <span
-                className={`transition-all duration-500 ${
-                  deck === key
-                    ? "text-[#2D3C68]"
-                    : "text-[#2D3C68]/30 group-hover:text-[#2D3C68]/60"
-                }`}
-              >
-                {key}
-              </span>
-
-              <div
-                className={`absolute left-0 -bottom-2 h-[1px] bg-[#2D3C68] transition-all duration-500 ${
-                  deck === key ? "w-full opacity-100" : "w-0 opacity-0"
-                }`}
-              />
+              {key}
             </button>
           ))}
         </div>
 
-        {/* ================= IMAGE (FRAME + OUTER SHADOW) ================= */}
-        <div className="relative w-full max-w-[1000px] mx-auto">
+        {/* ================= IMAGE ================= */}
+        <div
+          ref={imageRef}
+          className={`relative max-w-[1000px] mx-auto mb-[140px] transition-all duration-[1000ms]
+          ${visible.image ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+        >
+          <div className="relative p-[10px] bg-[#F4F5F2] shadow-[0_40px_80px_rgba(0,0,0,0.08)]">
+            <div className="absolute inset-0 border border-[#2D3C68]/10 pointer-events-none" />
 
-          {/* OUTER FRAME WITH SHADOW */}
-          <div
-            className="relative p-[10px] bg-[#F4F5F2]"
-            style={{
-              boxShadow:
-                "0px 40px 80px rgba(0,0,0,0.08), 0px 15px 30px rgba(0,0,0,0.05)",
-            }}
-          >
-
-            {/* OUTER BORDER */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                border: "1px solid rgba(45,60,104,0.08)",
-              }}
-            />
-
-            {/* INNER FRAME */}
             <div className="relative p-[14px] bg-white">
+              <div className="absolute inset-0 border border-[#2D3C68]/10 pointer-events-none" />
 
-              {/* INNER BORDER */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  border: "1px solid rgba(45,60,104,0.06)",
-                }}
-              />
-
-              {/* IMAGE CONTAINER */}
-              <div className="relative aspect-[16/9] overflow-hidden bg-white">
-
+              <div className="relative aspect-[16/9] overflow-hidden">
                 {Object.entries(decks).map(([key, src]) => (
                   <img
                     key={key}
                     src={src}
-                    alt={`${key} deck layout`}
-                    loading="lazy"
-                    decoding="async"
-                    className={`absolute inset-0 w-full h-full object-contain transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    alt={`${key} deck`}
+                    className={`absolute inset-0 w-full h-full object-contain transition-all duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)]
+                    ${
                       deck === key
                         ? "opacity-100 scale-100"
-                        : "opacity-0 scale-[1.015]"
+                        : "opacity-0 scale-[1.01]"
                     }`}
                   />
                 ))}
-
               </div>
             </div>
           </div>
         </div>
 
-        {/* PEAK */}
-        <div className="mt-[140px] text-center">
-          <p className="text-[11px] tracking-[0.3em] text-[#2D3C68]/40 uppercase">
-            Capacity
-          </p>
+        {/* ================= DATA SYSTEM ================= */}
+        <div ref={peakRef} className="max-w-[900px] mx-auto text-center">
 
-          <div className="relative mt-6 inline-block">
-            <div className="font-serif text-[72px] md:text-[88px] text-[#2D3C68] leading-none">
+          {/* 12 */}
+          <div
+            className={`mb-[32px] transition-all duration-[1000ms]
+            ${visible.peak ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          >
+            <div className="font-[Gambarino] text-[90px] md:text-[110px] leading-none text-[#2D3C68]">
               12
             </div>
 
-            <div
-              className="absolute inset-0 blur-[14px] opacity-20"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(45,60,104,0.25), transparent 70%)",
-              }}
-            />
+            <p className="mt-2 text-[12px] tracking-[0.28em] uppercase text-[#2D3C68]/45">
+              Guests
+            </p>
           </div>
 
-          <p className="mt-4 text-[14px] text-[#2D3C68]/70">
-            Intimate for 12 guests — supported by 10 crew
+          {/* MEANING */}
+          <div
+            className={`mb-[80px] transition-all duration-[1000ms] delay-100
+            ${visible.peak ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
+            <p className="text-[16px] leading-[1.8] text-[#2D3C68]/70 max-w-[560px] mx-auto">
+              Not crowded. Not empty.
+              A scale where people stay close without feeling compressed.
+            </p>
+          </div>
+
+          {/* STRUCTURE */}
+          <div
+            className={`grid grid-cols-3 gap-12 mb-[120px] transition-all duration-[1000ms] delay-200
+            ${visible.peak ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
+            {[
+              ["Length", "40.75 m"],
+              ["Cabins", "4"],
+              ["Crew", "10"],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <p className="text-[11px] tracking-[0.25em] uppercase text-[#2D3C68]/40">
+                  {label}
+                </p>
+
+                <p className="mt-3 text-[20px] text-[#2D3C68]">
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ================= SPECS ================= */}
+        <div
+          ref={specsRef}
+          className={`max-w-[900px] mx-auto transition-all duration-[1000ms]
+          ${visible.specs ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+        >
+          <p className="text-center text-[11px] tracking-[0.35em] uppercase mb-[32px] text-[#2D3C68]/35">
+            Technical Specifications
           </p>
-        </div>
 
-        {/* PRIMARY */}
-        <div className="mt-[110px] grid md:grid-cols-3 gap-y-12 gap-x-12 max-w-[900px] mx-auto">
-          {primary.map(([label, value], i) => (
-            <div
-              key={label}
-              className={`
-                ${i === 0 ? "text-left" : ""}
-                ${i === 1 ? "text-center" : ""}
-                ${i === 2 ? "text-right" : ""}
-              `}
-            >
-              <p className="text-[11px] tracking-[0.3em] text-[#2D3C68]/40 uppercase">
-                {label}
-              </p>
+          <div className="grid md:grid-cols-2 gap-x-20">
+            {specs.map(([label, value]) => (
+              <div
+                key={label}
+                className="flex justify-between items-baseline py-[14px] border-b border-[#2D3C68]/10"
+              >
+                <span className="text-[11px] tracking-[0.2em] uppercase text-[#2D3C68]/35">
+                  {label}
+                </span>
 
-              <p className="mt-3 text-[26px] md:text-[28px] text-[#2D3C68]">
-                {value}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* SECONDARY */}
-        <div className="mt-[130px] max-w-[800px] mx-auto space-y-6">
-          {specs.map(([label, value]) => (
-            <div
-              key={label}
-              className="flex justify-between items-start pb-4"
-              style={{
-                borderBottom: "1px solid rgba(45,60,104,0.08)",
-              }}
-            >
-              <span className="text-[11px] tracking-[0.25em] text-[#2D3C68]/40 uppercase">
-                {label}
-              </span>
-
-              <span className="text-[14px] text-[#2D3C68] text-right max-w-[60%]">
-                {value}
-              </span>
-            </div>
-          ))}
+                <span className="text-[14px] text-[#2D3C68] text-right">
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

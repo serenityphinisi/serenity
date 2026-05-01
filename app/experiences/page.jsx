@@ -34,30 +34,65 @@ export default function Page() {
 
 function Hero() {
   const containerRef = useRef(null);
+  const rafRef = useRef(null);
+  const stateRef = useRef({
+    autoProgress: 0,
+    lastTime: null,
+    userHasScrolled: false,
+    scrollCurrent: 0,
+    scrollTarget: 0,
+  });
 
   useEffect(() => {
-    let current = 0;
-    let target = 0;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
 
     const handleScroll = () => {
-      target = window.scrollY;
+      const s = stateRef.current;
+      if (window.scrollY > 10) s.userHasScrolled = true;
+      s.scrollTarget = window.scrollY;
     };
 
-    const loop = () => {
-      current += (target - current) * 0.06;
+    const loop = (timestamp) => {
+      rafRef.current = requestAnimationFrame(loop);
+      if (!isVisible) return;
 
-      if (containerRef.current) {
-        const shift = Math.min(current * 0.004, 1);
-        containerRef.current.style.setProperty("--shift", shift);
+      const s = stateRef.current;
+      let shift;
+
+      if (!s.userHasScrolled) {
+        // AUTO-PLAY — smooth sine loop, ~5 detik per cycle
+        if (s.lastTime !== null) {
+          const delta = timestamp - s.lastTime;
+          s.autoProgress = (s.autoProgress + delta / 5000) % 1;
+        }
+        s.lastTime = timestamp;
+        shift = Math.sin(s.autoProgress * Math.PI);
+      } else {
+        // SCROLL TAKES OVER — auto mati total
+        s.lastTime = null;
+        s.scrollCurrent += (s.scrollTarget - s.scrollCurrent) * 0.06;
+        shift = Math.min(s.scrollCurrent * 0.004, 1);
       }
 
-      requestAnimationFrame(loop);
+      if (containerRef.current) {
+        containerRef.current.style.setProperty("--shift", shift);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
-    loop();
+    rafRef.current = requestAnimationFrame(loop);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      observer.disconnect();
+    };
   }, []);
 
   const angles = [120, 200, 300, 60];
@@ -65,90 +100,84 @@ function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full h-[92vh] min-h-[720px] flex overflow-hidden"
+      className="relative w-full h-[92vh] min-h-[720px] overflow-hidden"
     >
-      {angles.map((angle, i) => (
-        <div key={i} className="relative flex-1 overflow-hidden">
+      {/* PANELS */}
+      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 md:grid-cols-4 md:grid-rows-1">
+        {angles.map((angle, i) => (
+          <div key={i} className="relative overflow-hidden">
 
-          {/* BASE */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `
-                linear-gradient(
-                  ${angle}deg,
-                  #2D3C68 0%,
-                  #F4F5F2 120%
-                )
-              `,
-            }}
-          />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(${angle}deg, #2D3C68 0%, #F4F5F2 120%)`,
+              }}
+            />
 
-          {/* SCROLL TRANSITION */}
-          <div
-            className="absolute inset-0 transition-all duration-700"
-            style={{
-              background: `
-                linear-gradient(
-                  ${angle}deg,
-                  #8B6A4F 0%,
-                  #F4F5F2 120%
-                )
-              `,
-              opacity: "var(--shift)",
-            }}
-          />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(${angle}deg, #8B6A4F 0%, #F4F5F2 120%)`,
+                opacity: "var(--shift)",
+              }}
+            />
 
-          {/* GOLD ACCENT */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: `
-                radial-gradient(
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `radial-gradient(
                   circle at ${i % 2 === 0 ? "30%" : "70%"} 40%,
                   rgba(176,141,87, calc(var(--shift) * 0.15)),
                   transparent 60%
-                )
-              `,
-            }}
-          />
+                )`,
+              }}
+            />
 
-          {/* DEPTH */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `
-                linear-gradient(
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(
                   to bottom,
                   rgba(45,60,104, calc(0.15 + var(--shift) * 0.2)),
                   rgba(45,60,104, calc(0.25 + var(--shift) * 0.3))
-                )
-              `,
-            }}
-          />
+                )`,
+              }}
+            />
 
-          {/* DIVIDER */}
-          {i !== 3 && (
-            <div className="absolute top-0 right-0 w-[1px] h-full bg-[#F4F5F2]/25" />
-          )}
-        </div>
-      ))}
+            {/* DIVIDER DESKTOP */}
+            {i !== 3 && (
+              <div className="hidden md:block absolute top-0 right-0 w-[1px] h-full bg-[#F4F5F2]/25" />
+            )}
+            {/* DIVIDER MOBILE HORIZONTAL */}
+            {i < 2 && (
+              <div className="md:hidden absolute bottom-0 left-0 w-full h-[1px] bg-[#F4F5F2]/25" />
+            )}
+            {/* DIVIDER MOBILE VERTICAL */}
+            {i % 2 === 0 && (
+              <div className="md:hidden absolute top-0 right-0 w-[1px] h-full bg-[#F4F5F2]/25" />
+            )}
+          </div>
+        ))}
+      </div>
 
-      {/* ================= TEXT ================= */}
+      {/* TEXT */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="text-center max-w-[640px] px-6">
+        <div className="text-center px-6 max-w-[600px] mx-auto">
 
           <p className="text-[10px] tracking-[0.35em] text-[#F4F5F2]/60 uppercase mb-6">
             Experiences
           </p>
 
-          <h1 className="font-[Gambarino] text-[42px] md:text-[68px] leading-[1.08] text-[#F4F5F2]">
-            The journey takes shape as you move
+          <h1
+            className="font-[Gambarino] text-[#F4F5F2] leading-[1.1]"
+            style={{ fontSize: "clamp(36px, 6vw, 68px)" }}
+          >
+            No two days look the same
           </h1>
 
-          <p className="mt-6 text-[15px] md:text-[16px] text-[#F4F5F2]/75 leading-[1.7]">
-            Some days unfold around the water. Others shift between islands,
-            conversations, and quiet time on deck. No single path defines the experience.
+          <p className="mt-5 text-[14px] md:text-[15px] text-[#F4F5F2]/70 leading-[1.75] max-w-[450px] mx-auto">
+          Some days unfold around the water. Others shift between islands,
+          conversations, and quiet time on deck. No single path defines the experience.
           </p>
 
         </div>
