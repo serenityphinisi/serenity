@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 import Footer from '../../components/Footer'
 
+const DISABLE_ANIMATION = false; // ubah ke false kalau mau animasi aktif
 
 export default function Page() {
   return (
@@ -1650,42 +1651,177 @@ function RateAnchor() {
 }
 
 function FinalClosing() {
+  const sectionRef = useRef(null);
+
   const headlineRef = useRef(null);
   const subtextRef = useRef(null);
   const dividerRef = useRef(null);
   const ctaRef = useRef(null);
 
   useEffect(() => {
-    const elements = [
-      headlineRef.current,
-      subtextRef.current,
-      dividerRef.current,
-      ctaRef.current,
-    ].filter(Boolean);
+    gsap.registerPlugin(ScrollTrigger);
 
-    gsap.from(elements, {
-      opacity: 0,
-      y: 24,
-      duration: 1,
-      ease: "power3.out",
-      stagger: 0.1,
-    });
+    if (!sectionRef.current) return;
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const ctx = gsap.context(() => {
+      if (DISABLE_ANIMATION || reduce) {
+        gsap.set(
+          [
+            headlineRef.current,
+            subtextRef.current,
+            dividerRef.current,
+            ctaRef.current,
+          ],
+          {
+            opacity: 1,
+            y: 0,
+            clearProps: "transform",
+          }
+        );
+
+        return;
+      }
+
+      // =====================================================
+      // HEADLINE
+      // =====================================================
+
+      gsap.fromTo(
+        headlineRef.current,
+        {
+          opacity: 0,
+          y: 26,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.25,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 72%",
+          },
+        }
+      );
+
+      // =====================================================
+      // SUBTEXT
+      // =====================================================
+
+      gsap.fromTo(
+        subtextRef.current,
+        {
+          opacity: 0,
+          y: 18,
+        },
+        {
+          opacity: 0.7,
+          y: 0,
+          duration: 1.1,
+          ease: "power2.out",
+          delay: 0.12,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 70%",
+          },
+        }
+      );
+
+      // =====================================================
+      // DIVIDER
+      // =====================================================
+
+      gsap.fromTo(
+        dividerRef.current,
+        {
+          opacity: 0,
+          scaleX: 0.6,
+        },
+        {
+          opacity: 1,
+          scaleX: 1,
+          duration: 1.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: dividerRef.current,
+            start: "top 88%",
+          },
+        }
+      );
+
+      // =====================================================
+      // CTA
+      // =====================================================
+
+      gsap.fromTo(
+        ctaRef.current,
+        {
+          opacity: 0,
+          y: 10,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+          delay: 0.24,
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: "top 92%",
+          },
+        }
+      );
+
+      // =====================================================
+      // AMBIENT FLOAT
+      // =====================================================
+
+      gsap.to(headlineRef.current, {
+        y: -4,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      gsap.to(subtextRef.current, {
+        y: -2,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <section
-      className="w-full px-6 pt-[140px] pb-[110px]"
+      ref={sectionRef}
+      className="relative w-full overflow-hidden px-6 pt-[140px] pb-[120px]"
       style={{
         background:
           "radial-gradient(ellipse at 50% 40%, #344575 0%, #2D3C68 65%)",
       }}
     >
-      <div className="max-w-[720px] mx-auto text-center text-white">
+      {/* ATMOSPHERE */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.06),transparent_42%)]" />
 
+      <div className="relative z-10 mx-auto max-w-[720px] text-center text-white">
         {/* HEADLINE */}
         <h2
           ref={headlineRef}
-          className="font-[Gambarino] text-[clamp(32px,5.5vw,56px)] leading-[1.1] tracking-[-0.01em]"
+          className="
+            font-[Gambarino]
+            text-[clamp(34px,5.5vw,60px)]
+            leading-[1.02]
+            tracking-[-0.03em]
+          "
         >
           The sea is already waiting.
           <br />
@@ -1695,33 +1831,49 @@ function FinalClosing() {
         {/* SUBTEXT */}
         <p
           ref={subtextRef}
-          className="mt-5 text-[14px] md:text-[15px] text-white/70 leading-[1.7] max-w-[440px] mx-auto"
+          className="
+            mx-auto mt-6 max-w-[460px]
+            text-[14px] md:text-[15px]
+            leading-[1.85]
+            text-white/70
+          "
         >
-          Tell us where you want to go. We'll handle everything else —
+          Tell us where you want to go. We’ll handle everything else —
           from the first knot to the last sunset.
         </p>
 
         {/* DIVIDER */}
         <div
           ref={dividerRef}
-          className="mx-auto mt-10 mb-10"
-          style={{
-            width: "36px",
-            height: "1px",
-            background: "rgba(255,255,255,0.15)",
-          }}
+          className="
+            mx-auto mt-12 mb-12
+            h-px w-[44px]
+            origin-center
+            bg-white/14
+          "
         />
 
-        {/* CTA — SINGLE */}
+        {/* CTA */}
         <div ref={ctaRef}>
           <a
             href="https://wa.me/your-number"
-            className="inline-block text-[11px] tracking-[0.32em] uppercase px-7 py-3 border border-white/50 rounded-full hover:bg-white hover:text-[#2D3C68] transition-all duration-500"
+            className="
+              inline-flex items-center justify-center
+              rounded-full
+              border border-white/40
+              px-7 py-3
+              text-[11px]
+              uppercase
+              tracking-[0.32em]
+              text-white
+              transition-all duration-500
+              hover:bg-white
+              hover:text-[#2D3C68]
+            "
           >
             Start Your Journey
           </a>
         </div>
-
       </div>
     </section>
   );

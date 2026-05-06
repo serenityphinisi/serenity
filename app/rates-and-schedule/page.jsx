@@ -15,6 +15,7 @@ export default function Page() {
        <WhatsIncluded/>
        <Rate/>
        <SailingCalendar/>
+       <HowItWorks/>
        {/* <RateOverview/> */}
        {/* <IncludedSection/> */}
        {/* <PricingDetails/>   */}
@@ -1377,6 +1378,276 @@ function SailingCalendar() {
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#2D3C68]/10 to-transparent" />
 
     </section>
+  );
+}
+ 
+  function HowItWorks() {
+  const steps = [
+    {
+      id: "01",
+      title: "Send an Inquiry",
+      duration: "Response within 24 hours",
+      desc: "Tell us your preferred dates, group size, and any specific requests. No commitment required — just a conversation.",
+      primary: true,
+    },
+    {
+      id: "02",
+      title: "We Plan Together",
+      duration: "2–5 days",
+      desc: "We send a tailored proposal — route, itinerary, and any customisations based on your group and the season.",
+      primary: false,
+    },
+    {
+      id: "03",
+      title: "Confirm with Deposit",
+      duration: "30% of charter rate",
+      desc: "A deposit secures your window. Balance is due 60 days before departure. Full refund if we cancel on our end.",
+      primary: false,
+    },
+    {
+      id: "04",
+      title: "Board Serenity",
+      duration: "From Labuan Bajo or Sorong",
+      desc: "Arrive at the departure port. The crew handles everything from there — provisions, route, and the pace of each day.",
+      primary: false,
+    },
+  ];
+
+  return (
+    <section className="relative bg-[#2D3C68] overflow-hidden">
+
+      {/* ================= ATMOSPHERE ================= */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute left-[-12%] top-[-8%] h-[600px] w-[600px] md:h-[800px] md:w-[800px] rounded-full bg-[#F4F5F2]/[0.025] blur-3xl" />
+        <div className="absolute bottom-[-18%] right-[-8%] h-[500px] w-[500px] md:h-[700px] md:w-[700px] rounded-full bg-[#B08D57]/[0.07] blur-3xl" />
+        <div
+          className="absolute inset-0 hidden md:block opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(244,245,242,0.06) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(244,245,242,0.06) 1px, transparent 1px)
+            `,
+            backgroundSize: "110px 110px",
+          }}
+        />
+        <div className="absolute inset-0 opacity-[0.02] mix-blend-soft-light bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] bg-[size:14px_14px]" />
+      </div>
+
+      {/* ================= TOP BORDER ================= */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F4F5F2]/10 to-transparent" />
+
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 py-[100px] md:py-[120px]">
+
+        {/* ================= HEADER ================= */}
+        <div className="mb-16 md:mb-20 md:grid md:grid-cols-12 md:gap-8 md:items-end">
+          <div className="md:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-5 text-[10px] md:text-[11px] tracking-[0.34em] text-[#F4F5F2]/36 uppercase"
+            >
+              How It Works
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 36, filter: "blur(8px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              className="font-[Gambarino] text-[42px] md:text-[56px] lg:text-[64px] leading-[1.0] tracking-[-0.03em] text-[#F4F5F2]"
+            >
+              Four steps
+              <br />
+              from here
+              <br />
+              to the sea.
+            </motion.h2>
+          </div>
+
+          <div className="md:col-span-5 md:col-start-8 mt-8 md:mt-0">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="text-[14px] md:text-[15px] leading-[1.85] text-[#F4F5F2]/52 max-w-[380px]"
+            >
+              The booking process is straightforward. One conversation is
+              enough to get started — the crew handles the rest once you
+              step on board.
+            </motion.p>
+          </div>
+        </div>
+
+        {/* ================= STEPS + IMAGE ================= */}
+        <div className="md:grid md:grid-cols-12 md:gap-8 md:items-start">
+
+          {/* STEPS — left 7 cols */}
+          <div className="md:col-span-7">
+
+            {/* MOBILE: vertical stack with left border */}
+            {/* DESKTOP: 2x2 grid */}
+            <div className="relative">
+
+              {/* DESKTOP GRID */}
+              <div className="hidden md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-0">
+                {steps.map((step, i) => (
+                  <StepCard key={step.id} step={step} index={i} />
+                ))}
+              </div>
+
+              {/* MOBILE STACK */}
+              <div className="md:hidden flex flex-col">
+                {steps.map((step, i) => (
+                  <StepCardMobile key={step.id} step={step} index={i} last={i === steps.length - 1} />
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+          {/* IMAGE — right 4 cols, offset up */}
+          <div className="md:col-span-4 md:col-start-9 mt-14 md:mt-0 md:-translate-y-[48px]">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative"
+            >
+              <div className="relative w-full aspect-[4/5] overflow-hidden">
+                <Image
+                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1776870966/ChatGPT_Image_Apr_22_2026_10_15_17_PM_1_clrjp0.png"
+                  alt="Serenity crew preparing the deck before departure"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-[#2D3C68]/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/60 via-transparent to-transparent" />
+              </div>
+
+              {/* CAPTION CHIP */}
+              <motion.div
+                initial={{ opacity: 0, x: -16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.9, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute -bottom-5 -right-4 md:-right-6 bg-[#F4F5F2] px-5 py-3"
+              >
+                <div className="text-[10px] tracking-[0.22em] text-[#2D3C68]/40 uppercase mb-[2px]">
+                  Crew
+                </div>
+                <div className="text-[13px] tracking-[0.04em] text-[#2D3C68]">
+                  Ready when you are
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= BOTTOM BORDER ================= */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F4F5F2]/10 to-transparent" />
+
+    </section>
+  );
+}
+
+function StepCard({ step, index }) {
+  const isEvenRow = Math.floor(index / 2) % 2 === 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.95,
+        delay: index * 0.1,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className={`
+        relative border-t border-[#F4F5F2]/10 pt-7 pb-10
+        ${index % 2 === 0 ? "pr-8 border-r border-r-[#F4F5F2]/6" : "pl-8"}
+      `}
+    >
+      {/* BACKDROP NUMBER */}
+      <div className="absolute right-3 top-2 font-[Gambarino] text-[100px] leading-none tracking-[-0.06em] text-[#F4F5F2]/[0.04] pointer-events-none select-none">
+        {step.id}
+      </div>
+
+      {/* ID */}
+      <div className="mb-4 text-[10px] tracking-[0.28em] text-[#B08D57]/60 uppercase">
+        {step.id}
+      </div>
+
+      {/* TITLE */}
+      <div className={`font-[Gambarino] leading-[1.1] tracking-[-0.02em] text-[#F4F5F2] mb-3 ${step.primary ? "text-[24px] md:text-[26px]" : "text-[20px] md:text-[22px]"}`}>
+        {step.title}
+      </div>
+
+      {/* DURATION */}
+      <div className="text-[11px] tracking-[0.16em] text-[#B08D57]/65 mb-4 uppercase">
+        {step.duration}
+      </div>
+
+      {/* DESC */}
+      <p className="text-[13px] md:text-[14px] leading-[1.75] text-[#F4F5F2]/50">
+        {step.desc}
+      </p>
+    </motion.div>
+  );
+}
+
+function StepCardMobile({ step, index, last }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        duration: 0.9,
+        delay: index * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="relative flex gap-5"
+    >
+      {/* LEFT — connector line */}
+      <div className="flex flex-col items-center shrink-0 w-8">
+        <div className="w-[1px] h-5 bg-transparent" />
+        <div className="h-[6px] w-[6px] rounded-full bg-[#B08D57]/60 shrink-0 mt-[14px]" />
+        {!last && (
+          <div className="flex-1 w-[1px] bg-[#F4F5F2]/10 mt-2" />
+        )}
+      </div>
+
+      {/* RIGHT — content */}
+      <div className="relative pb-10 flex-1 min-w-0">
+        <div className="absolute right-0 top-0 font-[Gambarino] text-[80px] leading-none tracking-[-0.06em] text-[#F4F5F2]/[0.04] pointer-events-none select-none">
+          {step.id}
+        </div>
+
+        <div className="mb-3 text-[10px] tracking-[0.28em] text-[#B08D57]/60 uppercase pt-[10px]">
+          {step.id}
+        </div>
+
+        <div className={`font-[Gambarino] leading-[1.1] tracking-[-0.02em] text-[#F4F5F2] mb-2 ${step.primary ? "text-[22px]" : "text-[19px]"}`}>
+          {step.title}
+        </div>
+
+        <div className="text-[11px] tracking-[0.14em] text-[#B08D57]/65 mb-3 uppercase">
+          {step.duration}
+        </div>
+
+        <p className="text-[13px] leading-[1.75] text-[#F4F5F2]/50">
+          {step.desc}
+        </p>
+      </div>
+    </motion.div>
   );
 }
 

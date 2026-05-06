@@ -10,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 import Footer from '../../components/Footer'
 
+const DISABLE_ANIMATION = false; // ubah ke false kalau mau animasi aktif
 
 export default function Page() {
   return (
@@ -1442,106 +1443,261 @@ function ExperienceStructure() {
 
 function ClosingCTA() {
   const sectionRef = useRef(null);
+
   const imageRef = useRef(null);
 
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const bodyRef = useRef(null);
+
+  const primaryRef = useRef(null);
+  const secondaryRef = useRef(null);
+
   useEffect(() => {
-    let rafId = null;
+    gsap.registerPlugin(ScrollTrigger);
 
-    const handleScroll = () => {
-      if (!sectionRef.current || !imageRef.current) return;
+    if (!sectionRef.current) return;
 
-      const rect = sectionRef.current.getBoundingClientRect();
-      const windowH = window.innerHeight;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-      let progress = rect.top / windowH;
+    const ctx = gsap.context(() => {
+      // =====================================================
+      // REDUCED MOTION
+      // =====================================================
 
-      // clamp biar stabil di semua device
-      progress = Math.max(-1, Math.min(1, progress));
+      if (DISABLE_ANIMATION || reduce) {
+        gsap.set(
+          [
+            imageRef.current,
+            labelRef.current,
+            headlineRef.current,
+            bodyRef.current,
+            primaryRef.current,
+            secondaryRef.current,
+          ],
+          {
+            opacity: 1,
+            y: 0,
+            clearProps: "transform",
+          }
+        );
 
-      // responsive strength (mobile lebih subtle)
-      const isMobile = window.innerWidth < 768;
-      const strength = isMobile ? -14 : -28;
+        return;
+      }
 
-      const translateY = progress * strength;
+      // =====================================================
+      // IMAGE PARALLAX
+      // =====================================================
 
-      imageRef.current.style.transform = `translateY(${translateY}px) scale(1.05)`;
-    };
-
-    const onScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        handleScroll();
-        rafId = null;
+      gsap.to(imageRef.current, {
+        y: -18,
+        scale: 1.06,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.2,
+        },
       });
-    };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+      // =====================================================
+      // LABEL
+      // =====================================================
 
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
+      gsap.fromTo(
+        labelRef.current,
+        {
+          opacity: 0,
+          y: 10,
+        },
+        {
+          opacity: 0.4,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 74%",
+          },
+        }
+      );
+
+      // =====================================================
+      // HEADLINE
+      // =====================================================
+
+      gsap.fromTo(
+        headlineRef.current,
+        {
+          opacity: 0,
+          y: 28,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.25,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: headlineRef.current,
+            start: "top 82%",
+          },
+        }
+      );
+
+      // =====================================================
+      // BODY
+      // =====================================================
+
+      gsap.fromTo(
+        bodyRef.current,
+        {
+          opacity: 0,
+          y: 16,
+        },
+        {
+          opacity: 0.8,
+          y: 0,
+          duration: 1,
+          ease: "power2.out",
+          delay: 0.08,
+          scrollTrigger: {
+            trigger: bodyRef.current,
+            start: "top 90%",
+          },
+        }
+      );
+
+      // =====================================================
+      // PRIMARY CTA
+      // =====================================================
+
+      gsap.fromTo(
+        primaryRef.current,
+        {
+          opacity: 0,
+          y: 14,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.95,
+          ease: "power2.out",
+          delay: 0.16,
+          scrollTrigger: {
+            trigger: primaryRef.current,
+            start: "top 94%",
+          },
+        }
+      );
+
+      // =====================================================
+      // SECONDARY CTA
+      // =====================================================
+
+      gsap.fromTo(
+        secondaryRef.current,
+        {
+          opacity: 0,
+          x: -8,
+        },
+        {
+          opacity: 0.6,
+          x: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          delay: 0.22,
+          scrollTrigger: {
+            trigger: secondaryRef.current,
+            start: "top 96%",
+          },
+        }
+      );
+
+      // =====================================================
+      // AMBIENT FLOAT
+      // =====================================================
+
+      gsap.to(headlineRef.current, {
+        y: -4,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden px-6 py-[80px] md:py-[120px]"
-      style={{
-        background: "var(--color-dark)",
-      }}
+      className="
+        relative overflow-hidden
+        bg-[#1A1A1A]
+        px-6
+        py-[90px]
+        md:px-10
+        md:py-[130px]
+      "
     >
-      {/* IMAGE LAYER */}
+      {/* ===================================================== */}
+      {/* IMAGE */}
+      {/* ===================================================== */}
+
       <div className="absolute inset-0 overflow-hidden">
         <img
           ref={imageRef}
           src="https://res.cloudinary.com/dombq6plz/image/upload/v1777217651/ChatGPT_Image_Apr_26_2026_10_30_34_PM_1_yc2ihk.png"
           alt=""
-          className="w-full h-full object-cover will-change-transform"
-          style={{
-            transform: "scale(1.05)",
-          }}
+          className="
+            h-full w-full
+            scale-[1.05]
+            object-cover
+            will-change-transform
+          "
         />
-      </div>
 
-      {/* DARK WASH (UNCHANGED) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "rgba(26,26,26,0.68)",
-        }}
-      />
+        {/* DARK WASH */}
+        <div className="absolute inset-0 bg-black/48" />
+  </div>
 
-      {/* DEPTH GRADIENT (UNCHANGED) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(45,60,104,0.32), transparent)",
-        }}
-      />
-
+      {/* ===================================================== */}
       {/* CONTENT */}
-      <div className="max-w-[1200px] mx-auto relative">
+      {/* ===================================================== */}
+
+      <div className="relative z-10 mx-auto max-w-[1200px]">
         {/* LABEL */}
         <p
-          className="text-[11px] tracking-[0.3em] uppercase mb-[32px] md:mb-[48px]"
-          style={{
-            color: "rgba(244,245,242,0.4)",
-          }}
+          ref={labelRef}
+          className="
+            mb-[34px]
+            text-[11px]
+            uppercase
+            tracking-[0.3em]
+            text-white/40
+            md:mb-[52px]
+          "
         >
           Plan Your Trip
         </p>
 
         {/* HEADLINE */}
-        <div className="mb-[40px] md:mb-[56px]">
+        <div className="mb-[44px] md:mb-[64px]">
           <h2
-            className="font-[Gambarino] leading-[1.05]"
-            style={{
-              fontSize: "clamp(42px, 8vw, 72px)",
-              color: "var(--color-base)",
-              maxWidth: "640px",
-            }}
+            ref={headlineRef}
+            className="
+              max-w-[680px]
+              font-[Gambarino]
+              text-[44px]
+              leading-[0.98]
+              tracking-[-0.04em]
+              text-[#F4F5F2]
+              md:text-[72px]
+            "
           >
             When do you
             <br />
@@ -1550,76 +1706,90 @@ function ClosingCTA() {
         </div>
 
         {/* CONTENT ROW */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10 md:gap-12">
-          {/* TEXT */}
+        <div
+          className="
+            flex flex-col
+            gap-10
+            md:flex-row
+            md:items-end
+            md:justify-between
+            md:gap-12
+          "
+        >
+          {/* BODY */}
           <p
-            className="text-[14px] leading-[1.8] max-w-[520px] md:max-w-[320px]"
-            style={{
-              color: "rgba(244,245,242,0.8)",
-            }}
+            ref={bodyRef}
+            className="
+              max-w-[520px]
+              text-[14px]
+              leading-[1.85]
+              text-white/80
+              md:max-w-[340px]
+            "
           >
             Share your dates, your pace, and who you’re coming with.
             We’ll shape the journey around you.
           </p>
 
           {/* CTA GROUP */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-6 sm:gap-10 md:translate-y-[6px] w-full sm:w-auto">
+          <div
+            className="
+              flex flex-col
+              items-stretch
+              gap-6
+              sm:flex-row
+              sm:items-center
+              sm:gap-10
+              md:translate-y-[4px]
+              w-full
+              sm:w-auto
+            "
+          >
             {/* PRIMARY */}
             <button
-              className="w-full sm:w-auto text-[11px] tracking-[0.2em] uppercase"
-              style={{
-                background: "var(--color-base)",
-                color: "var(--color-dark)",
-                padding: "16px 42px",
-                border: "none",
-                cursor: "pointer",
-                transition:
-                  "transform 300ms ease, opacity 300ms ease, box-shadow 300ms ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.92";
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 12px 30px rgba(0,0,0,0.25)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "1";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              ref={primaryRef}
+              className="
+                w-full
+                rounded-full
+                bg-[#F4F5F2]
+                px-10
+                py-4
+                text-[11px]
+                uppercase
+                tracking-[0.2em]
+                text-[#1A1A1A]
+                transition-all duration-500
+                hover:translate-y-[-2px]
+                hover:opacity-95
+                hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)]
+                sm:w-auto
+              "
             >
               Start a Conversation
             </button>
 
             {/* SECONDARY */}
             <button
-              className="group flex items-center gap-3 text-[11px] tracking-[0.18em] uppercase"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "rgba(244,245,242,0.6)",
-                transition: "color 300ms ease",
-                padding: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "rgba(244,245,242,0.8)";
-                e.currentTarget.querySelector("span").style.width = "40px";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "rgba(244,245,242,0.6)";
-                e.currentTarget.querySelector("span").style.width = "24px";
-              }}
+              ref={secondaryRef}
+              className="
+                group flex items-center gap-3
+                text-[11px]
+                uppercase
+                tracking-[0.18em]
+                text-white/60
+                transition-colors duration-300
+                hover:text-white/82
+              "
             >
               See Pricing
+
               <span
-                style={{
-                  display: "block",
-                  height: "1px",
-                  width: "24px",
-                  background: "currentColor",
-                  transition: "width 400ms cubic-bezier(0.22,1,0.36,1)",
-                }}
+                className="
+                  block h-px w-[24px]
+                  bg-current
+                  transition-all duration-500
+                  group-hover:w-[40px]
+                "
               />
             </button>
           </div>
