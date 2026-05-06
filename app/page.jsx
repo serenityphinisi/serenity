@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { gsap, ScrollTrigger } from "../lib/gsap"
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform , useInView} from "framer-motion";
 
 import Footer from '../components/Footer'
  
@@ -30,6 +30,7 @@ export default function Home() {
       {/* <YachtSection/> */}
       {/* <GalleryStrip/> */}
       {/* <Testimonials/> */}
+      {/* <SerenityTestimonials/> */}
       <Closing/>
       <Social/>
       {/* <Statement/> */}
@@ -49,52 +50,73 @@ const DISABLE_ANIMATION = false; // ubah ke false kalau mau animasi aktif
    HERO SECTION
 ========================= */
 function Hero() {
+  const sectionRef = useRef(null);
   const bgRef = useRef(null);
   const contentRef = useRef(null);
-  const rafRef = useRef(null);
+
+  const ease = [0.22, 1, 0.36, 1];
 
   useEffect(() => {
-    let current = 0;
-    let target = 0;
+    const ctx = gsap.context(() => {
+      // BG PARALLAX
+      gsap.to(bgRef.current, {
+        y: "18%",
+        scale: 1.08,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1.2,
+        },
+      });
 
-    const onScroll = () => {
-      target = window.scrollY;
-    };
+      // CONTENT DRIFT
+      gsap.to(contentRef.current, {
+        y: "6%",
+        opacity: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "40% top",
+          scrub: 0.8,
+        },
+      });
+    }, sectionRef);
 
-    const animate = () => {
-      current += (target - current) * 0.055;
-
-      if (bgRef.current) {
-        const scale = 1 + current * 0.00004;
-        const y = current * 0.02;
-
-        bgRef.current.style.transform = `translate3d(0, ${y}px, 0) scale(${scale})`;
-      }
-
-      if (contentRef.current) {
-        contentRef.current.style.transform = `translate3d(0, ${
-          current * 0.012
-        }px, 0)`;
-      }
-
-      rafRef.current = requestAnimationFrame(animate);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    rafRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-[#F4F5F2]">
+    <section
+      ref={sectionRef}
+      className="relative h-screen w-full overflow-hidden bg-[#F4F5F2]"
+    >
+      {/* SCROLL INDICATOR KEYFRAME */}
+      <style>{`
+        @keyframes scrollDrop {
+          0% {
+            transform: translateY(-100%);
+          }
+
+          100% {
+            transform: translateY(220%);
+          }
+        }
+
+        .scroll-drop {
+          animation: scrollDrop 1.8s ease-in-out infinite;
+        }
+      `}</style>
+
       {/* BACKGROUND */}
       <div
         ref={bgRef}
-        className="absolute inset-0 scale-[1.02] will-change-transform"
+        className="absolute inset-0 scale-[1.06] will-change-transform"
+        style={{
+          transformOrigin: "center top",
+        }}
       >
         <Image
           src="https://res.cloudinary.com/dombq6plz/image/upload/v1777307172/ChatGPT_Image_Apr_27_2026_10_24_29_PM_1_ou4x2n.png"
@@ -104,46 +126,65 @@ function Hero() {
           className="object-cover"
         />
 
-        {/* SERENITY COLOR SYSTEM OVERLAYS */}
+        {/* BASE MARITIME TINT */}
         <div className="absolute inset-0 bg-[#2D3C68]/14" />
 
+        {/* BOTTOM DEPTH */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/52 via-[#2D3C68]/14 to-transparent" />
 
+        {/* TOP WARMTH */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#8B6A4F]/10 via-transparent to-transparent" />
 
+        {/* RIGHT EDGE DEPTH */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#2D3C68]/10" />
 
-        {/* subtle atmospheric texture */}
-        <div className="absolute inset-0 opacity-[0.04] mix-blend-soft-light bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)]" />
+        {/* ATMOSPHERIC LIGHT */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)] opacity-[0.04] mix-blend-soft-light" />
       </div>
 
       {/* CONTENT */}
       <div
         ref={contentRef}
-        className="relative z-10 flex h-full items-end justify-center px-6 pb-[12vh] text-center md:px-10"
+        className="relative z-10 flex h-full items-end justify-center px-6 pb-[12vh] text-center will-change-transform md:px-10"
       >
         <div className="mx-auto max-w-[860px]">
           {/* MICRO LABEL */}
           <motion.div
-            initial={{ opacity: 0, y: 22, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{
+              opacity: 0,
+              y: 22,
+              filter: "blur(6px)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            }}
             transition={{
               duration: 1.1,
-              ease: [0.22, 1, 0.36, 1],
+              ease,
             }}
-            className="mb-6 text-[11px] md:text-[12px] tracking-[0.32em] text-[#F4F5F2]/76"
+            className="mb-6 text-[11px] tracking-[0.32em] text-[#F4F5F2]/76 md:text-[12px]"
           >
             INDONESIAN PHINISI YACHT
           </motion.div>
 
           {/* HEADLINE */}
-          <h1 className="font-[Gambarino] text-[#F4F5F2] text-[50px] leading-[0.98] tracking-[-0.04em] md:text-[76px] lg:text-[92px]">
+          <h1 className="font-[Gambarino] text-[50px] leading-[0.98] tracking-[-0.04em] text-[#F4F5F2] md:text-[76px] lg:text-[92px]">
             <motion.span
-              initial={{ opacity: 0, y: 48, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{
+                opacity: 0,
+                y: 48,
+                filter: "blur(8px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
               transition={{
                 duration: 1.35,
-                ease: [0.22, 1, 0.36, 1],
+                ease,
               }}
               className="block"
             >
@@ -151,12 +192,20 @@ function Hero() {
             </motion.span>
 
             <motion.span
-              initial={{ opacity: 0, y: 48, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{
+                opacity: 0,
+                y: 48,
+                filter: "blur(8px)",
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
               transition={{
                 duration: 1.35,
                 delay: 0.14,
-                ease: [0.22, 1, 0.36, 1],
+                ease,
               }}
               className="block opacity-95"
             >
@@ -166,12 +215,20 @@ function Hero() {
 
           {/* SUBCOPY */}
           <motion.p
-            initial={{ opacity: 0, y: 28, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{
+              opacity: 0,
+              y: 28,
+              filter: "blur(6px)",
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            }}
             transition={{
               duration: 1.25,
               delay: 0.28,
-              ease: [0.22, 1, 0.36, 1],
+              ease,
             }}
             className="mx-auto mt-5 max-w-[590px] text-[15px] leading-relaxed text-[#F4F5F2]/90 md:text-[17px]"
           >
@@ -181,29 +238,66 @@ function Hero() {
 
           {/* CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{
+              opacity: 0,
+              y: 18,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
             transition={{
               duration: 1.15,
               delay: 0.48,
-              ease: [0.22, 1, 0.36, 1],
+              ease,
             }}
             className="mt-10 flex flex-col items-center gap-4"
           >
-            <button className="group rounded-full border border-[#F4F5F2]/68 px-8 py-3 text-[13px] tracking-[0.02em] text-[#F4F5F2] transition-all duration-500 hover:border-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#2D3C68]">
-              <span className="inline-block transition-transform duration-500 group-hover:-translate-y-[2px]">
+            <button
+              className="
+                group
+                rounded-full
+                border
+                border-[#F4F5F2]/68
+                px-8
+                py-3
+                text-[13px]
+                tracking-[0.02em]
+                text-[#F4F5F2]
+                transition-all
+                duration-500
+                hover:border-[#F4F5F2]
+                hover:bg-[#F4F5F2]
+                hover:text-[#2D3C68]
+              "
+            >
+              <span
+                className="
+                  inline-block
+                  transition-transform
+                  duration-500
+                  group-hover:-translate-y-[2px]
+                "
+              >
                 Explore Journeys →
               </span>
-            </button> 
+            </button>
           </motion.div>
         </div>
       </div>
 
       {/* SCROLL INDICATOR */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.35, duration: 1.1 }}
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        transition={{
+          delay: 1.35,
+          duration: 1.1,
+        }}
         className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2"
       >
         <div className="flex flex-col items-center gap-2">
@@ -212,21 +306,16 @@ function Hero() {
           </span>
 
           <div className="relative h-8 w-[1px] overflow-hidden bg-[#B08D57]/28">
-            <motion.div
-              animate={{ y: ["-100%", "120%"] }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute left-0 top-0 h-4 w-full bg-[#F4F5F2]/80"
-            />
+            <div className="scroll-drop absolute left-0 top-0 h-4 w-full bg-[#F4F5F2]/80" />
           </div>
         </div>
       </motion.div>
     </section>
   );
 }
+
+
+
 
 
 function Introduction() {
@@ -2380,6 +2469,476 @@ function Testimonials() {
 
         </div>
 
+      </div>
+    </section>
+  );
+}
+
+function SerenityTestimonials() {
+  
+const EASE = [0.22, 1, 0.36, 1];
+ 
+const TESTIMONIALS = [
+  {
+    id: 1,
+    quote:
+      "We've chartered yachts before. This was different. By day two, we stopped checking our phones. By day four, we didn't want to leave.",
+    name: "Sarah & Tom",
+    origin: "London, UK",
+    trip: "Raja Ampat · 7 nights",
+  },
+  {
+    id: 2,
+    quote:
+      "The crew knew when to disappear and when to appear. That balance is almost impossible to find. Serenity has it.",
+    name: "Marcus L.",
+    origin: "Sydney, AU",
+    trip: "Labuan Bajo · 5 nights",
+  },
+  {
+    id: 3,
+    quote:
+      "Not a hotel. Not a tour. Something that felt genuinely ours — the route, the pace, the meals. All of it.",
+    name: "Isabelle & Remy",
+    origin: "Paris, FR",
+    trip: "Komodo · 6 nights",
+  },
+  {
+    id: 4,
+    quote:
+      "I've traveled a lot. Serenity is the first time the journey itself was the destination — not the stops along the way.",
+    name: "David K.",
+    origin: "New York, US",
+    trip: "Raja Ampat · 10 nights",
+  },
+];
+  const sectionRef  = useRef(null);
+  const headlineRef = useRef(null);
+  const lineRef     = useRef(null);
+  const isInView    = useInView(sectionRef, { once: true, margin: "-10%" });
+  const [active, setActive] = useState(0);
+  const [dir, setDir]       = useState(1);
+ 
+  const go = (idx) => {
+    setDir(idx > active ? 1 : -1);
+    setActive(idx);
+  };
+ 
+  const prev = () => go(active === 0 ? TESTIMONIALS.length - 1 : active - 1);
+  const next = () => go(active === TESTIMONIALS.length - 1 ? 0 : active + 1);
+ 
+  // ── GSAP — headline line stagger on scroll ──
+  useEffect(() => {
+    if (!headlineRef.current) return;
+    const ctx = gsap.context(() => {
+      const lines = headlineRef.current.querySelectorAll(".line");
+      gsap.fromTo(
+        lines,
+        { opacity: 0, y: 32, filter: "blur(8px)" },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1.3,
+          stagger: 0.16,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: headlineRef.current,
+            start: "top 82%",
+          },
+        }
+      );
+ 
+      // line draw
+      gsap.fromTo(
+        lineRef.current,
+        { width: "0px", opacity: 0 },
+        {
+          width: "40px",
+          opacity: 0.35,
+          duration: 1.0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: headlineRef.current,
+            start: "top 82%",
+          },
+        }
+      );
+    }, sectionRef);
+ 
+    return () => ctx.revert();
+  }, []);
+ 
+  const variants = {
+    enter: (d) => ({ opacity: 0, x: d * 40, filter: "blur(6px)" }),
+    center: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: EASE } },
+    exit: (d) => ({ opacity: 0, x: d * -40, filter: "blur(6px)", transition: { duration: 0.5, ease: EASE } }),
+  };
+ 
+  const t = TESTIMONIALS[active];
+ 
+  return (
+    <section
+      ref={sectionRef}
+      style={{
+        background: "#F4F5F2",
+        paddingTop: "120px",
+        paddingBottom: "120px",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Switzer:wght@300;400&display=swap');
+ 
+        :root {
+          --color-primary: #2D3C68;
+          --color-base:    #F4F5F2;
+          --color-dark:    #1A1A1A;
+          --brass:         #B08D57;
+        }
+ 
+        .fg  { font-family: 'Cormorant Garamond', serif; }
+        .fsw { font-family: 'Switzer', sans-serif; }
+ 
+        .nav-btn {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          border: 1px solid rgba(45,60,104,0.20);
+          background: transparent;
+          color: rgba(45,60,104,0.60);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: border-color 0.4s ease, background 0.4s ease, color 0.4s ease;
+        }
+        .nav-btn:hover {
+          border-color: #2D3C68;
+          background: #2D3C68;
+          color: #F4F5F2;
+        }
+ 
+        .dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: rgba(45,60,104,0.20);
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          transition: background 0.4s ease, transform 0.4s ease;
+        }
+        .dot.active {
+          background: #2D3C68;
+          transform: scale(1.3);
+        }
+      `}</style>
+ 
+      {/* ── SUBTLE TOP TRANSITION ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "120px",
+          background: "linear-gradient(to bottom, rgba(45,60,104,0.06) 0%, transparent 100%)",
+          pointerEvents: "none",
+        }}
+      />
+ 
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px" }}>
+ 
+        {/* ── HEADER ── */}
+        <div style={{ marginBottom: "72px" }}>
+ 
+          {/* Micro label */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 1.0, delay: 0.1, ease: EASE }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              marginBottom: "28px",
+            }}
+          >
+            <div
+              ref={lineRef}
+              style={{
+                height: "1px",
+                background: "rgba(45,60,104,0.35)",
+                width: 0,
+              }}
+            />
+            <span
+              className="fsw"
+              style={{
+                fontSize: "10px",
+                letterSpacing: "0.32em",
+                color: "rgba(45,60,104,0.40)",
+                textTransform: "uppercase",
+              }}
+            >
+              From Our Guests
+            </span>
+          </motion.div>
+ 
+          {/* H2 — 56px, 100% opacity, Gambarino, token compliant */}
+          <h2
+            ref={headlineRef}
+            className="fg"
+            style={{
+              fontSize: "56px",          // within H2 token: 52–64px
+              fontWeight: 300,
+              color: "#2D3C68",          // primary token, 100% opacity
+              lineHeight: 1.0,
+              letterSpacing: "-0.02em",
+              margin: 0,
+            }}
+          >
+            <span className="line" style={{ display: "block", fontStyle: "italic" }}>
+              Those who were
+            </span>
+            <span
+              className="line"
+              style={{
+                display: "block",
+                fontStyle: "normal",
+                paddingLeft: "56px",   // tension offset
+              }}
+            >
+              there.
+            </span>
+          </h2>
+        </div>
+ 
+        {/* ── TESTIMONIAL CARD ── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "80px",
+            alignItems: "center",
+          }}
+        >
+ 
+          {/* LEFT — quote ── */}
+          <div style={{ position: "relative", minHeight: "280px" }}>
+            <AnimatePresence mode="wait" custom={dir}>
+              <motion.div
+                key={t.id}
+                custom={dir}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+              >
+                {/* Opening mark */}
+                <span
+                  className="fg"
+                  style={{
+                    fontSize: "96px",
+                    fontWeight: 300,
+                    fontStyle: "italic",
+                    color: "rgba(45,60,104,0.10)",
+                    lineHeight: 0.8,
+                    display: "block",
+                    marginBottom: "16px",
+                    marginLeft: "-8px",
+                  }}
+                >
+                  "
+                </span>
+ 
+                {/* Quote — H3 range, Gambarino italic */}
+                <blockquote
+                  className="fg"
+                  style={{
+                    fontSize: "28px",        // H3 token: 26–32px
+                    fontWeight: 300,
+                    fontStyle: "italic",
+                    color: "#1A1A1A",         // 100% — headline rule
+                    lineHeight: 1.45,
+                    letterSpacing: "-0.01em",
+                    margin: 0,
+                  }}
+                >
+                  {t.quote}
+                </blockquote>
+ 
+                {/* Attribution */}
+                <div
+                  style={{
+                    marginTop: "32px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <span
+                    className="fsw"
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 400,
+                      color: "rgba(26,26,26,0.80)",  // 80% body token
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {t.name}
+                  </span>
+                  <span
+                    className="fsw"
+                    style={{
+                      fontSize: "11px",
+                      color: "rgba(26,26,26,0.40)",  // 40% meta token
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {t.origin} · {t.trip}
+                  </span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+ 
+          {/* RIGHT — navigation + counter ── */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "280px",
+              alignItems: "flex-end",
+            }}
+          >
+ 
+            {/* Counter — large Gambarino */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : {}}
+              transition={{ duration: 1.0, delay: 0.4, ease: EASE }}
+              style={{ textAlign: "right" }}
+            >
+              <span
+                className="fg"
+                style={{
+                  fontSize: "88px",        // H1 range — used as display number
+                  fontWeight: 300,
+                  color: "rgba(45,60,104,0.08)",
+                  lineHeight: 1,
+                  letterSpacing: "-0.04em",
+                  fontStyle: "italic",
+                  display: "block",
+                }}
+              >
+                {String(active + 1).padStart(2, "0")}
+              </span>
+              <span
+                className="fsw"
+                style={{
+                  fontSize: "10px",
+                  letterSpacing: "0.28em",
+                  color: "rgba(45,60,104,0.30)",
+                  textTransform: "uppercase",
+                }}
+              >
+                of {String(TESTIMONIALS.length).padStart(2, "0")}
+              </span>
+            </motion.div>
+ 
+            {/* Dots + nav buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 1.0, delay: 0.55, ease: EASE }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: "24px",
+              }}
+            >
+              {/* Dots */}
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                {TESTIMONIALS.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`dot${i === active ? " active" : ""}`}
+                    onClick={() => go(i)}
+                  />
+                ))}
+              </div>
+ 
+              {/* Prev / Next */}
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button className="nav-btn" onClick={prev} aria-label="Previous">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button className="nav-btn" onClick={next} aria-label="Next">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </motion.div>
+ 
+          </div>
+        </div>
+ 
+        {/* ── DIVIDER + STATS STRIP ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1.2, delay: 0.7, ease: EASE }}
+          style={{
+            marginTop: "80px",
+            paddingTop: "40px",
+            borderTop: "1px solid rgba(45,60,104,0.10)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {[
+            { v: "100%", l: "Return interest" },
+            { v: "4.9",  l: "Average rating"  },
+            { v: "12",   l: "Guests max"       },
+            { v: "2",    l: "Destinations"     },
+          ].map((s, i) => (
+            <div key={i} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span
+                className="fg"
+                style={{
+                  fontSize: "32px",
+                  fontWeight: 300,
+                  color: "#2D3C68",
+                  lineHeight: 1,
+                }}
+              >
+                {s.v}
+              </span>
+              <span
+                className="fsw"
+                style={{
+                  fontSize: "10px",
+                  letterSpacing: "0.26em",
+                  color: "rgba(45,60,104,0.40)",
+                  textTransform: "uppercase",
+                }}
+              >
+                {s.l}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+ 
       </div>
     </section>
   );
