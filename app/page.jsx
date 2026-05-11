@@ -293,7 +293,7 @@ function Hero() {
               delay: 0.28,
               ease,
             }}
-            className="mx-auto mt-5 max-w-[590px] text-[15px] leading-relaxed text-[#F4F5F2]/90 md:text-[17px]"
+            className="mx-auto mt-5 max-w-[590px] text-[15px] leading-relaxed text-[#F4F5F2]/90 md:text-[17px] "
           >
             Sail through Raja Ampat and Komodo with only twelve guests
             aboard a handcrafted phinisi built for intimate ocean
@@ -654,7 +654,7 @@ function Introduction() {
             "
           >
             <Image
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp"
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png"
               alt="Life on board Serenity yacht"
               fill
               priority
@@ -718,7 +718,7 @@ function Introduction() {
           "
         >
           <Image
-            src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/41_gbpo3o.webp"
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp"
             alt="Interior space on board"
             fill
             className="object-cover"
@@ -815,8 +815,6 @@ function Experiences() {
   const leftRef = useRef(null);
   const rightRef = useRef(null);
 
-  const ease = [0.22, 1, 0.36, 1];
-
   useEffect(() => {
     if (!sectionRef.current) return;
 
@@ -828,12 +826,17 @@ function Experiences() {
 
     if (prefersReducedMotion) {
       gsap.set(
-        [headerRef.current, leftRef.current, rightRef.current],
+        [
+          headerRef.current,
+          leftRef.current,
+          rightRef.current,
+        ],
         {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
           scale: 1,
+          filter: "blur(0px)",
+          clearProps: "all",
         }
       );
 
@@ -842,6 +845,12 @@ function Experiences() {
 
     const ctx = gsap.context(() => {
       const isDesktop = window.innerWidth >= 768;
+
+      /* ========================================= */
+      /* SHARED EASE */
+      /* ========================================= */
+
+      const ease = "power3.out";
 
       /* ========================================= */
       /* HEADER */
@@ -864,6 +873,7 @@ function Experiences() {
           scrollTrigger: {
             trigger: headerRef.current,
             start: "top 84%",
+            once: true,
           },
         }
       );
@@ -889,6 +899,7 @@ function Experiences() {
           scrollTrigger: {
             trigger: leftRef.current,
             start: "top 86%",
+            once: true,
           },
         }
       );
@@ -915,6 +926,7 @@ function Experiences() {
           scrollTrigger: {
             trigger: rightRef.current,
             start: "top 86%",
+            once: true,
           },
         }
       );
@@ -950,7 +962,9 @@ function Experiences() {
       }
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -969,13 +983,13 @@ function Experiences() {
       "
     >
       {/* TOP DEPTH */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-[#2D3C68]/10 via-[#2D3C68]/04 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-[#2D3C68]/10 via-[#2D3C68]/[0.04] to-transparent" />
 
       {/* SUBTLE TEXTURE */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03] mix-blend-multiply bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)] opacity-[0.03] mix-blend-multiply" />
 
       {/* ATMOSPHERIC BRIDGE OUT */}
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[180px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/03 to-[#2D3C68]/10" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-[180px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.03] to-[#2D3C68]/10" />
 
       <div className="relative mx-auto max-w-[1240px]">
         {/* ========================================= */}
@@ -997,7 +1011,7 @@ function Experiences() {
               text-[11px]
               uppercase
               tracking-[0.34em]
-              text-[#2D3C68]/56
+              text-[#2D3C68]/60
             "
           >
             On Board
@@ -2492,12 +2506,9 @@ function Crew() {
 
   const textRef = useRef(null);
 
-  const imgPrimaryRef = useRef(null);
-  const imgSecondaryRef = useRef(null);
-  const imgDetailRef = useRef(null);
+  const imageWrapRef = useRef(null);
 
-  const mobileImageRef = useRef(null);
-  const mobileDetailRef = useRef(null);
+  const imageRef = useRef(null);
 
   const ikatRef = useRef(null);
 
@@ -2510,608 +2521,270 @@ function Crew() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const mm = gsap.matchMedia();
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-    mm.add(
-      {
-        mobile: "(max-width: 767px)",
-        desktop: "(min-width: 768px)",
-      },
-      (context) => {
-        const { mobile } = context.conditions;
+    /*
+      ========================================
+      REDUCED MOTION
+      ========================================
+    */
 
-        const reduce = window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-        /*
-          ========================================
-          REDUCED MOTION
-          ========================================
-        */
-
-        if (reduce) {
-          gsap.set(
-            [
-              textRef.current,
-
-              imgPrimaryRef.current,
-              imgSecondaryRef.current,
-              imgDetailRef.current,
-
-              mobileImageRef.current,
-              mobileDetailRef.current,
-
-              ikatRef.current,
-              ctaRef.current,
-            ],
-            {
-              opacity: 1,
-              y: 0,
-              x: 0,
-              scale: 1,
-              filter: "blur(0px)",
-            }
-          );
-
-          return;
+    if (reduce) {
+      gsap.set(
+        [
+          textRef.current,
+          imageWrapRef.current,
+          ikatRef.current,
+          ctaRef.current,
+        ],
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: "blur(0px)",
         }
-
-        const ctx = gsap.context(() => {
-          /*
-            ========================================
-            MOBILE
-            ========================================
-          */
-
-          if (mobile) {
-            const tl = gsap.timeline({
-              defaults: { ease },
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top 82%",
-
-                once: true,
-              },
-            });
-
-            /*
-              TEXT
-            */
-
-            tl.fromTo(
-              textRef.current,
-              {
-                opacity: 0,
-
-                y: 32,
-
-                filter: "blur(10px)",
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                filter: "blur(0px)",
-
-                duration: 1.15,
-              }
-            );
-
-            /*
-              MAIN IMAGE
-            */
-
-            tl.fromTo(
-              mobileImageRef.current,
-              {
-                opacity: 0,
-
-                y: 36,
-
-                scale: 1.025,
-
-                filter: "blur(12px)",
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                scale: 1,
-
-                filter: "blur(0px)",
-
-                duration: 1.3,
-              },
-              "-=0.55"
-            );
-
-            /*
-              DETAIL
-            */
-
-            tl.fromTo(
-              mobileDetailRef.current,
-              {
-                opacity: 0,
-
-                y: 20,
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                duration: 1,
-              },
-              "-=0.8"
-            );
-
-            /*
-              CTA
-            */
-
-            tl.fromTo(
-              ctaRef.current,
-              {
-                opacity: 0,
-
-                y: 18,
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                duration: 0.9,
-              },
-              "-=0.5"
-            );
-
-            /*
-              PARALLAX
-            */
-
-            gsap.to(mobileImageRef.current, {
-              y: -14,
-
-              ease: "none",
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top bottom",
-
-                end: "bottom top",
-
-                scrub: 1.2,
-              },
-            });
-          }
-
-          /*
-            ========================================
-            DESKTOP
-            ========================================
-          */
-
-          else {
-            const tl = gsap.timeline({
-              defaults: { ease },
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top 78%",
-
-                once: true,
-              },
-            });
-
-            /*
-              TEXT
-            */
-
-            tl.fromTo(
-              textRef.current,
-              {
-                opacity: 0,
-
-                y: 32,
-
-                filter: "blur(10px)",
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                filter: "blur(0px)",
-
-                duration: 1.2,
-              }
-            );
-
-            /*
-              IKAT
-            */
-
-            tl.fromTo(
-              ikatRef.current,
-              {
-                scaleX: 0,
-
-                opacity: 0,
-              },
-              {
-                scaleX: 1,
-
-                opacity: 1,
-
-                duration: 1.3,
-
-                transformOrigin:
-                  "left center",
-              },
-              "-=0.82"
-            );
-
-            /*
-              PRIMARY
-            */
-
-            tl.fromTo(
-              imgPrimaryRef.current,
-              {
-                opacity: 0,
-
-                y: 34,
-
-                scale: 1.025,
-
-                filter: "blur(12px)",
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                scale: 1,
-
-                filter: "blur(0px)",
-
-                duration: 1.35,
-              },
-              "-=0.92"
-            );
-
-            /*
-              SECONDARY
-            */
-
-            tl.fromTo(
-              imgSecondaryRef.current,
-              {
-                opacity: 0,
-
-                y: 42,
-
-                scale: 1.02,
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                scale: 1,
-
-                duration: 1.1,
-              },
-              "-=1"
-            );
-
-            /*
-              DETAIL
-            */
-
-            tl.fromTo(
-              imgDetailRef.current,
-              {
-                opacity: 0,
-
-                y: 24,
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                duration: 1,
-              },
-              "-=0.88"
-            );
-
-            /*
-              CTA
-            */
-
-            tl.fromTo(
-              ctaRef.current,
-              {
-                opacity: 0,
-
-                y: 18,
-              },
-              {
-                opacity: 1,
-
-                y: 0,
-
-                duration: 0.9,
-              },
-              "-=0.6"
-            );
-
-            /*
-              PARALLAX
-            */
-
-            gsap.to(imgPrimaryRef.current, {
-              y: -16,
-
-              ease: "none",
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top bottom",
-
-                end: "bottom top",
-
-                scrub: 1.1,
-              },
-            });
-
-            gsap.to(imgSecondaryRef.current, {
-              y: -24,
-
-              ease: "none",
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top bottom",
-
-                end: "bottom top",
-
-                scrub: 1.5,
-              },
-            });
-
-            gsap.to(imgDetailRef.current, {
-              y: -18,
-
-              ease: "none",
-
-              scrollTrigger: {
-                trigger: sectionRef.current,
-
-                start: "top bottom",
-
-                end: "bottom top",
-
-                scrub: 1.3,
-              },
-            });
-          }
-        }, sectionRef);
-
-        return () => ctx.revert();
+      );
+
+      return;
+    }
+
+    /*
+      ========================================
+      INTRO
+      ========================================
+    */
+
+    const tl = gsap.timeline({
+      defaults: {
+        ease,
+      },
+
+      scrollTrigger: {
+        trigger: sectionRef.current,
+
+        start: "top 80%",
+
+        once: true,
+      },
+    });
+
+    tl.fromTo(
+      textRef.current,
+      {
+        opacity: 0,
+        y: 34,
+        filter: "blur(10px)",
+      },
+      {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.15,
       }
     );
 
-    return () => mm.revert();
+    tl.fromTo(
+      ikatRef.current,
+      {
+        opacity: 0,
+        scale: 0.94,
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+      },
+      "-=0.75"
+    );
+
+    tl.fromTo(
+      imageWrapRef.current,
+      {
+        opacity: 0,
+        y: 38,
+        scale: 1.025,
+        filter: "blur(12px)",
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 1.35,
+      },
+      "-=1.05"
+    );
+
+    tl.fromTo(
+      ctaRef.current,
+      {
+        opacity: 0,
+        y: 14,
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+      },
+      "-=0.65"
+    );
+
+    /*
+      ========================================
+      PARALLAX
+      ========================================
+    */
+
+    gsap.to(imageRef.current, {
+      y: -18,
+
+      ease: "none",
+
+      scrollTrigger: {
+        trigger: sectionRef.current,
+
+        start: "top bottom",
+
+        end: "bottom top",
+
+        scrub: 1.1,
+      },
+    });
+
+    return () => {
+      tl.kill();
+
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#2D3C68]
-        px-6
-        py-[90px]
-        md:px-10
-        md:py-[112px]
-      "
+      className="relative overflow-hidden bg-[#2D3C68]"
     >
       {/* ========================================= */}
-      {/* ATMOSPHERIC BRIDGE IN */}
+      {/* BRIDGE IN */}
       {/* ========================================= */}
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[140px] bg-gradient-to-b from-[#F4F5F2]/08 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[120px] bg-gradient-to-b from-[#F4F5F2]/8 to-transparent" />
 
       {/* ========================================= */}
-      {/* WARM ATMOSPHERE */}
+      {/* BRIDGE OUT */}
       {/* ========================================= */}
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_68%_22%,rgba(176,141,87,0.08),transparent_50%)]" />
-
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_45%,rgba(255,255,255,0.03),transparent_55%)]" />
-
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(0,0,0,0.18),transparent_40%)]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 z-20 h-[100px] w-full bg-gradient-to-b from-transparent to-[#1A1A1A]/12" />
 
       {/* ========================================= */}
-      {/* ATMOSPHERIC BRIDGE OUT */}
+      {/* ATMOSPHERE */}
       {/* ========================================= */}
 
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[120px] w-full bg-gradient-to-b from-transparent to-[#1A1A1A]/10" />
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-[radial-gradient(circle_at_74%_24%,rgba(176,141,87,0.10),transparent_42%)]" />
 
-      <div className="relative mx-auto max-w-[1220px]">
+      <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-white/[0.03] via-transparent to-black/[0.14]" />
+
+      {/* ========================================= */}
+      {/* IKAT */}
+      {/* ========================================= */}
+
+      <div
+        ref={ikatRef}
+        className="
+          pointer-events-none
+          absolute
+          bottom-[-120px]
+          left-[-120px]
+          z-[1]
+          hidden
+          h-[360px]
+          w-[360px]
+          md:block
+        "
+      >
+        <img
+          src="https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png"
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-contain"
+          style={{
+            opacity: 0.03,
+          }}
+        />
+      </div>
+
+      {/* ========================================= */}
+      {/* LAYOUT */}
+      {/* ========================================= */}
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          grid
+          max-w-[1320px]
+          items-center
+          gap-12
+          px-6
+          py-[72px]
+          md:grid-cols-[0.92fr_1.08fr]
+          md:gap-14
+          md:px-10
+          md:py-[84px]
+          lg:gap-16
+        "
+      >
         {/* ========================================= */}
-        {/* MOBILE */}
+        {/* LEFT */}
         {/* ========================================= */}
 
-        <div className="md:hidden">
-          {/* TEXT */}
+        <div
+          ref={textRef}
+          className="relative z-10"
+        >
+          <p className="text-[11px] uppercase tracking-[0.35em] text-white/46">
+            The Crew
+          </p>
 
-          <div ref={textRef}>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-white/48">
-              The Crew
-            </p>
+          <h2
+            className="
+              mt-5
+              max-w-[520px]
+              font-[Gambarino]
+              text-[40px]
+              leading-[1]
+              tracking-[-0.04em]
+              text-[#F4F5F2]
+              md:text-[54px]
+              lg:text-[60px]
+            "
+          >
+            They know every
+            <br />
+            current by name.
+          </h2>
 
-            <h2
-              className="
-                mt-5
-                max-w-[320px]
-                font-[Gambarino]
-                text-[42px]
-                leading-[1.02]
-                tracking-[-0.04em]
-                text-[#F4F5F2]
-              "
-            >
-              They know every
-              <br />
-              current by name.
-            </h2>
+          <div className="my-7 h-px w-12 bg-[#B08D57]/50" />
 
-            {/* IKAT */}
-
-            <div
-              ref={ikatRef}
-              className="my-7"
-              style={{
-                transformOrigin:
-                  "left center",
-              }}
-            >
-              <div
-                className="
-                  h-px
-                  w-full
-                  max-w-[180px]
-                  opacity-[0.16]
-                "
-                style={{
-                  backgroundImage: `
-                    repeating-linear-gradient(
-                      90deg,
-                      #F4F5F2 0px,
-                      #F4F5F2 4px,
-                      transparent 4px,
-                      transparent 8px,
-                      #B08D57 8px,
-                      #B08D57 10px,
-                      transparent 10px,
-                      transparent 16px,
-                      #F4F5F2 16px,
-                      #F4F5F2 18px,
-                      transparent 18px,
-                      transparent 24px
-                    )
-                  `,
-                }}
-              />
-            </div>
-
-            <p
-              className="
-                max-w-[330px]
-                text-[15px]
-                leading-[1.82]
-                text-white/70
-              "
-            >
-              Ten crew from Indonesia's maritime
-              communities. They bring generational
-              knowledge of these waters — warm,
-              attentive, and shaped entirely around
+          <div className="max-w-[450px] space-y-5">
+            <p className="text-[15px] leading-[1.88] text-white/70 md:text-[16px]">
+              Ten crew from Indonesia’s maritime communities —
+              warm, attentive, and shaped entirely around
               the rhythm of each voyage.
             </p>
 
-            <p
-              className="
-                mt-4
-                max-w-[330px]
-                text-[15px]
-                leading-[1.82]
-                text-white/70
-              "
-            >
-              They don't follow a script. They read
-              the sea — and quietly make everything
-              aboard feel effortless.
+            <p className="text-[15px] leading-[1.88] text-white/58 md:text-[16px]">
+              They notice shifting weather before the horizon changes,
+              remember how you take your coffee,
+              and somehow make every day aboard feel effortless.
             </p>
           </div>
 
-          {/* MAIN IMAGE */}
-
-          <div
-            ref={mobileImageRef}
-            className="
-              relative
-              mt-12
-              h-[360px]
-              overflow-hidden
-            "
-          >
-            <Image
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068969/43_fcprng.webp"
-              alt="Crew aboard Serenity"
-              fill
-              className="
-                object-cover
-                scale-[1.015]
-                transition-transform
-                duration-[2200ms]
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-                hover:scale-[1.04]
-              "
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/48 via-transparent to-black/[0.08]" />
-
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.08),transparent_42%)]" />
-          </div>
-
-          {/* DETAIL */}
-
-          <div
-            ref={mobileDetailRef}
-            className="
-              relative
-              -mt-14
-              ml-auto
-              h-[120px]
-              w-[54%]
-              overflow-hidden
-              border
-              border-white/[0.08]
-              shadow-[0_28px_70px_rgba(0,0,0,0.22)]
-            "
-          >
-            <Image
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068892/01_oomiyy.webp"
-              alt="Detail aboard Serenity"
-              fill
-              className="object-cover scale-[1.02]"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/36 to-transparent" />
-          </div>
-
-          {/* CTA */}
-
           <div
             ref={ctaRef}
-            className="mt-14 flex"
+            className="mt-11"
           >
             <a
               href="/about"
@@ -3121,21 +2794,27 @@ function Crew() {
                 items-center
                 gap-3
                 border-b
-                border-white/28
+                border-white/24
                 pb-[10px]
-                text-[12px]
+                text-[11px]
                 uppercase
-                tracking-[0.22em]
+                tracking-[0.24em]
                 text-white/80
                 transition-all
                 duration-500
-                hover:border-white/72
+                hover:border-white/58
                 hover:text-white
               "
             >
               Meet the Crew
 
-              <span className="transition-transform duration-500 group-hover:translate-x-1">
+              <span
+                className="
+                  transition-transform
+                  duration-500
+                  group-hover:translate-x-[2px]
+                "
+              >
                 →
               </span>
             </a>
@@ -3143,226 +2822,45 @@ function Crew() {
         </div>
 
         {/* ========================================= */}
-        {/* DESKTOP */}
+        {/* IMAGE */}
         {/* ========================================= */}
 
-        <div className="hidden md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-20">
-          {/* LEFT */}
-
-          <div ref={textRef}>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-white/48">
-              The Crew
-            </p>
-
-            <h2
-              className="
-                mt-5
-                max-w-[520px]
-                font-[Gambarino]
-                text-[56px]
-                leading-[1.03]
-                tracking-[-0.03em]
-                text-[#F4F5F2]
-              "
-            >
-              They know every
-              <br />
-              current by name.
-            </h2>
-
-            {/* IKAT */}
-
+        <div
+          ref={imageWrapRef}
+          className="relative overflow-hidden"
+        >
+          <div
+            className="
+              relative
+              h-[300px]
+              overflow-hidden
+              md:h-[360px]
+              lg:h-[400px]
+            "
+          >
             <div
-              ref={ikatRef}
-              className="my-8"
-              style={{
-                transformOrigin:
-                  "left center",
-              }}
-            >
-              <div
-                className="
-                  h-px
-                  w-full
-                  max-w-[280px]
-                  opacity-[0.16]
-                "
-                style={{
-                  backgroundImage: `
-                    repeating-linear-gradient(
-                      90deg,
-                      #F4F5F2 0px,
-                      #F4F5F2 4px,
-                      transparent 4px,
-                      transparent 8px,
-                      #B08D57 8px,
-                      #B08D57 10px,
-                      transparent 10px,
-                      transparent 16px,
-                      #F4F5F2 16px,
-                      #F4F5F2 18px,
-                      transparent 18px,
-                      transparent 24px
-                    )
-                  `,
-                }}
-              />
-            </div>
-
-            <p
-              className="
-                max-w-[520px]
-                text-[15px]
-                leading-[1.82]
-                text-white/70
-              "
-            >
-              Ten crew from Indonesia's maritime
-              communities. They bring generational
-              knowledge of these waters — warm,
-              attentive, and shaped entirely around
-              the rhythm of each voyage.
-            </p>
-
-            <p
-              className="
-                mt-4
-                max-w-[520px]
-                text-[15px]
-                leading-[1.82]
-                text-white/70
-              "
-            >
-              They don't follow a script. They read
-              the sea — and quietly make everything
-              aboard feel effortless.
-            </p>
-
-            {/* CTA */}
-
-            <div
-              ref={ctaRef}
-              className="mt-8"
-            >
-              <a
-                href="/about"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  gap-3
-                  border-b
-                  border-white/28
-                  pb-[10px]
-                  text-[12px]
-                  uppercase
-                  tracking-[0.22em]
-                  text-white/80
-                  transition-all
-                  duration-500
-                  hover:border-white/72
-                  hover:text-white
-                "
-              >
-                Meet the Crew
-
-                <span className="transition-transform duration-500 group-hover:translate-x-1">
-                  →
-                </span>
-              </a>
-            </div>
-          </div>
-
-          {/* RIGHT */}
-
-          <div className="relative h-[560px]">
-            {/* PRIMARY */}
-
-            <div
-              ref={imgPrimaryRef}
-              className="
-                absolute
-                right-0
-                top-0
-                h-[360px]
-                w-[72%]
-                overflow-hidden
-              "
+              ref={imageRef}
+              className="absolute inset-0 scale-[1.04]"
             >
               <Image
                 src="https://res.cloudinary.com/dombq6plz/image/upload/v1777227225/ChatGPT_Image_Apr_27_2026_01_12_43_AM_1_l0xnxm.png"
                 alt="Crew aboard Serenity"
                 fill
-                className="
-                  object-cover
-                  scale-[1.015]
-                  transition-transform
-                  duration-[2400ms]
-                  ease-[cubic-bezier(0.22,1,0.36,1)]
-                  hover:scale-[1.045]
-                "
+                className="object-cover object-center"
               />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/42 via-transparent to-black/[0.08]" />
-
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.08),transparent_42%)]" />
             </div>
 
-            {/* SECONDARY */}
+            {/* LEFT BLUE DEPTH */}
 
-            <div
-              ref={imgSecondaryRef}
-              className="
-                absolute
-                bottom-0
-                left-0
-                h-[190px]
-                w-[48%]
-                overflow-hidden
-              "
-            >
-              <Image
-                src="https://res.cloudinary.com/dombq6plz/image/upload/v1777271186/ChatGPT_Image_Apr_27_2026_01_24_38_PM_iuf3mw.png"
-                alt="Crew moment aboard Serenity"
-                fill
-                className="
-                  object-cover
-                  scale-[1.015]
-                  transition-transform
-                  duration-[2200ms]
-                  ease-[cubic-bezier(0.22,1,0.36,1)]
-                  hover:scale-[1.04]
-                "
-              />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#2D3C68]/78 via-[#2D3C68]/24 to-transparent" />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/40 to-transparent" />
-            </div>
+            {/* BOTTOM DEPTH */}
 
-            {/* DETAIL */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/48 via-transparent to-transparent" />
 
-            <div
-              ref={imgDetailRef}
-              className="
-                absolute
-                bottom-[118px]
-                right-[6%]
-                h-[128px]
-                w-[34%]
-                overflow-hidden
-                border
-                border-white/[0.08]
-                shadow-[0_28px_70px_rgba(0,0,0,0.2)]
-              "
-            >
-              <Image
-                src="https://res.cloudinary.com/dombq6plz/image/upload/v1777271186/ChatGPT_Image_Apr_27_2026_01_24_43_PM_xylsa1.png"
-                alt="Detail aboard Serenity"
-                fill
-                className="object-cover scale-[1.02]"
-              />
+            {/* FILM DEPTH */}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/34 to-transparent" />
-            </div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_42%,rgba(0,0,0,0.10)_100%)]" />
           </div>
         </div>
       </div>
@@ -6277,12 +5775,12 @@ function Destinations() {
     {
       name: ["Raja", "Ampat"],
       sub: "West Papua · Coral reefs and limestone passages",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
+      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
     },
     {
       name: ["Labuan", "Bajo"],
       sub: "East Nusa Tenggara · Volcanic islands and open sea",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1777295006/ChatGPT_Image_Apr_27_2026_07_43_23_PM_hynjkg.png",
+      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
     },
   ];
 

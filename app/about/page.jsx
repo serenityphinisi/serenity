@@ -16,10 +16,15 @@ export default function Page() {
   return (
     <main className="bg-[#0a0f14] text-white overflow-hidden">
       <Hero/> 
-      <AboutOrigin/>
-      <Philosophy/> 
-      <AboutCrew/>
-      <ForWho/>
+      <OurStory/>
+      <PhinisiHistory/>
+      <TheCrew/>
+      {/* <Testimonial/> */}
+      <Conversion/>
+      {/* <AboutOrigin/> */}
+      {/* <Philosophy/>  */}
+      {/* <AboutCrew/> */}
+      {/* <ForWho/> */}
       {/* <BuiltInIndonesia/> */}
       {/* <PrivateByDesign/> */}
       {/* <ThePeopleWhoShapeTheJourney/> */}
@@ -46,50 +51,45 @@ function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: {
-          ease: "power3.out",
-        },
-      });
-
       /* ===================================================== */
       /* ENTRY */
       /* ===================================================== */
-      tl.fromTo(
+      gsap.fromTo(
         imageWrapRef.current,
         {
-          scale: 1.04,
+          scale: 1.01,
           opacity: 0,
-          x: 18,
         },
         {
           scale: 1,
           opacity: 1,
-          x: 0,
-          duration: 1.5,
-          ease: "power4.out",
+          duration: 1.8,
+          ease: "power2.out",
         }
-      ).fromTo(
+      );
+
+      gsap.fromTo(
         contentRef.current.children,
         {
-          y: 18,
+          y: 8,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          stagger: 0.1,
-          duration: 0.72,
-        },
-        "-=0.95"
+          stagger: 0.08,
+          duration: 1,
+          ease: "power2.out",
+          delay: 0.2,
+        }
       );
 
       /* ===================================================== */
       /* AMBIENT */
       /* ===================================================== */
       gsap.to(imageRef.current, {
-        y: -8,
-        duration: 7,
+        y: -4,
+        duration: 10,
         repeat: -1,
         yoyo: true,
         ease: "sine.inOut",
@@ -99,8 +99,7 @@ function Hero() {
       /* SCROLL */
       /* ===================================================== */
       gsap.to(imageWrapRef.current, {
-        yPercent: 2,
-        scale: 1.01,
+        yPercent: 1,
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -111,7 +110,7 @@ function Hero() {
       });
 
       gsap.to(contentRef.current, {
-        y: -18,
+        y: -10,
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -128,24 +127,31 @@ function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[95svh] min-h-[760px] w-full items-center overflow-hidden bg-[#F4F5F2]"
+      className="relative flex min-h-[820px] overflow-hidden bg-[#F4F5F2]"
     >
       {/* ===================================================== */}
-      {/* IMAGE */}
+      {/* IMAGE ENVIRONMENT */}
       {/* ===================================================== */}
       <div className="absolute inset-0">
-        <div ref={imageWrapRef} className="relative h-full w-full">
+        <div
+          ref={imageWrapRef}
+          className="relative h-full w-full overflow-hidden"
+        >
           <img
             ref={imageRef}
-            src="https://res.cloudinary.com/dombq6plz/image/upload/v1777221118/ChatGPT_Image_Apr_26_2026_11_31_27_PM_1_fd8cat.png"
-            alt="Serenity private phinisi yacht in Indonesian waters"
-            className="h-full w-full object-cover object-center"
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png"
+            alt="Guests aboard Serenity sailing through Indonesian waters"
+            className="h-full w-full object-cover object-[72%_center]"
           />
 
-          {/* overlays */}
-          <div className="absolute inset-0 bg-[#2D3C68]/26" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F4F5F2] via-[#F4F5F2]/72 via-[28%] to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/28 via-transparent to-white/6" />
+          {/* ================================================= */}
+          {/* ATMOSPHERIC OVERLAYS */}
+          {/* ================================================= */}
+          <div className="absolute inset-0 bg-[#2D3C68]/14" />
+
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F4F5F2]/72 via-[#F4F5F2]/18 via-[18%] to-transparent" />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/14 via-transparent to-white/[0.03]" />
         </div>
       </div>
 
@@ -155,26 +161,25 @@ function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-[1320px] items-center px-6 md:px-10 lg:px-16">
         <div
           ref={contentRef}
-          className="-mt-[20px] max-w-[620px]"
+          className="max-w-[620px] pt-12 md:pt-20"
         >
           {/* MICRO */}
-          <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.34em] text-[#5C5C5C]">
-            About Serenity
+          <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.34em] text-[#5F5F5F]">
+            The Story of Serenity
           </p>
 
           {/* HEADLINE */}
-          <h1 className="font-[Gambarino] text-[52px] leading-[0.96] tracking-[-0.035em] text-[#2D3C68] sm:text-[66px] md:text-[82px] xl:text-[94px]">
+          <h1 className="font-[Gambarino] text-[52px] leading-[0.94] tracking-[-0.04em] text-[#2D3C68] sm:text-[66px] md:text-[78px] xl:text-[84px]">
             There is only
             <br />
             one Serenity
           </h1>
 
           {/* BODY */}
-          <p className="mt-8 max-w-[520px] text-[15px] leading-[1.9] text-[#2D3C68]/74 md:text-[16px]">
-            A 40-meter private phinisi yacht handcrafted in Indonesia,
-            designed for up to 12 guests with open-air living spaces,
-            personalized onboard service, and journeys across Raja Ampat
-            and Labuan Bajo.
+          <p className="mt-8 max-w-[420px] text-[15px] leading-[1.92] text-[#2D3C68]/74 md:text-[16px]">
+            A contemporary phinisi built in Tanah Beru,
+            South Sulawesi. Four cabins. Twelve guests.
+            Ten crew. Routes shaped by sea and curiosity.
           </p>
         </div>
       </div>
@@ -182,10 +187,746 @@ function Hero() {
       {/* ===================================================== */}
       {/* BOTTOM TRANSITION */}
       {/* ===================================================== */}
-      <div className="absolute bottom-0 left-0 h-[220px] w-full bg-gradient-to-b from-transparent via-[#F4F5F2]/40 to-[#F4F5F2]" />
+      <div className="absolute bottom-0 left-0 h-[220px] w-full bg-gradient-to-b from-transparent via-[#F4F5F2]/26 to-[#F4F5F2]" />
     </section>
   );
 }
+
+function OurStory() {
+  const PILLARS = [
+    {
+      num: '01',
+      headline: 'Twelve guests.\nNot more.',
+      body: [
+        'A larger boat carries more people. It also carries more noise, more distance, more of everything that gets between you and the sea.',
+        'Twelve is not a limitation — it is the number at which a journey still feels like one.',
+      ],
+    },
+    {
+      num: '02',
+      headline: 'No schedule.\nNot by accident.',
+      body: [
+        'Every morning on Serenity begins without an agenda.',
+        'The sea, the season, and the group shape the day.',
+        'Rigidity is the enemy of the kind of journey we are trying to create.',
+      ],
+    },
+    {
+      num: '03',
+      headline: 'A phinisi.\nAlways.',
+      body: [
+        'We did not choose it for aesthetics.',
+        'We chose it because nothing else is built for this sea the way a phinisi is.',
+      ],
+    },
+  ]
+
+  return (
+    <section
+      className="relative overflow-hidden"
+      style={{ background: '#F4F5F2' }}
+    >
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-24 md:py-32">
+
+        {/* ───────────────────────────────────────────── */}
+        {/* OPENING */}
+        {/* ───────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[52fr_48fr] gap-16 lg:gap-20 items-center mb-20 md:mb-28">
+
+          {/* LEFT — TEXT */}
+          <div className="max-w-[700px]">
+
+            <h2
+              className="mb-9"
+              style={{
+                fontFamily: 'Gambarino, serif',
+                fontSize: 'clamp(40px, 4.8vw, 64px)',
+                lineHeight: '0.98',
+                letterSpacing: '-0.045em',
+                color: '#2D3C68',
+              }}
+            >
+              Not a bigger boat.
+              <br />
+              Not a resort that floats.
+            </h2>
+
+            <p
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontWeight: 300,
+                fontSize: '16px',
+                lineHeight: '1.92',
+                color: '#5C5C5C',
+                maxWidth: '500px',
+              }}
+            >
+              Serenity is a phinisi — the vessel Indonesia has used to
+              read the sea for centuries — built for twelve people who
+              want to actually be there. One group. Ten crew. No rigid
+              schedule.
+            </p>
+
+          </div>
+
+          {/* RIGHT — IMAGE */}
+          <div className="hidden lg:flex justify-end">
+
+            <div
+              className="overflow-hidden w-full"
+              style={{
+                maxWidth: '640px',
+                borderRadius: '2px',
+                boxShadow: '0 24px 60px rgba(22,32,55,0.08)',
+              }}
+            >
+              <img
+                src="https://res.cloudinary.com/dombq6plz/image/upload/v1776870966/ChatGPT_Image_Apr_22_2026_10_15_17_PM_1_clrjp0.png"
+                alt=""
+                className="w-full aspect-[1.38/1] object-cover"
+                draggable={false}
+              />
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* ───────────────────────────────────────────── */}
+        {/* DIVIDER */}
+        {/* ───────────────────────────────────────────── */}
+        <div
+          className="w-full h-px mb-16 md:mb-20"
+          style={{
+            background: 'rgba(45,60,104,0.12)',
+          }}
+        />
+
+        {/* ───────────────────────────────────────────── */}
+        {/* THREE PILLARS */}
+        {/* ───────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
+          {PILLARS.map((pillar, i) => (
+            <div key={i}>
+
+              {/* NUMBER */}
+              <p
+                className="mb-5"
+                style={{
+                  fontFamily: 'Gambarino, serif',
+                  fontSize: 'clamp(48px, 5vw, 68px)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.03em',
+                  color: 'rgba(45,60,104,0.10)',
+                  userSelect: 'none',
+                }}
+              >
+                {pillar.num}
+              </p>
+
+              {/* HEADLINE */}
+              <h3
+                className="mb-5"
+                style={{
+                  fontFamily: 'Gambarino, serif',
+                  fontSize: 'clamp(22px, 2vw, 28px)',
+                  lineHeight: '1.1',
+                  letterSpacing: '-0.025em',
+                  color: '#2D3C68',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                {pillar.headline}
+              </h3>
+
+              {/* BODY */}
+              <div
+                className="space-y-4"
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '14px',
+                  lineHeight: '1.9',
+                  color: '#5C5C5C',
+                }}
+              >
+                {pillar.body.map((paragraph, idx) => (
+                  <p key={idx}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* ───────────────────────────────────────────── */}
+      {/* BOTTOM BRIDGE */}
+      {/* ───────────────────────────────────────────── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(45,60,104,0.05) 100%)',
+        }}
+      />
+    </section>
+  )
+}
+
+function PhinisiHistory() {
+  const IKAT_URL =
+  'https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png'
+  return (
+    <section
+      className="relative overflow-hidden"
+      style={{ background: '#2D3C68' }}
+    >
+      {/* ── Sumba Ikat — rotating ambient texture ── */}
+      <style>{`
+        @keyframes ikatRotate {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+      `}</style>
+ 
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{ opacity: 0.08, overflow: 'hidden' }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '120%',
+            aspectRatio: '1',
+            backgroundImage: `url(${IKAT_URL})`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            animation: 'ikatRotate 120s linear infinite',
+          }}
+        />
+      </div>
+ 
+      {/* ── Atmospheric radial ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.04), transparent 55%)',
+        }}
+      />
+ 
+      {/* ── Bridge in ── */}
+      <div
+        className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(244,245,242,0.05) 0%, transparent 100%)',
+        }}
+      />
+ 
+      {/* ── Layout — full-bleed image kiri, teks kanan ── */}
+      <div className="relative">
+ 
+        {/* Image — absolute, bleed ke left edge, full section height */}
+        <div
+          className="hidden lg:block absolute left-0 top-0 bottom-0 overflow-hidden"
+          style={{ width: '42%' }}
+        >
+          <img
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png"
+            alt=""
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+          {/* Overlay supaya image blend ke bg section */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(to right, transparent 60%, rgba(45,60,104,0.85) 100%)',
+            }}
+          />
+        </div>
+ 
+        {/* Mobile image — full width, fixed height */}
+        <div
+          className="block lg:hidden w-full overflow-hidden"
+          style={{ height: '260px' }}
+        >
+          <img
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1775031030/ChatGPT_Image_Apr_1_2026_03_07_15_PM_otnwp1.png"
+            alt=""
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        </div>
+ 
+        {/* Text — pushed kanan, clear dari image */}
+        <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-24 md:py-28">
+          <div className="lg:ml-[46%]">
+ 
+            
+ 
+            {/* Body */}
+            <p
+              className="mb-8"
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontWeight: 300,
+                fontSize: '15px',
+                lineHeight: '1.85',
+                color: 'rgba(244,245,242,0.72)',
+              }}
+            >
+              The phinisi originates from Tanah Beru and Bira, South Sulawesi —
+              built by the Konjo-speaking shipbuilders of Ara and long sailed by
+              Bugis and Makassar seafarers across the archipelago. Each vessel is
+              constructed entirely by hand, using techniques passed down through
+              generations of people who learned the sea before they learned
+              anything else.
+            </p>
+ 
+            {/* UNESCO callout */}
+            <div
+              className="mb-8 pl-5"
+              style={{ borderLeft: '2px solid #B08D57' }}
+            >
+              <p
+                className="mb-2"
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '11px',
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color: '#B08D57',
+                }}
+              >
+                2017 · UNESCO
+              </p>
+              <p
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '14px',
+                  lineHeight: '1.75',
+                  color: 'rgba(244,245,242,0.60)',
+                }}
+              >
+                The art of phinisi boatbuilding was recognized as part of the
+                Intangible Cultural Heritage of Humanity — a reflection of its
+                enduring craftsmanship and cultural significance.
+              </p>
+            </div>
+ 
+            {/* Divider */}
+            <div
+              className="mb-8 w-full h-px"
+              style={{ background: 'rgba(244,245,242,0.08)' }}
+            />
+ 
+            {/* Coda */}
+            <p
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontWeight: 300,
+                fontSize: '14px',
+                lineHeight: '1.85',
+                color: 'rgba(244,245,242,0.60)',
+              }}
+            >
+              Serenity was built on the same coastline, by the same hands, in
+              2025. Ironwood and teak. No fiberglass, no aluminum. The Sumba
+              Ikat woven into her interior is not decoration — it is a
+              deliberate acknowledgment that craft and culture belong together.
+            </p>
+ 
+          </div>
+        </div>
+      </div>
+ 
+      {/* ── Bridge out ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(244,245,242,0.04) 100%)',
+        }}
+      />
+    </section>
+  )
+}
+
+function TheCrew() {
+  const CREW_IMAGE = 'https://res.cloudinary.com/dombq6plz/image/upload/v1778534690/ChatGPT_Image_May_12_2026_04_23_45_AM_ircnlq.png'
+ 
+  return (
+    <section
+      className="relative overflow-hidden"
+      style={{ background: '#F4F5F2' }}
+    >
+      {/* ── Warm radial — temperature shift ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.06), transparent 50%)',
+        }}
+      />
+ 
+      {/* ── Bridge in — dari maritime blue Phinisi ── */}
+      <div
+        className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(45,60,104,0.06) 0%, transparent 100%)',
+        }}
+      />
+ 
+      {/* ── Text block ── */}
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 pt-24 md:pt-32 pb-14 md:pb-16">
+ 
+        {/* Eyebrow */}
+        <p
+          className="mb-8"
+          style={{
+            fontFamily: 'Switzer, sans-serif',
+            fontWeight: 300,
+            fontSize: '11px',
+            letterSpacing: '0.28em',
+            textTransform: 'uppercase',
+            color: '#6A6A6A',
+          }}
+        >
+          The Crew
+        </p>
+ 
+        {/* Headline + body — dua kolom */}
+        <div className="grid grid-cols-1 lg:grid-cols-[52fr_44fr] gap-12 lg:gap-20 items-end">
+ 
+          {/* Left — headline */}
+          <h2
+            style={{
+              fontFamily: 'Gambarino, serif',
+              fontSize: 'clamp(40px, 4.8vw, 64px)',
+              lineHeight: '1.02',
+              letterSpacing: '-0.035em',
+              color: '#2D3C68',
+            }}
+          >
+            They know every<br />
+            current by name.
+          </h2>
+ 
+          {/* Right — body + stat */}
+          <div>
+            <p
+              className="mb-8"
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontWeight: 300,
+                fontSize: '15px',
+                lineHeight: '1.85',
+                color: '#5C5C5C',
+              }}
+            >
+              Ten crew from Indonesia's maritime communities — warm, attentive,
+              and shaped entirely around the rhythm of each voyage. They read
+              the sea, not a script. They adapt to the group — not the other
+              way around.
+            </p>
+ 
+            {/* Stat */}
+            <div className="flex items-center gap-4">
+              <div
+                style={{
+                  width: '32px',
+                  height: '1px',
+                  background: '#B08D57',
+                  flexShrink: 0,
+                }}
+              />
+              <p
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '11px',
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color: '#8B6A4F',
+                }}
+              >
+                Ten crew · Twelve guests
+              </p>
+            </div>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      {/* ── Crew photo — full width, foreground, closing statement ── */}
+      <div className="relative w-full overflow-hidden">
+        <img
+          src={CREW_IMAGE}
+          alt=""
+          className="w-full object-cover object-center"
+          style={{ aspectRatio: '16/7' }}
+          draggable={false}
+        />
+ 
+        {/* Subtle top fade — blend dari sail-white ke foto */}
+        <div
+          className="absolute top-0 left-0 right-0 h-20 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, #F4F5F2 0%, transparent 100%)',
+          }}
+        />
+      </div>
+ 
+    </section>
+  )
+}
+
+function Testimonial() {
+  return (
+    <section
+      className="relative"
+      style={{ background: '#F4F5F2' }}
+    >
+      {/* ── Bridge in — dari warm crew photo ── */}
+      <div
+        className="absolute top-0 left-0 right-0 h-20 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(20,14,8,0.06) 0%, transparent 100%)',
+        }}
+      />
+ 
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-28 md:py-40">
+        <div className="max-w-[720px] mx-auto text-center">
+ 
+          {/* Quote — Gambarino, no quotation marks */}
+          <blockquote
+            className="mb-10"
+            style={{
+              fontFamily: 'Gambarino, serif',
+              fontSize: 'clamp(26px, 3vw, 42px)',
+              lineHeight: '1.18',
+              letterSpacing: '-0.02em',
+              color: '#2D3C68',
+              fontStyle: 'normal',
+            }}
+          >
+            REPLACE WITH GUEST QUOTE
+          </blockquote>
+ 
+          {/* Divider — brass */}
+          <div
+            className="mx-auto mb-6"
+            style={{
+              width: '32px',
+              height: '1px',
+              background: '#B08D57',
+            }}
+          />
+ 
+          {/* Attribution */}
+          <p
+            style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontWeight: 300,
+              fontSize: '12px',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: '#6A6A6A',
+            }}
+          >
+            GUEST NAME · ORIGIN · CHARTER DETAIL
+          </p>
+ 
+        </div>
+      </div>
+ 
+      {/* ── Bridge out — ke dark Conversion ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(45,60,104,0.05) 100%)',
+        }}
+      />
+    </section>
+  )
+}
+
+function Conversion() {
+  const IKAT_URL =
+  'https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png'
+ 
+  return (
+    <section
+      className="relative overflow-hidden"
+      style={{ background: '#F4F5F2' }}
+    >
+      {/* ── Sumba Ikat — rotating ambient texture ── */}
+      <style>{`
+        @keyframes ikatRotateConv {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+      `}</style>
+ 
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{ opacity: 0.045, overflow: 'hidden' }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '110%',
+            aspectRatio: '1',
+            backgroundImage: `url(${IKAT_URL})`,
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            animation: 'ikatRotateConv 120s linear infinite',
+          }}
+        />
+      </div>
+ 
+      {/* ── Atmospheric radial — cool subtle ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(circle at 50% 40%, rgba(45,60,104,0.03), transparent 60%)',
+        }}
+      />
+ 
+      {/* ── Content — centered, narrow ── */}
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-28 md:py-40">
+        <div className="max-w-[680px] mx-auto text-center">
+ 
+          {/* Eyebrow */}
+          <p
+            className="mb-8"
+            style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontWeight: 300,
+              fontSize: '11px',
+              letterSpacing: '0.28em',
+              textTransform: 'uppercase',
+              color: '#6A6A6A',
+            }}
+          >
+            Begin Your Voyage
+          </p>
+ 
+          {/* Headline */}
+          <h2
+            className="mb-8"
+            style={{
+              fontFamily: 'Gambarino, serif',
+              fontSize: 'clamp(36px, 4.2vw, 58px)',
+              lineHeight: '1.05',
+              letterSpacing: '-0.03em',
+              color: '#2D3C68',
+            }}
+          >
+            Your voyage begins<br />
+            with a conversation.
+          </h2>
+ 
+          {/* Support line */}
+          <p
+            style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontWeight: 300,
+              fontSize: '15px',
+              lineHeight: '1.8',
+              color: '#5C5C5C',
+              maxWidth: '420px',
+              margin: '0 auto 48px',
+            }}
+          >
+            Tell us when you want to travel, how many are in your group,
+            and where you want to go. We'll take it from there.
+          </p>
+ 
+          {/* CTA */}
+          <a
+            href="/contact"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              fontFamily: 'Switzer, sans-serif',
+              fontWeight: 300,
+              fontSize: '13px',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: '#2D3C68',
+              border: '1px solid rgba(45,60,104,0.35)',
+              padding: '16px 36px',
+              borderRadius: '1px',
+              textDecoration: 'none',
+              transition: 'border-color 0.4s ease, color 0.4s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#B08D57'
+              e.currentTarget.style.color = '#B08D57'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(45,60,104,0.35)'
+              e.currentTarget.style.color = '#2D3C68'
+            }}
+          >
+            Begin Your Voyage
+            <span style={{ fontSize: '16px', lineHeight: 1 }}>↗</span>
+          </a>
+ 
+          {/* Email — secondary */}
+          <p
+            className="mt-10"
+            style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontWeight: 300,
+              fontSize: '13px',
+              letterSpacing: '0.06em',
+              color: '#6A6A6A',
+            }}
+          >
+            or write directly at{' '}
+            <a
+              href="mailto:hello@serenityphinisi.com"
+              style={{
+                color: '#8B6A4F',
+                textDecoration: 'none',
+              }}
+            >
+              hello@serenityphinisi.com
+            </a>
+          </p>
+ 
+        </div>
+      </div>
+    </section>
+  )
+}
+ 
+
 
 function AboutOrigin() {
   const sectionRef = useRef(null);

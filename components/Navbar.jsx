@@ -395,7 +395,7 @@ export default function Navbar() {
               inset-0
               z-[100]
               overflow-hidden
-              bg-[#243657]
+              bg-[#2D3C68]
               text-[#F4F5F2]
             "
           >
