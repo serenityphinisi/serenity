@@ -199,24 +199,23 @@ function OurStory() {
       headline: 'Twelve guests.\nNot more.',
       body: [
         'A larger boat carries more people. It also carries more noise, more distance, more of everything that gets between you and the sea.',
-        'Twelve is not a limitation — it is the number at which a journey still feels like one.',
+        'Twelve is not a limitation — it is the number at which a journey still feels like one. With ten crew on board, the attention is real.',
       ],
     },
     {
       num: '02',
       headline: 'No schedule.\nNot by accident.',
       body: [
-        'Every morning on Serenity begins without an agenda.',
-        'The sea, the season, and the group shape the day.',
-        'Rigidity is the enemy of the kind of journey we are trying to create.',
+        'Some mornings begin with a dive at first light. Others with coffee on the upper deck, watching the coast come into view.',
+        'The sea, the season, and what the group wants shape the day. Nothing is set before you arrive.',
       ],
     },
     {
       num: '03',
       headline: 'A phinisi.\nAlways.',
       body: [
-        'We did not choose it for aesthetics.',
-        'We chose it because nothing else is built for this sea the way a phinisi is.',
+        'Ironwood and teak. Built in the same tradition as the vessels that navigated these waters for centuries.',
+        'Not a modern charter boat that looks like a phinisi — the real thing, on the same coastline where phinisi have always been built.',
       ],
     },
   ]
@@ -261,10 +260,10 @@ function OurStory() {
                 maxWidth: '500px',
               }}
             >
-              Serenity is a phinisi — the vessel Indonesia has used to
-              read the sea for centuries — built for twelve people who
-              want to actually be there. One group. Ten crew. No rigid
-              schedule.
+              Serenity is a 40.75-meter phinisi, built by hand in Tanah Beru,
+              South Sulawesi in 2025. Four cabins. Twelve guests. Ten crew.
+              She sails through Raja Ampat and Labuan Bajo — not on a fixed
+              itinerary, but shaped by the sea and the people on board.
             </p>
 
           </div>
@@ -380,6 +379,7 @@ function OurStory() {
 function PhinisiHistory() {
   const IKAT_URL =
   'https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png'
+
   return (
     <section
       className="relative overflow-hidden"
@@ -392,7 +392,7 @@ function PhinisiHistory() {
           to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
       `}</style>
- 
+
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
@@ -413,7 +413,7 @@ function PhinisiHistory() {
           }}
         />
       </div>
- 
+
       {/* ── Atmospheric radial ── */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -422,7 +422,7 @@ function PhinisiHistory() {
             'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.04), transparent 55%)',
         }}
       />
- 
+
       {/* ── Bridge in ── */}
       <div
         className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
@@ -431,31 +431,56 @@ function PhinisiHistory() {
             'linear-gradient(to bottom, rgba(244,245,242,0.05) 0%, transparent 100%)',
         }}
       />
- 
-      {/* ── Layout — full-bleed image kiri, teks kanan ── */}
+
+      {/* ── Layout ── */}
       <div className="relative">
- 
-        {/* Image — absolute, bleed ke left edge, full section height */}
+
+        {/* Desktop image */}
         <div
-          className="hidden lg:block absolute left-0 top-0 bottom-0 overflow-hidden"
+          className="hidden lg:flex absolute left-0 top-0 bottom-0 items-center"
           style={{ width: '42%' }}
         >
-          <img
-            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png"
-            alt=""
-            className="w-full h-full object-cover"
-            draggable={false}
-          />
-          {/* Overlay supaya image blend ke bg section */}
           <div
-            className="absolute inset-0"
+            className="w-full"
             style={{
-              background:
-                'linear-gradient(to right, transparent 60%, rgba(45,60,104,0.85) 100%)',
+              paddingLeft: '48px',
+              paddingTop: '48px',
+              paddingBottom: '48px',
             }}
-          />
+          >
+            <div
+              className="relative overflow-hidden"
+              style={{
+                background: 'rgba(244,245,242,0.05)',
+                padding: '18px',
+              }}
+            >
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  aspectRatio: '0.82 / 1',
+                }}
+              >
+                <img
+                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png"
+                  alt=""
+                  className="w-full h-full object-cover"
+                  draggable={false}
+                />
+
+                {/* Overlay supaya image blend ke bg section */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(to right, transparent 58%, rgba(45,60,104,0.55) 100%)',
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
- 
+
         {/* Mobile image — full width, fixed height */}
         <div
           className="block lg:hidden w-full overflow-hidden"
@@ -468,13 +493,11 @@ function PhinisiHistory() {
             draggable={false}
           />
         </div>
- 
+
         {/* Text — pushed kanan, clear dari image */}
         <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-24 md:py-28">
           <div className="lg:ml-[46%]">
- 
-            
- 
+
             {/* Body */}
             <p
               className="mb-8"
@@ -493,7 +516,7 @@ function PhinisiHistory() {
               generations of people who learned the sea before they learned
               anything else.
             </p>
- 
+
             {/* UNESCO callout */}
             <div
               className="mb-8 pl-5"
@@ -526,13 +549,13 @@ function PhinisiHistory() {
                 enduring craftsmanship and cultural significance.
               </p>
             </div>
- 
+
             {/* Divider */}
             <div
               className="mb-8 w-full h-px"
               style={{ background: 'rgba(244,245,242,0.08)' }}
             />
- 
+
             {/* Coda */}
             <p
               style={{
@@ -548,11 +571,11 @@ function PhinisiHistory() {
               Ikat woven into her interior is not decoration — it is a
               deliberate acknowledgment that craft and culture belong together.
             </p>
- 
+
           </div>
         </div>
       </div>
- 
+
       {/* ── Bridge out ── */}
       <div
         className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
