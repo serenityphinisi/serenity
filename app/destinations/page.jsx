@@ -17,9 +17,9 @@ export default function Page() {
     <main className="bg-[#0a0f14] text-white overflow-hidden">
        <Hero/>
        {/* <WorldDefinition/>    */}
-       <RegionSystem/>
+       <DestinationsArchipelago/>
        {/* <IndonesiaKosmik/> */}
-       <RegionFragment/>
+       {/* <RegionFragment/> */}
        <ExperienceStructure/> 
        {/* <ExperienceBreak/> */}
        {/* <HowItWorks/> */}
@@ -32,45 +32,52 @@ export default function Page() {
 
 function Hero() {
   const pathRefD = useRef(null);
-  const pathRefM = useRef(null);
-
+ 
   useEffect(() => {
-    function setup(path, isMobile = false) {
-      if (!path) return;
-
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = length;
-      path.style.strokeDashoffset = length;
-
-      let progress = 0;
-
-      function animate() {
-        const speed = isMobile ? 0.003 : 0.0016;
-        progress += speed;
-
-        path.style.strokeDashoffset = length * (1 - progress);
-
-        if (progress < 1) requestAnimationFrame(animate);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    const ctx = gsap.context(() => {
+ 
+      if (reduce) {
+        if (pathRefD.current) {
+          const len = pathRefD.current.getTotalLength();
+          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
+        }
+        return;
       }
-
-      animate();
-    }
-
-    setup(pathRefD.current, false);
-    setup(pathRefM.current, true);
+ 
+      const mm = gsap.matchMedia();
+ 
+      // Desktop only — mobile has no route line
+      mm.add('(min-width: 768px)', () => {
+        const path = pathRefD.current;
+        if (!path) return;
+        const len = path.getTotalLength();
+        gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+        gsap.to(path, {
+          strokeDashoffset: 0,
+          duration: 10.4,
+          ease: 'none',
+        });
+      });
+ 
+    });
+ 
+    return () => ctx.revert();
   }, []);
-
+ 
   return (
     <section className="relative h-screen bg-[#2D3C68] overflow-hidden">
-
-      {/* MAP */}
+ 
+      {/* MAP — mobile opacity bumped to 0.24 for atmosphere without the line */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
         <img
           src="https://res.cloudinary.com/dombq6plz/image/upload/v1776257972/indonesia_ruqj89.svg"
-          alt="Indonesia Map"
+          alt=""
+          aria-hidden="true"
           className="
             w-[220%] md:w-[180%]
-            opacity-[0.18] md:opacity-[0.12]
+            opacity-[0.24] md:opacity-[0.12]
             invert
             object-contain
             md:translate-x-[-18%] translate-x-[-10%]
@@ -80,17 +87,18 @@ function Hero() {
           "
         />
       </div>
-
-      {/* ROUTE — desktop */}
+ 
+      {/* ROUTE — desktop only */}
       <svg
         viewBox="0 0 1000 500"
         className="absolute inset-0 w-full h-full pointer-events-none hidden md:block"
+        aria-hidden="true"
       >
         <defs>
           <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#B08D57" stopOpacity="0.08" />
-            <stop offset="30%" stopColor="#D4A853" stopOpacity="0.8" />
-            <stop offset="60%" stopColor="#E0C48A" stopOpacity="1" />
+            <stop offset="0%"   stopColor="#B08D57" stopOpacity="0.08" />
+            <stop offset="30%"  stopColor="#D4A853" stopOpacity="0.8"  />
+            <stop offset="60%"  stopColor="#E0C48A" stopOpacity="1"    />
             <stop offset="100%" stopColor="#B08D57" stopOpacity="0.15" />
           </linearGradient>
           <filter id="routeGlow">
@@ -101,7 +109,7 @@ function Hero() {
             </feMerge>
           </filter>
         </defs>
-
+ 
         <path
           ref={pathRefD}
           d="M220 340 C340 295, 450 255, 560 278 S740 318, 880 240"
@@ -112,63 +120,32 @@ function Hero() {
           filter="url(#routeGlow)"
         />
       </svg>
-
-      {/* ROUTE — mobile */}
-      <svg
-        viewBox="0 0 500 800"
-        className="absolute inset-0 w-full h-full pointer-events-none block md:hidden"
-      >
-        <defs>
-          <linearGradient id="routeGradientM" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#B08D57" stopOpacity="0.15" />
-            <stop offset="40%" stopColor="#D4A853" stopOpacity="0.9" />
-            <stop offset="70%" stopColor="#E0C48A" stopOpacity="1" />
-            <stop offset="100%" stopColor="#B08D57" stopOpacity="0.2" />
-          </linearGradient>
-          <filter id="routeGlowM">
-            <feGaussianBlur stdDeviation="1.4" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        <path
-          ref={pathRefM}
-          d="M60 300 C140 260, 220 230, 280 260 S380 310, 450 200"
-          fill="none"
-          stroke="url(#routeGradientM)"
-          strokeWidth="2.6"
-          strokeLinecap="round"
-          filter="url(#routeGlowM)"
-        />
-      </svg>
-
+ 
       {/* DEPTH */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_45%_50%,rgba(255,255,255,0.04)_0%,rgba(45,60,104,0.9)_70%)]" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68] via-transparent to-transparent opacity-90" />
-
+ 
       {/* CONTENT */}
       <div className="relative z-10 h-full flex items-end md:items-center">
         <div className="w-full max-w-[1200px] mx-auto px-6 pb-14 md:pb-0 md:grid md:grid-cols-12">
-
+ 
           <div className="md:col-span-7 md:col-start-2">
-
+ 
             <div className="mb-5 text-[10px] md:text-[11px] tracking-[0.28em] text-[#F4F5F2]/70">
               DESTINATIONS
             </div>
-
+ 
             <h1 className="font-[Gambarino] text-[40px] md:text-[76px] leading-[1.05] tracking-[-0.03em] text-[#F4F5F2]">
               Nowhere to be
               <br />
               Nothing to follow
             </h1>
-
+ 
             <p className="mt-5 md:mt-6 text-[14px] md:text-[15px] text-[#F4F5F2]/80 max-w-full md:max-w-[520px] leading-[1.7]">
-              Twelve guests across a shifting archipelago — no fixed route, only the sea, the season, and where it takes you next
+              Twelve guests across a shifting archipelago — no fixed route, only the sea,
+              the season, and where it takes you next
             </p>
-
+ 
             <div className="mt-8 md:mt-10">
               <button
                 className="
@@ -179,10 +156,8 @@ function Hero() {
                   rounded-full
                   text-[13px]
                   transition
-
                   bg-[#F4F5F2] text-[#2D3C68]
                   active:scale-[0.97]
-
                   md:bg-transparent md:text-[#F4F5F2]
                   md:border md:border-[#F4F5F2]/70
                   md:hover:bg-[#F4F5F2]
@@ -192,15 +167,17 @@ function Hero() {
                 Explore Destinations →
               </button>
             </div>
-
+ 
           </div>
-
         </div>
       </div>
-
+ 
     </section>
   );
 }
+
+
+ 
 
 
 
@@ -306,169 +283,225 @@ function WorldDefinition() {
   )
 }
 
-function RegionSystem() {
-  const mapRef = useRef(null);
-  const sectionRef = useRef(null);
-
+function DestinationsArchipelago() {
+  const sectionRef        = useRef(null);
+  const mapDesktopRef     = useRef(null);
+  const contentMobileRef  = useRef(null);
+  const contentDesktopRef = useRef(null);
+ 
   useEffect(() => {
-    let raf;
-    let t = 0;
-
-    const animate = () => {
-      t += 0.0025;
-
-      if (mapRef.current) {
-        const isMobile = window.innerWidth < 768;
-
-        const x = Math.cos(t * 0.6) * (isMobile ? 6 : 10);
-        const y = Math.sin(t) * (isMobile ? 10 : 14);
-        const scale = isMobile ? 1.04 : 1.06;
-
-        mapRef.current.style.transform = `
-          translate(${x}px, ${y}px) scale(${scale})
-        `;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    const ctx = gsap.context(() => {
+ 
+      if (reduce) {
+        gsap.set(
+          [
+            ...Array.from(contentMobileRef.current?.children || []),
+            ...Array.from(contentDesktopRef.current?.children || []),
+          ],
+          { opacity: 1, y: 0 }
+        );
+        return;
       }
-
-      raf = requestAnimationFrame(animate);
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) animate();
-        else cancelAnimationFrame(raf);
-      },
-      { threshold: 0.2 }
-    );
-
-    if (sectionRef.current) observer.observe(sectionRef.current);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-    };
+ 
+      const mm = gsap.matchMedia();
+ 
+      // ── Desktop ───────────────────────────────────────────────
+      mm.add('(min-width: 768px)', () => {
+ 
+        // Map: scroll-driven parallax — purposeful, not decorative float
+        gsap.fromTo(mapDesktopRef.current,
+          { y: 0 },
+          {
+            y: -28,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5,
+            },
+          }
+        );
+ 
+        // Content entrance
+        gsap.fromTo(
+          Array.from(contentDesktopRef.current.children),
+          { y: 24, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'power3.out',
+            stagger: 0.13,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 70%',
+            },
+          }
+        );
+      });
+ 
+      // ── Mobile ────────────────────────────────────────────────
+      mm.add('(max-width: 767px)', () => {
+        gsap.fromTo(
+          Array.from(contentMobileRef.current.children),
+          { y: 18, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 78%',
+            },
+          }
+        );
+      });
+ 
+    }, sectionRef);
+ 
+    return () => ctx.revert();
   }, []);
-
+ 
   return (
     <section
       ref={sectionRef}
       className="relative bg-[#F4F5F2] overflow-hidden py-[80px] md:py-[100px]"
     >
-      {/* BACKGROUND SOFT DEPTH */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_50%,rgba(45,60,104,0.04)_0%,transparent_70%)] pointer-events-none" />
-
-      <div className="max-w-[1200px] mx-auto px-6 relative">
-
-        {/* ================= MOBILE ================= */}
-        <div className="block md:hidden text-center">
-
-          {/* MAP */}
-          <div className="relative h-[300px] flex items-center justify-center mb-10">
-            <div
-              ref={mapRef}
-              className="relative w-[150%] will-change-transform"
-            >
+ 
+      {/* ── ATMOSPHERIC BRIDGE IN ── */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[70px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(45,60,104,0.06) 0%, transparent 100%)' }}
+      />
+ 
+      {/* ── COOL RADIAL ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(circle at 40% 50%, rgba(45,60,104,0.04) 0%, transparent 70%)' }}
+      />
+ 
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 relative">
+ 
+        {/* ── MOBILE ── */}
+        <div className="block md:hidden">
+ 
+          <div className="relative h-[260px] flex items-center justify-center mb-10 overflow-hidden">
+            <div className="relative w-[150%]">
               <img
                 src="https://res.cloudinary.com/dombq6plz/image/upload/v1776257972/indonesia_ruqj89.svg"
-                alt="Indonesia Map"
-                className="w-full h-auto object-contain opacity-[0.5]"
+                alt=""
+                aria-hidden="true"
+                className="w-full h-auto object-contain opacity-[0.45]"
               />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#F4F5F2] via-transparent to-[#F4F5F2] pointer-events-none" />
             </div>
           </div>
-
-          {/* CONTENT */}
-          <div className="max-w-[360px] mx-auto">
-
-            <p className="text-[10px] tracking-[0.28em] text-[#2D3C68]/50 mb-4">
-              THE ARCHIPELAGO
+ 
+          <div ref={contentMobileRef} className="max-w-[380px]">
+ 
+            <p className="text-[10px] tracking-[0.28em] text-[#2D3C68]/45 uppercase mb-4">
+              The Archipelago
             </p>
-
-            <h3 className="font-[Gambarino] text-[36px] leading-[1.1] text-[#2D3C68] mb-4">
-              17,000 islands.<br />
+ 
+            <h2 className="font-[Gambarino] text-[36px] leading-[1.06] tracking-[-0.02em] text-[#2D3C68] mb-6">
+              17,000 islands.
+              <br />
               Mostly ocean.
-            </h3>
-
-            <p className="text-[14px] leading-[1.6] text-[#2D3C68]/75 mb-6">
-              Across Indonesia, movement isn’t fixed. It follows the sea —
-              currents, weather, and what each moment allows.
+            </h2>
+ 
+            <p className="text-[14px] leading-[1.78] text-[#2D3C68]/70 mb-4">
+              Indonesia stretches 5,000 kilometers from west to east —
+              wider than continental Europe, shaped more by water than land.
             </p>
-
-            <button className="
-              px-6 py-3 rounded-full
-              bg-[#2D3C68] text-[#F4F5F2]
-              text-[13px]
-              active:scale-[0.97]
-              transition
-            ">
-              Explore Regions →
-            </button>
-
+ 
+            <p className="text-[14px] leading-[1.78] text-[#2D3C68]/70 mb-5">
+              Serenity moves through two of its waters. Komodo and Raja Ampat —
+              1,500 kilometers apart, and nothing alike.
+            </p>
+ 
+            <p className="text-[12px] leading-[1.70] text-[#2D3C68]/42">
+              Komodo: volcanic ridgelines, strong currents, life that has existed
+              here for millions of years. Raja Ampat: still water, limestone
+              islands, 1,300 species of reef fish in a single stretch of ocean.
+            </p>
+ 
           </div>
         </div>
-
-        {/* ================= DESKTOP ================= */}
+ 
+        {/* ── DESKTOP ── */}
         <div className="hidden md:grid grid-cols-12 items-center">
-
-          {/* MAP */}
-          <div className="col-span-6 relative h-[640px] flex items-center justify-center">
+ 
+          {/* Map — scroll parallax only, no ambient float */}
+          <div className="col-span-6 relative h-[620px] flex items-center justify-center overflow-hidden">
             <div
-              ref={mapRef}
+              ref={mapDesktopRef}
               className="relative w-[160%] will-change-transform"
             >
               <img
                 src="https://res.cloudinary.com/dombq6plz/image/upload/v1776257972/indonesia_ruqj89.svg"
-                alt="Indonesia Map"
+                alt=""
+                aria-hidden="true"
                 className="w-full h-auto object-contain opacity-[0.45]"
               />
-
-              {/* SOFT EDGE */}
-              <div className="absolute left-0 top-0 w-[30%] h-full bg-gradient-to-r from-[#F4F5F2] to-transparent" />
+              <div className="absolute left-0 top-0 w-[30%] h-full bg-gradient-to-r from-[#F4F5F2] to-transparent pointer-events-none" />
             </div>
           </div>
-
-          {/* CONTENT */}
+ 
+          {/* Content */}
           <div className="col-span-5 col-start-8 relative z-10">
-            <div className="max-w-[460px]">
-
-              <p className="text-[11px] tracking-[0.30em] text-[#2D3C68]/40 mb-6">
-                THE ARCHIPELAGO
+            <div ref={contentDesktopRef} className="max-w-[420px]">
+ 
+              <p className="text-[11px] tracking-[0.30em] text-[#2D3C68]/40 uppercase mb-6">
+                The Archipelago
               </p>
-
-              <h3 className="font-[Gambarino] text-[52px] leading-[1.05] text-[#2D3C68] mb-6">
-                17,000+ islands.<br />
+ 
+              <h2 className="font-[Gambarino] text-[54px] leading-[1.04] tracking-[-0.025em] text-[#2D3C68] mb-7">
+                17,000+ islands.
+                <br />
                 Mostly ocean.
-              </h3>
-
-              <p className="text-[15px] leading-[1.8] text-[#2D3C68]/75 mb-8">
-                Indonesia stretches across thousands of kilometers, shaped more by water than land.
-                Movement here follows currents, seasons, and visibility between regions — not fixed routes.
+              </h2>
+ 
+              {/* Para 1 — scale */}
+              <p className="text-[15px] leading-[1.82] text-[#2D3C68]/72 mb-5">
+                Indonesia stretches 5,000 kilometers from west to east —
+                wider than continental Europe, shaped more by water than land.
               </p>
-
-              <p className="text-[13px] leading-[1.7] text-[#2D3C68]/45 mb-10">
-                Serenity moves through Komodo and Raja Ampat.<br />
-                Not the most visited. The most worth being in.
+ 
+              {/* Para 2 — introduce */}
+              <p className="text-[15px] leading-[1.82] text-[#2D3C68]/72 mb-6">
+                Serenity moves through two of its waters. Komodo and Raja Ampat —
+                1,500 kilometers apart, and nothing alike.
               </p>
-
-              <button className="
-                px-8 py-3 rounded-full
-                border border-[#2D3C68]/20
-                text-[#2D3C68]
-                text-[13px]
-                transition
-                hover:bg-[#2D3C68]
-                hover:text-[#F4F5F2]
-              ">
-                Explore Regions →
-              </button>
-
+ 
+              {/* Para 3 — character, muted */}
+              <p className="text-[13px] leading-[1.75] text-[#2D3C68]/42">
+                Komodo: volcanic ridgelines, strong currents, life that has
+                existed here for millions of years. Raja Ampat: still water,
+                limestone islands, 1,300 species of reef fish in a single
+                stretch of ocean.
+              </p>
+ 
             </div>
           </div>
-
+ 
         </div>
-
       </div>
+ 
+      {/* ── ATMOSPHERIC BRIDGE OUT ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[60px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04))' }}
+      />
+ 
     </section>
   );
 }
+ 
 
 function RegionFragment() {
   const sectionRef = useRef(null);
@@ -924,382 +957,592 @@ function IndonesiaKosmik() {
 
 function ExperienceStructure() {
   const sectionRef = useRef(null);
+  const ikatRef = useRef(null);
 
-  const destinations = [
+  const DESTINATIONS = [
     {
-      name: "Raja Ampat",
-      hero:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
-      mainImage:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_28_23_PM_1_pbeqgf.png",
+      id: 'labuan-bajo',
+
+      name: 'Labuan Bajo',
+
+      dark: false,
+
+      atmosphere: 'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.05), transparent 54%)',
+
+      sumbaIkat: true,
+
+      hero: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_09_52_24_PM_ksm8ag.png',
+
+      mainImage: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png',
+
       description:
-        "Over 1,300 reef fish species. Visibility up to 30 meters. The densest marine ecosystem on the planet — where movement happens beneath you, not around you.",
-      meta: "Best: Oct – Apr · Calm seas · Long dives",
+        'The terrain here is ancient. Volcanic ridgelines drop sharply into coral systems, currents run strong through the straits, and Komodo dragons move through the landscape as if forty million years have changed nothing.',
+
+      meta: 'Best: April – November · Dry season · Strong currents',
+
+      eyebrow: 'East Nusa Tenggara',
+
       gallery: [
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png",
-          text: "Everything moves without needing direction",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_31_PM_maxcdv.png',
+
+          text: 'The anchor drops before sunrise. By eight, already on the island.',
         },
+
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_29_52_PM_fzz6eu.png",
-          text: "Islands appear, then disappear behind you",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_34_PM_ot1mm8.png',
+
+          text: "Padar's ridgeline from the top. Serenity below.",
         },
+
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
-          text: "Evenings settle into still water and low light",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_38_PM_u9zpja.png',
+
+          text: 'Back on deck by noon — the current took everything it had.',
         },
       ],
     },
+
     {
-      name: "Komodo",
-      hero:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_09_52_24_PM_ksm8ag.png",
-      mainImage:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png",
+      id: 'raja-ampat',
+
+      name: 'Raja Ampat',
+
+      dark: false,
+
+      atmosphere: 'radial-gradient(circle at 35% 45%, rgba(176,141,87,0.04), transparent 58%)',
+
+      sumbaIkat: false,
+
+      hero: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png',
+
+      mainImage: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_28_23_PM_1_pbeqgf.png',
+
       description:
-        "Dry terrain. Strong currents. Visibility shifts fast. A region defined by exposure — where land, heat, and elevation shape the pace of movement.",
-      meta: "Best: Apr – Nov · Dry season · Strong contrast",
+        'Nothing prepares you for the stillness. Visibility reaches thirty meters. Beneath the surface, 1,300 species of reef fish — moving slowly, unhurried, the way everything moves in Raja Ampat.',
+
+      meta: 'Best: October – April · Calm seas · Deep visibility',
+
+      eyebrow: 'West Papua',
+
       gallery: [
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_31_PM_maxcdv.png",
-          text: "Life here holds its ground, quietly",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png',
+
+          text: 'The limestone karst from the water, just after dawn.',
         },
+
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_34_PM_ot1mm8.png",
-          text: "Elevation reveals the full terrain",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_29_52_PM_fzz6eu.png',
+
+          text: 'Thirty meters of visibility. The reef floor feels close.',
         },
+
         {
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_38_PM_u9zpja.png",
-          text: "By evening, everything slows again",
+          img: 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png',
+
+          text: 'Dinner on deck. The kind of quiet you stop trying to fill.',
         },
       ],
     },
   ];
 
   useEffect(() => {
-    const mm = gsap.matchMedia();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    mm.add(
-      {
-        isDesktop: "(min-width: 768px)",
-        isMobile: "(max-width: 767px)",
-      },
-      (context) => {
-        const { isDesktop, isMobile } = context.conditions;
+    const ctx = gsap.context(() => {
+      if (reduce) {
+        gsap.set(
+          [
+            '.dest-hero-inner',
+            '.dest-main-img',
+            '.dest-gallery-img',
+            '.dest-title-wrap',
+            '.dest-eyebrow',
+            '.dest-text-block > *',
+            '.dest-gallery-item',
+          ],
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: 'blur(0px)',
+            clipPath: 'inset(0% 0% 0% 0%)',
+          }
+        );
 
-        const ctx = gsap.context(() => {
-          const blocks = gsap.utils.toArray(".dest-block");
+        return;
+      }
 
-          blocks.forEach((block) => {
-            const hero = block.querySelector(".hero");
-            const heroInner = block.querySelector(".hero-inner");
-            const overlay = block.querySelector(".hero-overlay");
-            const title = block.querySelector(".hero-title");
-            const mainWrap = block.querySelector(".main-wrap");
-            const mainImg = block.querySelector(".main-img");
-            const text = block.querySelector(".text-block");
-            const gallery = block.querySelectorAll(".gallery-item");
+      if (ikatRef.current) {
+        gsap.to(ikatRef.current, {
+          rotation: 360,
+          duration: 220,
+          ease: 'none',
+          repeat: -1,
+        });
+      }
 
-            // HERO
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        {
+          isDesktop: '(min-width: 768px)',
+          isMobile: '(max-width: 767px)',
+        },
+
+        (context) => {
+          const { isDesktop } = context.conditions;
+
+          gsap.utils.toArray('.dest-block').forEach((block) => {
+            const hero = block.querySelector('.dest-hero');
+
+            const heroInner = block.querySelector('.dest-hero-inner');
+
+            const heroImg = block.querySelector('.dest-hero-img');
+
+            const eyebrow = block.querySelector('.dest-eyebrow');
+
+            const titleWrap = block.querySelector('.dest-title-wrap');
+
+            const mainWrap = block.querySelector('.dest-main-wrap');
+
+            const mainImg = block.querySelector('.dest-main-img');
+
+            const galleryImages = block.querySelectorAll('.dest-gallery-img');
+
+            const textChildren = block.querySelectorAll('.dest-text-block > *');
+
+            const gallery = block.querySelectorAll('.dest-gallery-item');
+
+            // HERO REVEAL
+
             gsap.fromTo(
               heroInner,
               {
-                scale: isDesktop ? 1.6 : 1.15,
-                clipPath: isDesktop
-                  ? "inset(30% 38% 30% 38%)"
-                  : "inset(10% 5% 10% 5%)",
-                filter: "blur(10px)",
+                scale: isDesktop ? 1.16 : 1.06,
+
+                clipPath: isDesktop ? 'inset(16% 20% 16% 20%)' : 'inset(6% 3% 6% 3%)',
+
+                filter: 'blur(8px)',
               },
+
               {
                 scale: 1,
-                clipPath: "inset(0% 0% 0% 0%)",
-                filter: "blur(0px)",
-                ease: "power3.out",
+
+                clipPath: 'inset(0% 0% 0% 0%)',
+
+                filter: 'blur(0px)',
+
+                ease: 'power3.out',
+
                 scrollTrigger: {
                   trigger: hero,
-                  start: "top 95%",
-                  end: "top 40%",
-                  scrub: isDesktop ? 2.8 : 1.4,
+                  start: 'top 92%',
+                  end: 'top 34%',
+                  scrub: isDesktop ? 1.8 : 1,
+                  invalidateOnRefresh: true,
                 },
               }
             );
+
+            // INTERNAL HERO PARALLAX
+
+            gsap.to(heroImg, {
+              yPercent: isDesktop ? -10 : -6,
+
+              ease: 'none',
+
+              scrollTrigger: {
+                trigger: hero,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.2,
+                invalidateOnRefresh: true,
+              },
+            });
+
+            // EYEBROW
 
             gsap.fromTo(
-              overlay,
-              { opacity: 0 },
+              eyebrow,
               {
-                opacity: 0.08,
-                ease: "none",
+                opacity: 0,
+                y: 18,
+              },
+
+              {
+                opacity: 1,
+                y: 0,
+
+                duration: 1.1,
+
+                ease: 'power2.out',
+
                 scrollTrigger: {
                   trigger: hero,
-                  start: "top 55%",
-                  end: "top 0%",
-                  scrub: isDesktop ? 2 : 1,
+                  start: 'top 60%',
+                  invalidateOnRefresh: true,
                 },
               }
             );
-
-            if (isDesktop) {
-              gsap.to(heroInner, {
-                y: -90,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: hero,
-                  start: "top top",
-                  end: "bottom top",
-                  scrub: 3.2,
-                },
-              });
-            }
 
             // TITLE
+
             gsap.fromTo(
-              title,
-              { y: isMobile ? 50 : 120, opacity: 0, scale: 1.05 },
+              titleWrap,
               {
-                y: 0,
+                opacity: 0,
+                y: isDesktop ? 72 : 34,
+              },
+
+              {
                 opacity: 1,
-                scale: 1,
-                duration: isMobile ? 1.6 : 2.4,
-                ease: "power3.out",
+                y: 0,
+
+                duration: isDesktop ? 1.8 : 1.1,
+
+                ease: 'power3.out',
+
                 scrollTrigger: {
                   trigger: hero,
-                  start: "top 70%",
+                  start: 'top 56%',
+                  invalidateOnRefresh: true,
                 },
               }
             );
 
-            // MAIN IMAGE
-            gsap.fromTo(
-              mainWrap,
-              { clipPath: "inset(100% 0% 0% 0%)" },
-              {
-                clipPath: "inset(0% 0% 0% 0%)",
-                duration: isMobile ? 1.4 : 2,
-                ease: "power3.out",
-                scrollTrigger: {
-                  trigger: mainWrap,
-                  start: "top 85%",
-                },
-              }
-            );
+            // MAIN IMAGE REVEAL
 
             gsap.fromTo(
               mainImg,
-              { scale: 1.15 },
               {
-                scale: 1,
-                ease: "power2.out",
-                duration: isMobile ? 1.4 : 2,
+                opacity: 0,
+                y: 56,
+                scale: 1.12,
+              },
+
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1.08,
+
+                duration: isDesktop ? 1.6 : 1.05,
+
+                ease: 'power2.out',
+
                 scrollTrigger: {
                   trigger: mainWrap,
-                  start: "top 85%",
+                  start: 'top 82%',
+                  invalidateOnRefresh: true,
                 },
               }
             );
 
-            if (isDesktop) {
-              gsap.to(mainImg, {
-                y: -40,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: mainWrap,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: 2.6,
-                },
-              });
-            }
+            // INTERNAL MAIN IMAGE PARALLAX
+
+            gsap.to(mainImg, {
+              yPercent: isDesktop ? -8 : -5,
+
+              ease: 'none',
+
+              scrollTrigger: {
+                trigger: mainWrap,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1,
+                invalidateOnRefresh: true,
+              },
+            });
 
             // TEXT
+
             gsap.fromTo(
-              text.children,
-              { y: 30, opacity: 0 },
+              textChildren,
               {
-                y: 0,
+                opacity: 0,
+                y: 20,
+              },
+
+              {
                 opacity: 1,
-                duration: isMobile ? 1.2 : 1.8,
-                ease: "power2.out",
-                stagger: 0.14,
-                delay: 0.1,
+                y: 0,
+
+                duration: 1.05,
+
+                stagger: 0.07,
+
+                ease: 'power2.out',
+
                 scrollTrigger: {
-                  trigger: text,
-                  start: "top 88%",
+                  trigger: mainWrap,
+                  start: 'top 72%',
+                  invalidateOnRefresh: true,
                 },
               }
             );
 
             // GALLERY
-            gallery.forEach((el, i) => {
-              const img = el.querySelector("img");
+
+            gallery.forEach((item, index) => {
+              const img = item.querySelector('.dest-gallery-img');
 
               gsap.fromTo(
-                el,
-                { y: isMobile ? 24 : 40, opacity: 0 },
+                item,
                 {
-                  y: 0,
+                  opacity: 0,
+                  y: 18,
+                },
+
+                {
                   opacity: 1,
-                  duration: isMobile ? 1.1 : 1.6,
-                  ease: "power2.out",
-                  delay: i * 0.08,
+                  y: 0,
+
+                  duration: 1,
+
+                  ease: 'power2.out',
+
                   scrollTrigger: {
-                    trigger: el,
-                    start: "top 92%",
+                    trigger: item,
+                    start: 'top 94%',
+                    invalidateOnRefresh: true,
                   },
                 }
               );
 
-              gsap.fromTo(
-                img,
-                { scale: isMobile ? 1.04 : 1.05 },
-                {
-                  scale: 1,
-                  duration: isMobile ? 1.2 : 2,
-                  ease: "power2.out",
-                  scrollTrigger: {
-                    trigger: el,
-                    start: "top 90%",
-                  },
-                }
-              );
+              gsap.to(img, {
+                yPercent: index % 2 === 0 ? -7 : -11,
+
+                ease: 'none',
+
+                scrollTrigger: {
+                  trigger: item,
+                  start: 'top bottom',
+                  end: 'bottom top',
+                  scrub: 1,
+                  invalidateOnRefresh: true,
+                },
+              });
             });
           });
-        }, sectionRef);
+        }
+      );
+    }, sectionRef);
 
-        return () => ctx.revert();
-      }
-    );
-
-    return () => mm.revert();
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-[#F4F5F2]">
-      {destinations.map((dest, i) => (
-        <div key={i} className="dest-block">
+    <section ref={sectionRef}>
+      {DESTINATIONS.map((dest) => (
+        <div key={dest.id}>
+          <div className="dest-block relative overflow-hidden bg-[#F4F5F2]">
+            <div className="absolute inset-0 pointer-events-none z-0" style={{ background: dest.atmosphere }} />
 
-          {/* HERO */}
-          <div className="hero w-full h-[75vh] md:h-[90vh] relative overflow-hidden">
-            <div className="hero-inner absolute inset-0">
-              <img src={dest.hero} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-             {/* <div className="hero-overlay absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" /> */}
-            </div>
+            {dest.sumbaIkat && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute -right-[24%] top-[18%] w-[82vw] max-w-[1200px] opacity-[0.028]">
+                  <img
+                    ref={ikatRef}
+                    src="https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="w-full h-auto object-contain"
+                  />
+                </div>
+              </div>
+            )}
 
-            <div className="absolute inset-0 flex items-end md:items-center justify-start md:justify-center px-5 pb-10 md:pb-0">
-              <h2 className="hero-title text-white font-[Gambarino] text-[56px] md:text-[72px] opacity-0">
-                {dest.name}
-              </h2>
-            </div>
-          </div>
+            {/* HERO */}
 
-          {/* MAIN */}
-          <div className="mt-[48px] md:mt-[120px]">
+            <div className="dest-hero relative overflow-hidden h-[60vh] md:h-[72vh]">
+              <div className="dest-hero-inner absolute inset-0 will-change-transform overflow-hidden">
+                <img
+                  src={dest.hero}
+                  alt={dest.name}
+                  className="dest-hero-img absolute inset-0 w-full h-[118%] object-cover will-change-transform"
+                />
 
-            {/* MOBILE */}
-            <div className="md:hidden">
-              <div className="main-wrap overflow-hidden aspect-[3/2] mr-8">
-                <img src={dest.mainImage} className="main-img w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/30" />
+
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `
+                      linear-gradient(
+                        to bottom,
+                        rgba(0,0,0,0.02),
+                        rgba(0,0,0,0.16) 35%,
+                        rgba(0,0,0,0.46)
+                      )
+                    `,
+                  }}
+                />
+
+                <div
+                  className="absolute inset-0 opacity-[0.04] mix-blend-soft-light"
+                  style={{
+                    backgroundImage: `
+                      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.9) 0%, transparent 32%),
+                      radial-gradient(circle at 70% 60%, rgba(255,255,255,0.5) 0%, transparent 36%)
+                    `,
+                  }}
+                />
               </div>
 
-              <div className="text-block mt-8 pl-6 pr-4 border-l border-[#2D3C68]/15 ml-5">
-                <p className="text-[14px] leading-[1.9] text-[#2D3C68]/85 mb-5">
-                  {dest.description}
-                </p>
+              <div className="absolute inset-0 flex items-end md:items-center px-6 md:px-10 lg:px-14 pb-10 md:pb-0">
+                <div className="max-w-[820px]">
+                  <p className="dest-eyebrow text-[#F4F5F2]/70 text-[10px] md:text-[11px] tracking-[0.32em] uppercase mb-5">
+                    {dest.eyebrow}
+                  </p>
 
-                <p className="text-[11px] tracking-[0.18em] uppercase text-[#2D3C68]/40 mb-7">
-                  {dest.meta}
-                </p>
-
-                <button className="group border border-[#2D3C68]/40 px-5 py-[10px] text-[11px] tracking-[0.12em] text-[#2D3C68] transition min-h-[44px]">
-                  <span className="inline-block transition-transform duration-300 group-hover:-translate-y-[1px]">
-                    Explore →
-                  </span>
-                </button>
+                  <div className="overflow-hidden">
+                    <div className="dest-title-wrap">
+                      <h2 className="font-[Gambarino] text-[#F4F5F2] text-[48px] md:text-[74px] lg:text-[86px] leading-[0.92] tracking-[-0.045em]">
+                        {dest.name}
+                      </h2>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* DESKTOP */}
-            <div className="hidden md:block max-w-[1200px] mx-auto px-6">
-              <div className="grid grid-cols-12 gap-14 items-center">
-                <div className="col-span-7">
-                  <div className="main-wrap overflow-hidden aspect-[16/10]">
-                    <img src={dest.mainImage} className="main-img w-full h-full object-cover" />
+            {/* MAIN */}
+
+            <div className="relative z-10 pt-[76px] md:pt-[132px]">
+              <div className="md:hidden">
+                <div className="pr-10 pl-6">
+                  <div className="dest-main-wrap overflow-hidden aspect-[3/2]">
+                    <img
+                      src={dest.mainImage}
+                      alt={dest.name}
+                      className="dest-main-img w-full h-[118%] object-cover will-change-transform"
+                    />
                   </div>
                 </div>
 
-                <div className="col-span-5">
-                  <div className="text-block max-w-[340px]">
-                    <p className="text-[15px] leading-[1.8] text-[#2D3C68]/85 mb-6">
+                <div className="pt-12 px-6">
+                  <div className="dest-text-block max-w-[520px]">
+                    <p className="text-[#B08D57] text-[11px] tracking-[0.28em] uppercase mb-4">{dest.name}</p>
+
+                    <p className="text-[14px] leading-[1.95] mb-7 text-[#2D3C68]/76">
                       {dest.description}
                     </p>
 
-                    <p className="text-[12px] tracking-[0.15em] text-[#2D3C68]/45 mb-8">
+                    <p className="text-[11px] tracking-[0.18em] uppercase mb-10 text-[#2D3C68]/38">
                       {dest.meta}
                     </p>
-
-                    <button className="border border-[#2D3C68]/50 px-6 py-3 text-[12px] tracking-[0.12em] text-[#2D3C68] hover:bg-[#2D3C68] hover:text-white transition">
-                      Explore →
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* GALLERY */}
-          <div className="mt-[52px] md:mt-[120px] pb-[80px] md:pb-[140px]">
-
-            {/* MOBILE */}
-            <div className="md:hidden px-4">
-              <div className="gallery-item mb-3">
-                <div className="aspect-[3/2] overflow-hidden mb-2">
-                  <img src={dest.gallery[0].img} className="w-full h-full object-cover" />
-                </div>
-                <p className="text-[13px] text-[#2D3C68]/65 pl-1">
-                  {dest.gallery[0].text}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 items-start">
-                <div className="gallery-item">
-                  <div className="aspect-[4/5] overflow-hidden mb-2">
-                    <img src={dest.gallery[1].img} className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[12px] text-[#2D3C68]/65">
-                    {dest.gallery[1].text}
-                  </p>
-                </div>
-
-                <div className="gallery-item mt-8">
-                  <div className="aspect-[4/5] overflow-hidden mb-2">
-                    <img src={dest.gallery[2].img} className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[12px] text-[#2D3C68]/65">
-                    {dest.gallery[2].text}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* DESKTOP */}
-            <div className="hidden md:block max-w-[1200px] mx-auto px-6">
-              <div className="grid grid-cols-3 gap-10">
-                {dest.gallery.map((item, j) => (
-                  <div key={j} className="gallery-item">
-                    <div className="aspect-[16/10] overflow-hidden mb-4">
-                      <img src={item.img} className="w-full h-full object-cover" />
+              <div className="hidden md:grid grid-cols-12 gap-12 items-start max-w-[1340px] mx-auto px-10 lg:px-14">
+                <div className="col-span-7">
+                  <div className="pr-12">
+                    <div className="dest-main-wrap overflow-hidden aspect-[16/10] -mr-20">
+                      <img
+                        src={dest.mainImage}
+                        alt={dest.name}
+                        className="dest-main-img w-full h-[118%] object-cover will-change-transform"
+                      />
                     </div>
-                    <p className="text-[14px] text-[#2D3C68]/70">
-                      {item.text}
+                  </div>
+                </div>
+
+                <div className="col-span-4 col-start-9 pt-16">
+                  <div className="dest-text-block max-w-[360px]">
+                    <p className="text-[#B08D57] text-[11px] tracking-[0.3em] uppercase mb-5">{dest.eyebrow}</p>
+
+                    <p className="text-[15px] leading-[2] mb-8 text-[#2D3C68]/76">
+                      {dest.description}
+                    </p>
+
+                    <p className="text-[11px] tracking-[0.18em] uppercase mb-12 text-[#2D3C68]/36">
+                      {dest.meta}
                     </p>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
 
-          </div>
+            {/* GALLERY */}
 
+            <div className="relative z-10 pt-[110px] md:pt-[170px] pb-[110px] md:pb-[170px]">
+              <div className="md:hidden px-6">
+                <div className="space-y-14">
+                  <div className="dest-gallery-item">
+                    <div className="aspect-[4/5] overflow-hidden mb-5">
+                      <img
+                        src={dest.gallery[0].img}
+                        alt=""
+                        className="dest-gallery-img w-full h-[118%] object-cover will-change-transform"
+                      />
+                    </div>
+
+                    <p className="text-[13px] leading-[1.75] max-w-[270px] text-[#2D3C68]/56">
+                      {dest.gallery[0].text}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {[1, 2].map((j) => (
+                      <div key={j} className={`dest-gallery-item ${j === 2 ? 'pt-12' : ''}`}>
+                        <div className="aspect-[4/5] overflow-hidden mb-3">
+                          <img
+                            src={dest.gallery[j].img}
+                            alt=""
+                            className="dest-gallery-img w-full h-[118%] object-cover will-change-transform"
+                          />
+                        </div>
+
+                        <p className="text-[12px] leading-[1.75] text-[#2D3C68]/56">
+                          {dest.gallery[j].text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden md:grid grid-cols-12 gap-6 items-start max-w-[1340px] mx-auto px-10 lg:px-14">
+                <div className="dest-gallery-item col-span-5">
+                  <div className="pr-10">
+                    <div className="aspect-[3/4] overflow-hidden mb-5">
+                      <img
+                        src={dest.gallery[0].img}
+                        alt=""
+                        className="dest-gallery-img w-full h-[118%] object-cover will-change-transform"
+                      />
+                    </div>
+
+                    <p className="text-[13px] leading-[1.8] max-w-[290px] pl-1 text-[#2D3C68]/56">
+                      {dest.gallery[0].text}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="col-span-5 col-start-8 pt-24">
+                  <div className="space-y-24">
+                    {[1, 2].map((j, index) => (
+                      <div key={j} className={`dest-gallery-item ${index === 1 ? '-ml-10' : ''}`}>
+                        <div className="aspect-[16/9] overflow-hidden mb-4">
+                          <img
+                            src={dest.gallery[j].img}
+                            alt=""
+                            className="dest-gallery-img w-full h-[118%] object-cover will-change-transform"
+                          />
+                        </div>
+
+                        <p className="text-[13px] leading-[1.8] max-w-[380px] text-[#2D3C68]/56">
+                          {dest.gallery[j].text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </section>
@@ -1442,32 +1685,21 @@ function ExperienceStructure() {
 
 
 function ClosingCTA() {
-  const sectionRef = useRef(null);
-
-  const imageRef = useRef(null);
-
-  const labelRef = useRef(null);
-  const headlineRef = useRef(null);
-  const bodyRef = useRef(null);
-
-  const primaryRef = useRef(null);
+  const sectionRef   = useRef(null);
+  const imageRef     = useRef(null);
+  const labelRef     = useRef(null);
+  const headlineRef  = useRef(null);
+  const bodyRef      = useRef(null);
+  const primaryRef   = useRef(null);
   const secondaryRef = useRef(null);
-
+ 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    if (!sectionRef.current) return;
-
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
     const ctx = gsap.context(() => {
-      // =====================================================
-      // REDUCED MOTION
-      // =====================================================
-
-      if (DISABLE_ANIMATION || reduce) {
+ 
+      // ── Reduced motion ────────────────────────────────────────
+      if (reduce) {
         gsap.set(
           [
             imageRef.current,
@@ -1477,324 +1709,187 @@ function ClosingCTA() {
             primaryRef.current,
             secondaryRef.current,
           ],
-          {
-            opacity: 1,
-            y: 0,
-            clearProps: "transform",
-          }
+          { opacity: 1, y: 0, clearProps: 'transform' }
         );
-
         return;
       }
-
-      // =====================================================
-      // IMAGE PARALLAX
-      // =====================================================
-
+ 
+      // ── Image parallax ────────────────────────────────────────
       gsap.to(imageRef.current, {
-        y: -18,
+        y:    -18,
         scale: 1.06,
-        ease: "none",
+        ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.2,
+          start:   'top bottom',
+          end:     'bottom top',
+          scrub:   1.2,
         },
       });
-
-      // =====================================================
-      // LABEL
-      // =====================================================
-
-      gsap.fromTo(
-        labelRef.current,
+ 
+      // ── Label ─────────────────────────────────────────────────
+      gsap.fromTo(labelRef.current,
+        { opacity: 0, y: 10 },
         {
-          opacity: 0,
-          y: 10,
-        },
-        {
-          opacity: 0.4,
-          y: 0,
+          opacity:  0.4,
+          y:        0,
           duration: 0.9,
-          ease: "power2.out",
+          ease:     'power2.out',
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 74%",
+            start:   'top 74%',
           },
         }
       );
-
-      // =====================================================
-      // HEADLINE
-      // =====================================================
-
-      gsap.fromTo(
-        headlineRef.current,
+ 
+      // ── Headline ──────────────────────────────────────────────
+      // Ambient float removed — floating text is gimmicky at this position
+      gsap.fromTo(headlineRef.current,
+        { opacity: 0, y: 28 },
         {
-          opacity: 0,
-          y: 28,
-        },
-        {
-          opacity: 1,
-          y: 0,
+          opacity:  1,
+          y:        0,
           duration: 1.25,
-          ease: "power3.out",
+          ease:     'power3.out',
           scrollTrigger: {
             trigger: headlineRef.current,
-            start: "top 82%",
+            start:   'top 82%',
           },
         }
       );
-
-      // =====================================================
-      // BODY
-      // =====================================================
-
-      gsap.fromTo(
-        bodyRef.current,
+ 
+      // ── Body ──────────────────────────────────────────────────
+      gsap.fromTo(bodyRef.current,
+        { opacity: 0, y: 16 },
         {
-          opacity: 0,
-          y: 16,
-        },
-        {
-          opacity: 0.8,
-          y: 0,
+          opacity:  0.8,
+          y:        0,
           duration: 1,
-          ease: "power2.out",
-          delay: 0.08,
+          ease:     'power2.out',
+          delay:    0.08,
           scrollTrigger: {
             trigger: bodyRef.current,
-            start: "top 90%",
+            start:   'top 90%',
           },
         }
       );
-
-      // =====================================================
-      // PRIMARY CTA
-      // =====================================================
-
-      gsap.fromTo(
-        primaryRef.current,
+ 
+      // ── Primary CTA ───────────────────────────────────────────
+      gsap.fromTo(primaryRef.current,
+        { opacity: 0, y: 14 },
         {
-          opacity: 0,
-          y: 14,
-        },
-        {
-          opacity: 1,
-          y: 0,
+          opacity:  1,
+          y:        0,
           duration: 0.95,
-          ease: "power2.out",
-          delay: 0.16,
+          ease:     'power2.out',
+          delay:    0.16,
           scrollTrigger: {
             trigger: primaryRef.current,
-            start: "top 94%",
+            start:   'top 94%',
           },
         }
       );
-
-      // =====================================================
-      // SECONDARY CTA
-      // =====================================================
-
-      gsap.fromTo(
-        secondaryRef.current,
+ 
+      // ── Secondary CTA ─────────────────────────────────────────
+      gsap.fromTo(secondaryRef.current,
+        { opacity: 0, x: -8 },
         {
-          opacity: 0,
-          x: -8,
-        },
-        {
-          opacity: 0.6,
-          x: 0,
+          opacity:  0.6,
+          x:        0,
           duration: 0.9,
-          ease: "power2.out",
-          delay: 0.22,
+          ease:     'power2.out',
+          delay:    0.22,
           scrollTrigger: {
             trigger: secondaryRef.current,
-            start: "top 96%",
+            start:   'top 96%',
           },
         }
       );
-
-      // =====================================================
-      // AMBIENT FLOAT
-      // =====================================================
-
-      gsap.to(headlineRef.current, {
-        y: -4,
-        duration: 6,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
+ 
     }, sectionRef);
-
+ 
     return () => ctx.revert();
   }, []);
-
+ 
   return (
     <section
       ref={sectionRef}
-      className="
-        relative overflow-hidden
-        bg-[#1A1A1A]
-        px-6
-        py-[90px]
-        md:px-10
-        md:py-[130px]
-      "
+      className="relative overflow-hidden bg-[#1A1A1A] px-6 py-[90px] md:px-10 md:py-[130px]"
     >
-      {/* ===================================================== */}
-      {/* IMAGE */}
-      {/* ===================================================== */}
-
+ 
+      {/* ── IMAGE ─────────────────────────────────────────────── */}
       <div className="absolute inset-0 overflow-hidden">
         <img
           ref={imageRef}
           src="https://res.cloudinary.com/dombq6plz/image/upload/v1777217651/ChatGPT_Image_Apr_26_2026_10_30_34_PM_1_yc2ihk.png"
           alt=""
-          className="
-            h-full w-full
-            scale-[1.05]
-            object-cover
-            will-change-transform
-          "
+          aria-hidden="true"
+          className="h-full w-full scale-[1.05] object-cover will-change-transform"
         />
-
-        {/* DARK WASH */}
         <div className="absolute inset-0 bg-black/48" />
-  </div>
-
-      {/* ===================================================== */}
-      {/* CONTENT */}
-      {/* ===================================================== */}
-
+      </div>
+ 
+      {/* ── CONTENT ───────────────────────────────────────────── */}
       <div className="relative z-10 mx-auto max-w-[1200px]">
-        {/* LABEL */}
+ 
+        {/* Eyebrow — fixed from "Plan Your Trip" (TripAdvisor tone) */}
         <p
           ref={labelRef}
-          className="
-            mb-[34px]
-            text-[11px]
-            uppercase
-            tracking-[0.3em]
-            text-white/40
-            md:mb-[52px]
-          "
+          className="mb-[34px] text-[11px] uppercase tracking-[0.3em] text-white/40 md:mb-[52px]"
         >
-          Plan Your Trip
+          Begin Your Voyage
         </p>
-
-        {/* HEADLINE */}
+ 
+        {/* Headline */}
         <div className="mb-[44px] md:mb-[64px]">
           <h2
             ref={headlineRef}
-            className="
-              max-w-[680px]
-              font-[Gambarino]
-              text-[44px]
-              leading-[0.98]
-              tracking-[-0.04em]
-              text-[#F4F5F2]
-              md:text-[72px]
-            "
+            className="max-w-[680px] font-[Gambarino] text-[44px] leading-[0.98] tracking-[-0.04em] text-[#F4F5F2] md:text-[72px]"
           >
             When do you
             <br />
             want to leave?
           </h2>
         </div>
-
-        {/* CONTENT ROW */}
-        <div
-          className="
-            flex flex-col
-            gap-10
-            md:flex-row
-            md:items-end
-            md:justify-between
-            md:gap-12
-          "
-        >
-          {/* BODY */}
+ 
+        {/* Content row */}
+        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-12">
+ 
+          {/* Body */}
           <p
             ref={bodyRef}
-            className="
-              max-w-[520px]
-              text-[14px]
-              leading-[1.85]
-              text-white/80
-              md:max-w-[340px]
-            "
+            className="max-w-[520px] text-[14px] leading-[1.85] text-white/80 md:max-w-[340px]"
           >
-            Share your dates, your pace, and who you’re coming with.
-            We’ll shape the journey around you.
+            Share your dates, your pace, and who you're coming with.
+            We'll shape the journey around you.
           </p>
-
-          {/* CTA GROUP */}
-          <div
-            className="
-              flex flex-col
-              items-stretch
-              gap-6
-              sm:flex-row
-              sm:items-center
-              sm:gap-10
-              md:translate-y-[4px]
-              w-full
-              sm:w-auto
-            "
-          >
-            {/* PRIMARY */}
-            <button
+ 
+          {/* CTA group */}
+          <div className="flex flex-col items-stretch gap-6 sm:flex-row sm:items-center sm:gap-10 md:translate-y-[4px] w-full sm:w-auto">
+ 
+            {/* Primary */}
+            <a
               ref={primaryRef}
-              className="
-                w-full
-                rounded-full
-                bg-[#F4F5F2]
-                px-10
-                py-4
-                text-[11px]
-                uppercase
-                tracking-[0.2em]
-                text-[#1A1A1A]
-                transition-all duration-500
-                hover:translate-y-[-2px]
-                hover:opacity-95
-                hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)]
-                sm:w-auto
-              "
+              href="/contact"
+              className="w-full rounded-full bg-[#F4F5F2] px-10 py-4 text-center text-[11px] uppercase tracking-[0.2em] text-[#1A1A1A] transition-all duration-500 hover:-translate-y-[2px] hover:opacity-95 hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)] sm:w-auto"
             >
               Start a Conversation
-            </button>
-
-            {/* SECONDARY */}
-            <button
+            </a>
+ 
+            {/* Secondary */}
+            <a
               ref={secondaryRef}
-              className="
-                group flex items-center gap-3
-                text-[11px]
-                uppercase
-                tracking-[0.18em]
-                text-white/60
-                transition-colors duration-300
-                hover:text-white/82
-              "
+              href="/rates"
+              className="group flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-white/60 transition-colors duration-300 hover:text-white/82"
             >
               See Pricing
-
-              <span
-                className="
-                  block h-px w-[24px]
-                  bg-current
-                  transition-all duration-500
-                  group-hover:w-[40px]
-                "
-              />
-            </button>
+              <span className="block h-px w-[24px] bg-current transition-all duration-500 group-hover:w-[40px]" />
+            </a>
+ 
           </div>
         </div>
       </div>
+ 
     </section>
   );
 }

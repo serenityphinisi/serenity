@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState, useLayoutEffect, useMemo, useCallback, Fragment   } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 import useEmblaCarousel from "embla-carousel-react";
 
@@ -18,9 +20,15 @@ export default function Page() {
   return (
     <main className="bg-[#0a0f14] text-white overflow-hidden">
       <Hero />  
-      <ExperienceMoments/> 
-      <SplitHorizon/>
+      <ExperienceDayOnBoard/>
+      {/* <ExperienceFrame/> */}
       <ExperienceActivities/>
+      <ExperienceBreaking/>
+      <ExperienceDining/>
+      <ExperienceHumanMoments/>
+      {/* <ExperienceMoments/>  */}
+      {/* <SplitHorizon/> */}
+      {/* <ExperienceActivities/> */}
       {/* <ExperienceSelection/>  */}
       {/* <SampleJourney/> */}
       {/* <JourneyLens  /> */}
@@ -39,6 +47,7 @@ export default function Page() {
 
 function Hero() {
   const containerRef = useRef(null);
+
   const rafRef = useRef(null);
   const observerRef = useRef(null);
   const mountedRef = useRef(false);
@@ -46,85 +55,306 @@ function Hero() {
   const stateRef = useRef({
     autoProgress: 0,
     lastTime: null,
+
     userHasScrolled: false,
+
     scrollCurrent: 0,
     scrollTarget: 0,
+
     transitionMix: 0,
+    visualCurrent: 0,
+
+    // NEW
+    idleDrift: 0,
+    widthMultiplier: 0.0038,
+    introPhase: 0,
+    introComplete: false,
   });
 
   useEffect(() => {
     if (mountedRef.current) return;
     mountedRef.current = true;
 
-    let isVisible = true;
-
     const node = containerRef.current;
+
     if (!node) return;
 
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (reduceMotion) {
+      node.style.setProperty("--shift", "0.24");
+
+      return () => {
+        mountedRef.current = false;
+      };
+    }
+
+    const s = stateRef.current;
+
+    // ─────────────────────────────────────
+    // Cache mobile multiplier
+    // ─────────────────────────────────────
+    const setMultiplier = () => {
+      s.widthMultiplier =
+        window.innerWidth < 768
+          ? 0.00185
+          : 0.0036;
+    };
+
+    setMultiplier();
+
+    window.addEventListener(
+      "resize",
+      setMultiplier
+    );
+
+    let isVisible = true;
+
+    // ─────────────────────────────────────
+    // Visibility
+    // ─────────────────────────────────────
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
-        isVisible = entry.isIntersecting;
+        isVisible =
+          entry.intersectionRatio > 0.08;
       },
-      { threshold: 0 }
+      {
+        threshold: [0, 0.08],
+      }
     );
 
     observerRef.current.observe(node);
 
+    // ─────────────────────────────────────
+    // Scroll Tracking
+    // ─────────────────────────────────────
     const handleScroll = () => {
-      const s = stateRef.current;
       const y = window.scrollY || 0;
 
-      if (!s.userHasScrolled && y > 10) {
+      if (!s.userHasScrolled && y > 8) {
         s.userHasScrolled = true;
       }
 
       s.scrollTarget = y;
     };
 
+    // Initial value
+    handleScroll();
+
+    // ─────────────────────────────────────
+    // RAF LOOP
+    // ─────────────────────────────────────
     const loop = (timestamp) => {
-      const s = stateRef.current;
+      rafRef.current =
+        requestAnimationFrame(loop);
 
-      rafRef.current = requestAnimationFrame(loop);
-      if (!isVisible || !containerRef.current) return;
+      if (!isVisible || !containerRef.current)
+        return;
 
-      let autoShift = 0;
-      if (s.lastTime !== null) {
-        const delta = Math.min(timestamp - s.lastTime, 100);
-        s.autoProgress = (s.autoProgress + delta / 5000) % 1;
-      }
+      // ─────────────────────────────────
+      // Delta
+      // ─────────────────────────────────
+      const delta =
+        s.lastTime !== null
+          ? Math.min(
+              timestamp - s.lastTime,
+              100
+            )
+          : 16.67;
+
       s.lastTime = timestamp;
-      autoShift = Math.sin(s.autoProgress * Math.PI);
 
-      s.scrollCurrent += (s.scrollTarget - s.scrollCurrent) * 0.06;
-      const scrollShift = Math.min(s.scrollCurrent * 0.004, 1);
+      const dt = delta / 1000;
 
-      const targetMix = s.userHasScrolled ? 1 : 0;
-      s.transitionMix += (targetMix - s.transitionMix) * 0.08;
+      // ─────────────────────────────────
+      // Intro arrival
+      // Smooth atmospheric settling
+      // ─────────────────────────────────
+      if (!s.introComplete) {
+        s.introPhase += dt * 0.38;
 
-      let shift =
-        autoShift * (1 - s.transitionMix) +
-        scrollShift * s.transitionMix;
+        if (s.introPhase >= 1) {
+          s.introPhase = 1;
+          s.introComplete = true;
+        }
+      }
 
-      if (!Number.isFinite(shift)) shift = 0;
-      shift = Math.max(0, Math.min(1, shift));
+      const introEase =
+        1 -
+        Math.pow(
+          1 - s.introPhase,
+          3
+        );
 
-      containerRef.current.style.setProperty("--shift", shift);
+      // ─────────────────────────────────
+      // Ambient tide
+      // FIX:
+      // Full oscillation
+      // Slower
+      // Less mechanical
+      // ─────────────────────────────────
+      s.autoProgress += delta / 9400;
+
+      const autoShift =
+        Math.sin(
+          s.autoProgress * Math.PI * 2
+        ) *
+          0.5 +
+        0.5;
+
+      // ─────────────────────────────────
+      // Tiny natural drift
+      // Prevents robotic sync
+      // ─────────────────────────────────
+      s.idleDrift += dt * 0.11;
+
+      const drift =
+        Math.sin(s.idleDrift * 1.7) *
+        0.018;
+
+      // ─────────────────────────────────
+      // Scroll smoothing
+      // ─────────────────────────────────
+      const scrollLerp =
+        1 - Math.exp(-3.4 * dt);
+
+      s.scrollCurrent +=
+        (s.scrollTarget -
+          s.scrollCurrent) *
+        scrollLerp;
+
+      // ─────────────────────────────────
+      // Non-linear scroll mapping
+      // More cinematic
+      // ─────────────────────────────────
+      const normalizedScroll =
+        Math.min(
+          s.scrollCurrent *
+            s.widthMultiplier,
+          1
+        );
+
+      const scrollShift =
+        1 -
+        Math.pow(
+          1 - normalizedScroll,
+          2.2
+        );
+
+      // ─────────────────────────────────
+      // Auto <-> Scroll blend
+      // FIX:
+      // not permanently killed
+      // ─────────────────────────────────
+      const mixTarget = Math.min(
+        s.scrollCurrent / 220,
+        1
+      );
+
+      const mixLerp =
+        1 - Math.exp(-4.2 * dt);
+
+      s.transitionMix +=
+        (mixTarget -
+          s.transitionMix) *
+        mixLerp;
+
+      // ─────────────────────────────────
+      // Final target
+      // ─────────────────────────────────
+      let targetShift =
+        autoShift *
+          (1 - s.transitionMix) +
+        scrollShift *
+          s.transitionMix;
+
+      // Tiny imperfection
+      targetShift += drift;
+
+      // Intro settling
+      targetShift *=
+        0.82 + introEase * 0.18;
+
+      if (!Number.isFinite(targetShift)) {
+        targetShift = 0;
+      }
+
+      targetShift = Math.max(
+        0,
+        Math.min(1, targetShift)
+      );
+
+      // ─────────────────────────────────
+      // Inertia
+      // Slightly slower
+      // more liquid
+      // ─────────────────────────────────
+      const inertiaLerp =
+        1 - Math.exp(-1.85 * dt);
+
+      s.visualCurrent +=
+        (targetShift -
+          s.visualCurrent) *
+        inertiaLerp;
+
+      // ─────────────────────────────────
+      // Paint guard
+      // Prevent needless repaint spam
+      // ─────────────────────────────────
+      const rounded =
+        s.visualCurrent.toFixed(4);
+
+      if (
+        node.style.getPropertyValue(
+          "--shift"
+        ) !== rounded
+      ) {
+        node.style.setProperty(
+          "--shift",
+          rounded
+        );
+      }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    rafRef.current = requestAnimationFrame(loop);
+    window.addEventListener(
+      "scroll",
+      handleScroll,
+      {
+        passive: true,
+      }
+    );
+
+    rafRef.current =
+      requestAnimationFrame(loop);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "scroll",
+        handleScroll
+      );
+
+      window.removeEventListener(
+        "resize",
+        setMultiplier
+      );
 
       if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
+        cancelAnimationFrame(
+          rafRef.current
+        );
+
         rafRef.current = null;
       }
 
       if (observerRef.current && node) {
-        observerRef.current.unobserve(node);
+        observerRef.current.unobserve(
+          node
+        );
+
         observerRef.current.disconnect();
+
         observerRef.current = null;
       }
 
@@ -132,121 +362,2591 @@ function Hero() {
     };
   }, []);
 
-  const angles = [120, 200, 300, 60];
+  // ─────────────────────────────────────────
+  // Panels
+  // Slight asymmetry retained
+  // ─────────────────────────────────────────
+  const panels = [
+    {
+      angle: 118,
+      radial: "26%",
+      warmOpacity: 0.90,
+      depth: 0.22,
+      offset: 0.98,
+    },
+    {
+      angle: 198,
+      radial: "74%",
+      warmOpacity: 0.84,
+      depth: 0.28,
+      offset: 0.94,
+    },
+    {
+      angle: 302,
+      radial: "36%",
+      warmOpacity: 0.95,
+      depth: 0.24,
+      offset: 1.04,
+    },
+    {
+      angle: 62,
+      radial: "70%",
+      warmOpacity: 1,
+      depth: 0.30,
+      offset: 1.08,
+    },
+  ];
 
   return (
     <section
       ref={containerRef}
-      style={{ "--shift": 0 }}
-      className="relative w-full h-[92vh] min-h-[720px] overflow-hidden"
+      style={{
+        "--shift": 0,
+      }}
+      className="
+        relative
+        h-[92vh]
+        min-h-[720px]
+        overflow-hidden
+        bg-[#2D3C68]
+      "
     >
-      {/* PANELS */}
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 md:grid-cols-4 md:grid-rows-1">
-        {angles.map((angle, i) => (
-          <div key={i} className="relative overflow-hidden">
+      {/* ─────────────────────────────────────────
+          PANEL FIELD
+      ───────────────────────────────────────── */}
+
+      <div
+        className="
+          absolute
+          inset-0
+
+          grid
+          grid-cols-2
+          grid-rows-2
+
+          md:grid-cols-4
+          md:grid-rows-1
+        "
+      >
+        {panels.map((panel, i) => (
+          <div
+            key={i}
+            className="
+              relative
+              overflow-hidden
+            "
+          >
+            {/* Cool Base */}
             <div
               className="absolute inset-0"
               style={{
-                background: `linear-gradient(${angle}deg, #2D3C68 0%, #3D4E7A 60%, #F4F5F2 200%)`,
+                background: `
+                  linear-gradient(
+                    ${panel.angle}deg,
+                    #2B3B67 0%,
+                    #3A4A75 58%,
+                    #F4F5F2 220%
+                  )
+                `,
               }}
             />
 
+            {/* Warm Tide */}
             <div
               className="absolute inset-0"
               style={{
-                background: `linear-gradient(${angle}deg, #8B6A4F 0%, #9E7A5E 60%, #F4F5F2 200%)`,
-                opacity: "var(--shift)",
+                opacity: `
+                  calc(
+                    var(--shift) *
+                    ${panel.warmOpacity} *
+                    ${panel.offset}
+                  )
+                `,
+
+                filter: `
+                  blur(
+                    calc(
+                      (1 - var(--shift)) * 2px
+                    )
+                  )
+                `,
+
+                background: `
+                  linear-gradient(
+                    ${panel.angle}deg,
+                    #695547 0%,
+                    #8B6A4F 46%,
+                    #A27B5A 100%
+                  )
+                `,
               }}
             />
 
+            {/* Brass Atmosphere */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="
+                absolute
+                inset-0
+                pointer-events-none
+              "
               style={{
-                background: `radial-gradient(
-                  circle at ${i % 2 === 0 ? "30%" : "70%"} 40%,
-                  rgba(176,141,87, calc(var(--shift) * 0.15)),
-                  transparent 60%
-                )`,
+                opacity: `
+                  calc(
+                    0.34 +
+                    var(--shift) * 0.52
+                  )
+                `,
+
+                background: `
+                  radial-gradient(
+                    circle at ${panel.radial} 42%,
+                    rgba(
+                      176,
+                      141,
+                      87,
+                      calc(
+                        var(--shift) * 0.13
+                      )
+                    ),
+                    transparent 60%
+                  )
+                `,
               }}
             />
 
+            {/* Atmospheric Depth */}
             <div
               className="absolute inset-0"
               style={{
-                background: `linear-gradient(
-                  to bottom,
-                  rgba(45,60,104, calc(0.30 + var(--shift) * 0.25)),
-                  rgba(45,60,104, calc(0.50 + var(--shift) * 0.35))
-                )`,
+                background: `
+                  linear-gradient(
+                    to bottom,
+
+                    rgba(
+                      24,
+                      32,
+                      54,
+                      calc(
+                        ${panel.depth} +
+                        var(--shift) * 0.13
+                      )
+                    ),
+
+                    rgba(
+                      24,
+                      32,
+                      54,
+                      calc(
+                        0.44 +
+                        var(--shift) * 0.17
+                      )
+                    )
+                  )
+                `,
               }}
             />
 
+            {/* Soft Panel Bleed */}
+            <div
+              className="
+                absolute
+                top-0
+                right-[-6%]
+                h-full
+                w-[14%]
+                blur-[20px]
+                opacity-[0.05]
+                pointer-events-none
+              "
+              style={{
+                background: `
+                  linear-gradient(
+                    to right,
+                    rgba(255,255,255,0),
+                    rgba(255,255,255,0.16),
+                    rgba(255,255,255,0)
+                  )
+                `,
+              }}
+            />
+
+            {/* Divider */}
             {i !== 3 && (
-              <div className="hidden md:block absolute top-0 right-0 w-[1px] h-full bg-[#F4F5F2]/15" />
+              <div
+                className="
+                  hidden
+                  md:block
+
+                  absolute
+                  top-[14%]
+                  right-0
+
+                  h-[72%]
+                  w-px
+                "
+                style={{
+                  opacity:
+                    i === 1
+                      ? 0.05
+                      : 0.09,
+
+                  background: `
+                    linear-gradient(
+                      to bottom,
+                      transparent,
+                      rgba(
+                        244,
+                        245,
+                        242,
+                        1
+                      ),
+                      transparent
+                    )
+                  `,
+                }}
+              />
             )}
+
+            {/* Mobile Horizontal */}
             {i < 2 && (
-              <div className="md:hidden absolute bottom-0 left-0 w-full h-[1px] bg-[#F4F5F2]/15" />
+              <div
+                className="
+                  md:hidden
+
+                  absolute
+                  bottom-0
+                  left-[12%]
+
+                  h-px
+                  w-[76%]
+                "
+                style={{
+                  opacity: 0.07,
+
+                  background: `
+                    linear-gradient(
+                      to right,
+                      transparent,
+                      rgba(
+                        244,
+                        245,
+                        242,
+                        1
+                      ),
+                      transparent
+                    )
+                  `,
+                }}
+              />
             )}
+
+            {/* Mobile Vertical */}
             {i % 2 === 0 && (
-              <div className="md:hidden absolute top-0 right-0 w-[1px] h-full bg-[#F4F5F2]/15" />
+              <div
+                className="
+                  md:hidden
+
+                  absolute
+                  top-[12%]
+                  right-0
+
+                  w-px
+                  h-[76%]
+                "
+                style={{
+                  opacity: 0.07,
+
+                  background: `
+                    linear-gradient(
+                      to bottom,
+                      transparent,
+                      rgba(
+                        244,
+                        245,
+                        242,
+                        1
+                      ),
+                      transparent
+                    )
+                  `,
+                }}
+              />
             )}
           </div>
         ))}
       </div>
 
-      {/* TEXT */}
+      {/* Humid atmosphere */}
       <div
         className="
-          absolute inset-0 flex pointer-events-none
+          absolute
+          inset-0
+          pointer-events-none
+        "
+        style={{
+          background: `
+            radial-gradient(
+              ellipse at 52% 8%,
+              rgba(255,255,255,0.06),
+              transparent 52%
+            ),
 
-          /* MOBILE: bawah kiri */
-          items-end justify-start pb-[10vh]
+            radial-gradient(
+              ellipse at 74% 22%,
+              rgba(
+                176,
+                141,
+                87,
+                calc(var(--shift) * 0.055)
+              ),
+              transparent 44%
+            )
+          `,
+        }}
+      />
 
-          /* DESKTOP: tengah */
-          md:items-center md:justify-center md:pb-0
+      {/* Warm imperfection */}
+      <div
+        className="
+          absolute
+          top-[-8%]
+          right-[16%]
+
+          w-[18vw]
+          h-[18vw]
+
+          blur-[80px]
+          opacity-[0.04]
+          pointer-events-none
+        "
+        style={{
+          background:
+            "rgba(176,141,87,0.42)",
+        }}
+      />
+
+      {/* Grain */}
+      <div
+        className="
+          absolute
+          inset-[-10%]
+          opacity-[0.038]
+          mix-blend-soft-light
+          pointer-events-none
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      {/* Content */}
+      <div
+        className="
+          absolute
+          inset-0
+
+          flex
+          pointer-events-none
+
+          items-end
+          justify-start
+          pb-[10vh]
+
+          md:items-center
+          md:justify-center
+          md:pb-0
         "
       >
         <div
           className="
-            w-full max-w-[600px]
+            w-full
+            max-w-[620px]
             px-6
 
-            /* MOBILE */
             text-left
 
-            /* DESKTOP */
-            md:text-center md:mx-auto
+            md:text-center
+            md:mx-auto
           "
         >
-          <p className="text-[10px] tracking-[0.35em] text-[#F4F5F2]/60 uppercase mb-4 md:mb-6 md:text-center">
-            Experiences
+          <p
+            className="
+              mb-4
+              uppercase
+
+              md:mb-5
+            "
+            style={{
+              fontFamily:
+                "Switzer, sans-serif",
+
+              fontSize: "11px",
+
+              letterSpacing: "0.28em",
+
+              color:
+                "rgba(244,245,242,0.44)",
+
+              fontWeight: 400,
+            }}
+          >
+            EXPERIENCES
           </p>
 
           <h1
-            className="font-[Gambarino] text-[#F4F5F2] leading-[1.1] md:text-center"
-            style={{ fontSize: "clamp(36px, 6vw, 68px)" }}
+            className="text-[#F4F5F2]"
+            style={{
+              fontFamily:
+                "Gambarino, serif",
+
+              fontSize:
+                "clamp(36px, 6vw, 68px)",
+
+              lineHeight: 1.02,
+
+              letterSpacing:
+                "-0.035em",
+
+              fontWeight: 400,
+
+              opacity: `
+                calc(
+                  0.89 +
+                  var(--shift) * 0.05
+                )
+              `,
+            }}
           >
-            No two days at sea unfold the same
+            No schedules.
+            <br />
+            Just the sea.
           </h1>
 
           <p
             className="
-              mt-4 md:mt-5
-              text-[14px] md:text-[15px]
-              text-[#F4F5F2]/70
-              leading-[1.7]
-
+              mt-4
               max-w-[420px]
-              md:max-w-[480px]
 
-              text-left
-              md:mx-auto md:text-center
+              md:mt-5
+              md:max-w-[480px]
+              md:mx-auto
             "
+            style={{
+              fontFamily:
+                "Switzer, sans-serif",
+
+              fontSize: "14px",
+
+              lineHeight: 1.9,
+
+              color:
+                "rgba(244,245,242,0.64)",
+
+              fontWeight: 300,
+            }}
           >
-            Some days revolve around diving and open water. Others shift between
-            islands, shared meals, and quiet time on deck.
+            Some mornings begin in the water.
+            Others stay slow from the start,
+            with nowhere particular to be.
           </p>
         </div>
+      </div>
+
+      {/* Atmospheric Exit */}
+      <div
+        aria-hidden="true"
+        className="
+          absolute
+          bottom-0
+          left-0
+          right-0
+          pointer-events-none
+          h-[140px]
+        "
+        style={{
+          background: `
+            linear-gradient(
+              to bottom,
+              transparent,
+              rgba(244,245,242,0.04) 58%,
+              rgba(244,245,242,0.16) 100%
+            )
+          `,
+        }}
+      />
+    </section>
+  );
+}
+
+function ExperienceFrame() {
+  const sectionRef  = useRef(null);
+  const headlineRef = useRef(null);
+  const bodyRef     = useRef(null);
+  const imageRef    = useRef(null);
+  const statRef     = useRef(null);
+ 
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    if (reduce) {
+      gsap.set(
+        [headlineRef.current, bodyRef.current, imageRef.current, statRef.current],
+        { opacity: 1, y: 0 }
+      );
+      return;
+    }
+ 
+    const ctx = gsap.context(() => {
+      const ease = [0.22, 1, 0.36, 1];
+ 
+      gsap.fromTo(headlineRef.current,
+        { opacity: 0, y: 44 },
+        {
+          opacity: 1, y: 0, duration: 1.3, ease,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 76%' },
+        }
+      );
+ 
+      gsap.fromTo(bodyRef.current,
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1, y: 0, duration: 1.1, ease,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%' },
+          delay: 0.14,
+        }
+      );
+ 
+      gsap.fromTo(imageRef.current,
+        { opacity: 0, scale: 1.03 },
+        {
+          opacity: 1, scale: 1, duration: 1.4, ease,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%' },
+          delay: 0.08,
+        }
+      );
+ 
+      gsap.fromTo(statRef.current,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 1.0, ease,
+          scrollTrigger: { trigger: statRef.current, start: 'top 88%' },
+        }
+      );
+    }, sectionRef);
+ 
+    return () => ctx.revert();
+  }, []);
+ 
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#F4F5F2] overflow-hidden"
+      style={{
+        paddingTop   : 'clamp(88px, 12vh, 144px)',
+        paddingBottom: 'clamp(88px, 12vh, 144px)',
+      }}
+    >
+ 
+      {/* Bridge in — carries memory of hero dark */}
+      <div
+        className="absolute top-0 inset-x-0 h-[90px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(45,60,104,0.06), transparent)' }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain — same texture as hero, keeps atmosphere */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.03] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+ 
+      {/* ── Headline ────────────────────────────────────────────────────
+          Sits at full section width — not capped at max-w.
+          Scale contrast: this is bigger than everything below it.
+          Three words that open a question the body answers.
+          "The crew knows." → knows what? keep reading.
+      ─────────────────────────────────────────────────────────────── */}
+      <div
+        ref={headlineRef}
+        className="w-full px-6 md:px-10 lg:px-14"
+        style={{ marginBottom: 'clamp(48px, 8vh, 88px)' }}
+      >
+        <h2
+          style={{
+            fontFamily   : 'Gambarino, Georgia, serif',
+            fontSize     : 'clamp(58px, 9vw, 128px)',
+            lineHeight   : 0.95,
+            letterSpacing: '-0.04em',
+            color        : '#2D3C68',
+            fontWeight   : 400,
+            margin       : 0,
+          }}
+        >
+          The crew knows.
+        </h2>
+      </div>
+ 
+      {/* ── Two column — body left, image right ─────────────────────── */}
+      <div className="relative w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
+        <div className="grid grid-cols-1 md:grid-cols-12 md:gap-x-14 gap-y-10 md:items-start">
+ 
+          {/* Body + stat */}
+          <div ref={bodyRef} className="md:col-span-6 flex flex-col">
+ 
+            <p
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontSize  : '15px',
+                lineHeight: 1.9,
+                color     : 'rgba(45,60,104,0.68)',
+                fontWeight: 300,
+                maxWidth  : '44ch',
+                margin    : 0,
+              }}
+            >
+              When to be there and when to stay away. What you
+              want before you ask. Ten people on a forty-metre
+              boat who have made a practice of reading the sea
+              and the people on it.
+            </p>
+ 
+            <p
+              style={{
+                fontFamily: 'Switzer, sans-serif',
+                fontSize  : '15px',
+                lineHeight: 1.9,
+                color     : 'rgba(45,60,104,0.68)',
+                fontWeight: 300,
+                maxWidth  : '44ch',
+                margin    : 'clamp(22px, 3vh, 36px) 0 0 0',
+              }}
+            >
+              The days take shape around this. Not around a
+              schedule, not around a programme — around people
+              who already know what the morning asks for before
+              anyone wakes up.
+            </p>
+ 
+            {/* Stat — earned only after reading the two paragraphs */}
+            <div ref={statRef} style={{ marginTop: 'clamp(36px, 6vh, 64px)' }}>
+              <div
+                style={{
+                  width     : '28px',
+                  height    : '1px',
+                  background: 'rgba(176,141,87,0.55)',
+                  marginBottom: '20px',
+                }}
+                aria-hidden="true"
+              />
+              <p
+                style={{
+                  fontFamily   : 'Gambarino, Georgia, serif',
+                  fontSize     : 'clamp(30px, 3.4vw, 50px)',
+                  lineHeight   : 1.0,
+                  letterSpacing: '-0.03em',
+                  color        : '#2D3C68',
+                  fontWeight   : 400,
+                  margin       : 0,
+                }}
+              >
+                Ten crew.
+                <br />
+                Twelve guests.
+              </p>
+            </div>
+ 
+          </div>
+ 
+          {/* Image — portrait, offset upward to break alignment */}
+          <div
+            ref={imageRef}
+            className="md:col-span-5 md:col-start-8 md:-mt-12"
+          >
+            <div
+              className="relative w-full overflow-hidden"
+              style={{ aspectRatio: '3 / 4' }}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=80&fit=crop"
+                alt=""
+                role="presentation"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div
+                className="absolute inset-0"
+                style={{ background: 'rgba(45,60,104,0.06)' }}
+              />
+            </div>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      {/* Bridge out */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04))' }}
+        aria-hidden="true"
+      />
+ 
+    </section>
+  );
+}
+
+function ExperienceActivities() {
+  const sectionRef = useRef(null);
+  const headerRef  = useRef(null);
+  const groupRefs  = useRef([]);
+ 
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    if (reduce) {
+      headerRef.current && gsap.set(headerRef.current.querySelectorAll('.anim'), { opacity: 1, y: 0 });
+      groupRefs.current.forEach(el =>
+        el && gsap.set(el.querySelectorAll('.anim'), { opacity: 1, y: 0 })
+      );
+      return;
+    }
+ 
+    const ctx = gsap.context(() => {
+      const ease = [0.22, 1, 0.36, 1];
+ 
+      gsap.fromTo(
+        headerRef.current.querySelectorAll('.anim'),
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 1.1, stagger: 0.12, ease,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 76%' },
+        }
+      );
+ 
+      groupRefs.current.forEach((el) => {
+        if (!el) return;
+        gsap.fromTo(
+          el.querySelectorAll('.anim'),
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1, y: 0, duration: 1.0, stagger: 0.10, ease,
+            scrollTrigger: { trigger: el, start: 'top 84%' },
+          }
+        );
+      });
+    }, sectionRef);
+ 
+    return () => ctx.revert();
+  }, []);
+ 
+  // ── Groups — four activity types ────────────────────────────────────
+  // Image aspect ratio varies per group: wide → landscape → portrait → panoramic.
+  // Group intro provides narrative context — no energy rating labels.
+  const groups = [
+    {
+      energy       : 'High',
+      color        : '#C66A4A',
+      imgAspect    : '16 / 7',
+      nameSize     : 'clamp(22px, 2.2vw, 32px)',
+      nameTracking : '-0.025em',
+      layout       : 'single-wide',
+      intro        : 'For the mornings when the sea is flat and the energy is there.',
+      activities   : [
+        {
+          name : 'Wakeboarding',
+          desc : 'Glide across calm seas surrounding Serenity.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_32_29_PM_yhqlyg.png',
+        },
+      ],
+    },
+    {
+      energy       : 'Medium',
+      color        : '#B08D57',
+      imgAspect    : '4 / 3',
+      nameSize     : 'clamp(22px, 2.2vw, 32px)',
+      nameTracking : '-0.025em',
+      layout       : 'pair',
+      intro        : 'Indonesia\'s underwater world is the reason most people come. The reef here earns the trip.',
+      activities   : [
+        {
+          name : 'Diving',
+          desc : 'Explore Indonesia\'s most extraordinary underwater worlds.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png',
+        },
+        {
+          name : 'Snorkeling',
+          desc : 'Discover colorful reefs just beneath the surface.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922405/ChatGPT_Image_May_16_2026_03_49_22_PM_cyflb6.png',
+        },
+      ],
+    },
+    {
+      energy       : 'Low',
+      color        : '#8B6A4F',
+      imgAspect    : '3 / 4',
+      nameSize     : 'clamp(22px, 2.2vw, 32px)',
+      nameTracking : '-0.025em',
+      layout       : 'pair-portrait',
+      intro        : 'The hours that don\'t ask anything of you. A line in the water. A board on a quiet bay.',
+      activities   : [
+        {
+          name : 'Fishing',
+          desc : 'Cast a line in peaceful waters.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_14_PM_liebfi.png',
+        },
+        {
+          name : 'Paddle Boarding',
+          desc : 'Drift quietly across calm bays and hidden coves.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png',
+        },
+      ],
+    },
+    {
+      energy       : 'Land',
+      color        : 'rgba(45,60,104,0.50)',
+      imgAspect    : '21 / 9',
+      nameSize     : 'clamp(22px, 2.2vw, 32px)',
+      nameTracking : '-0.025em',
+      layout       : 'single-wide',
+      intro        : 'Some islands are best understood on foot. The crew knows which ones are worth the walk.',
+      activities   : [
+        {
+          name : 'Island Exploration',
+          desc : 'Step ashore on remote islands.',
+          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922406/ChatGPT_Image_May_16_2026_04_00_38_PM_zneayx.png',
+        },
+      ],
+    },
+  ];
+ 
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#F4F5F2] overflow-hidden"
+      style={{
+        paddingTop   : 'clamp(80px, 11vh, 130px)',
+        paddingBottom: 'clamp(80px, 11vh, 130px)',
+      }}
+    >
+ 
+      {/* Bridge in from DayOnBoard */}
+      <div
+        className="absolute top-0 inset-x-0 pointer-events-none"
+        style={{
+          height    : '80px',
+          background: 'linear-gradient(to bottom, rgba(45,60,104,0.05), transparent)',
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.03] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+ 
+      {/* Warm atmosphere */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.05) 0%, transparent 52%)' }}
+        aria-hidden="true"
+      />
+ 
+      <div className="relative w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
+ 
+        {/* ── Header ───────────────────────────────────────────────────── */}
+        <div ref={headerRef} className="mb-14 md:mb-20">
+          <p
+            className="anim"
+            style={{
+              fontFamily   : 'Switzer, sans-serif',
+              fontSize     : '11px',
+              letterSpacing: '0.28em',
+              textTransform: 'uppercase',
+              color        : 'rgba(45,60,104,0.42)',
+              fontWeight   : 400,
+              margin       : '0 0 12px 0',
+            }}
+          >
+            Activities
+          </p>
+          <h2
+            className="anim"
+            style={{
+              fontFamily   : 'Gambarino, Georgia, serif',
+              fontSize     : 'clamp(34px, 4vw, 58px)',
+              lineHeight   : 1.03,
+              letterSpacing: '-0.03em',
+              color        : '#2D3C68',
+              fontWeight   : 400,
+              margin       : 0,
+              maxWidth     : '16ch',
+            }}
+          >
+            Whatever the sea allows.
+          </h2>
+        </div>
+ 
+        {/* ── Groups ───────────────────────────────────────────────────── */}
+        {groups.map((group, gi) => (
+          <div
+            key={group.energy}
+            ref={el => groupRefs.current[gi] = el}
+            className="grid grid-cols-1 md:grid-cols-12 md:gap-x-10 gap-y-5 py-10 md:py-12"
+            style={{ borderTop: '1px solid rgba(176,141,87,0.14)' }}
+          >
+ 
+            {/* Section number — neutral organizer, left 2 cols */}
+            <div className="anim md:col-span-2 flex md:flex-col md:pt-1">
+              <span
+                style={{
+                  fontFamily   : 'Switzer, sans-serif',
+                  fontSize     : '10px',
+                  letterSpacing: '0.24em',
+                  color        : 'rgba(45,60,104,0.32)',
+                  fontWeight   : 400,
+                }}
+              >
+                0{gi + 1}
+              </span>
+            </div>
+ 
+            {/* Activities — right 10 cols */}
+            <div className="md:col-span-10">
+ 
+              {/* Narrative intro per group — readable sentence, not a label */}
+              {group.intro && (
+                <p
+                  className="anim"
+                  style={{
+                    fontFamily: 'Switzer, sans-serif',
+                    fontSize  : '14px',
+                    lineHeight: 1.8,
+                    color     : 'rgba(45,60,104,0.58)',
+                    fontWeight: 300,
+                    maxWidth  : '52ch',
+                    margin    : '0 0 clamp(16px, 2.5vh, 28px) 0',
+                  }}
+                >
+                  {group.intro}
+                </p>
+              )}
+ 
+              {/* single-wide: one image full right-column width */}
+              {group.layout === 'single-wide' && (
+                <div className="anim flex flex-col gap-4">
+                  <div
+                    className="relative w-full overflow-hidden"
+                    style={{ aspectRatio: group.imgAspect }}
+                  >
+                    <img
+                      src={group.activities[0].img}
+                      alt="" role="presentation"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
+                  </div>
+                  <div>
+                    <h3 style={{
+                      fontFamily   : 'Gambarino, Georgia, serif',
+                      fontSize     : group.nameSize,
+                      lineHeight   : 1.0,
+                      letterSpacing: group.nameTracking,
+                      color        : '#2D3C68',
+                      fontWeight   : 400,
+                      margin       : 0,
+                    }}>
+                      {group.activities[0].name}
+                    </h3>
+                    <p style={{
+                      fontFamily: 'Switzer, sans-serif',
+                      fontSize  : '13px',
+                      lineHeight: 1.75,
+                      color     : 'rgba(45,60,104,0.52)',
+                      fontWeight: 300,
+                      margin    : '8px 0 0 0',
+                    }}>
+                      {group.activities[0].desc}
+                    </p>
+                  </div>
+                </div>
+              )}
+ 
+              {/* pair: two images side by side, landscape */}
+              {group.layout === 'pair' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                  {group.activities.map((act) => (
+                    <div key={act.name} className="anim flex flex-col gap-4">
+                      <div
+                        className="relative w-full overflow-hidden"
+                        style={{ aspectRatio: group.imgAspect }}
+                      >
+                        <img
+                          src={act.img}
+                          alt="" role="presentation"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
+                      </div>
+                      <div>
+                        <h3 style={{
+                          fontFamily   : 'Gambarino, Georgia, serif',
+                          fontSize     : group.nameSize,
+                          lineHeight   : 1.0,
+                          letterSpacing: group.nameTracking,
+                          color        : '#2D3C68',
+                          fontWeight   : 400,
+                          margin       : 0,
+                        }}>
+                          {act.name}
+                        </h3>
+                        <p style={{
+                          fontFamily: 'Switzer, sans-serif',
+                          fontSize  : '13px',
+                          lineHeight: 1.75,
+                          color     : 'rgba(45,60,104,0.52)',
+                          fontWeight: 300,
+                          margin    : '8px 0 0 0',
+                        }}>
+                          {act.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+ 
+              {/* pair-portrait: two portrait images, constrained desktop  */}
+              {/* LOW energy — small, quiet, lots of whitespace             */}
+              {group.layout === 'pair-portrait' && (
+                <div className="grid grid-cols-2 gap-6 md:gap-10 md:max-w-[62%]">
+                  {group.activities.map((act) => (
+                    <div key={act.name} className="anim flex flex-col gap-3">
+                      <div
+                        className="relative w-full overflow-hidden"
+                        style={{ aspectRatio: group.imgAspect }}
+                      >
+                        <img
+                          src={act.img}
+                          alt="" role="presentation"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
+                      </div>
+                      <div>
+                        <h3 style={{
+                          fontFamily   : 'Gambarino, Georgia, serif',
+                          fontSize     : group.nameSize,
+                          lineHeight   : 1.1,
+                          letterSpacing: group.nameTracking,
+                          color        : '#2D3C68',
+                          fontWeight   : 400,
+                          margin       : 0,
+                        }}>
+                          {act.name}
+                        </h3>
+                        <p style={{
+                          fontFamily: 'Switzer, sans-serif',
+                          fontSize  : '12px',
+                          lineHeight: 1.75,
+                          color     : 'rgba(45,60,104,0.45)',
+                          fontWeight: 300,
+                          margin    : '5px 0 0 0',
+                        }}>
+                          {act.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+ 
+            </div>
+          </div>
+        ))}
+ 
+      </div>
+ 
+      {/* Bridge out */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04))' }}
+        aria-hidden="true"
+      />
+ 
+    </section>
+  );
+}
+
+function ExperienceBreaking() {
+  const sectionRef = useRef(null);
+  const textRef    = useRef(null);
+ 
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    if (reduce) {
+      gsap.set(textRef.current, { opacity: 1, y: 0 });
+      return;
+    }
+ 
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        textRef.current,
+        { opacity: 0, y: 20, filter: 'blur(4px)' },
+        {
+          opacity : 1,
+          y       : 0,
+          filter  : 'blur(0px)',
+          duration: 1.3,
+          ease    : [0.22, 1, 0.36, 1],
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start  : 'top 72%',
+          },
+        }
+      );
+    }, sectionRef);
+ 
+    return () => ctx.revert();
+  }, []);
+ 
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#F4F5F2] overflow-hidden py-20 md:py-28"
+    >
+ 
+      {/* Bridge in — barely visible */}
+      <div
+        className="absolute top-0 inset-x-0 h-[60px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(45,60,104,0.03), transparent)' }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain — consistent with all sail-white sections */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.03] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+      <div className="flex items-center justify-center px-6">
+        <p
+          ref={textRef}
+          style={{
+            fontFamily   : 'Gambarino, Georgia, serif',
+            fontSize     : 'clamp(36px, 4.8vw, 52px)',
+            lineHeight   : 1.1,
+            letterSpacing: '-0.03em',
+            color        : '#2D3C68',
+            fontWeight   : 400,
+            textAlign    : 'center',
+            maxWidth     : '600px',
+            margin       : 0,
+          }}
+        >
+          Nowhere to be.
+          <br />
+          Nothing to follow.
+        </p>
+      </div>
+ 
+      {/* Bridge out — toward dark Dining.
+          Gradient darkens significantly so the jump to #121824
+          feels like dusk arriving, not a hard cut.              */}
+      <div
+        className="absolute bottom-0 inset-x-0 pointer-events-none"
+        style={{
+          height    : '140px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(18,24,36,0.05) 30%, rgba(18,24,36,0.16) 60%, rgba(18,24,36,0.38) 100%)',
+        }}
+        aria-hidden="true"
+      />
+ 
+    </section>
+  );
+}
+
+
+function ExperienceDining() {
+  const sectionRef = useRef(null);
+  const imgWrapRef = useRef(null);
+  const contentRef = useRef(null);
+ 
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    if (reduce) {
+      gsap.set(contentRef.current.querySelectorAll('.anim'), { opacity: 1, y: 0, filter: 'blur(0px)' });
+      return;
+    }
+ 
+    const ctx = gsap.context(() => {
+      const ease = [0.22, 1, 0.36, 1];
+ 
+      // ChatGPT: yPercent + scale together, scrub 1.6 — slower, heavier, more cinematic
+      gsap.fromTo(imgWrapRef.current,
+        { yPercent: -3, scale: 1.02 },
+        {
+          yPercent: 3,
+          scale   : 1.04,
+          ease    : 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start  : 'top bottom',
+            end    : 'bottom top',
+            scrub  : 1.6,
+          },
+        }
+      );
+ 
+      gsap.fromTo(
+        contentRef.current.querySelectorAll('.anim'),
+        { opacity: 0, y: 24, filter: 'blur(5px)' },
+        {
+          opacity : 1,
+          y       : 0,
+          filter  : 'blur(0px)',
+          duration: 1.35,
+          stagger : 0.14,
+          ease,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start  : 'top 72%',
+          },
+        }
+      );
+    }, sectionRef);
+ 
+    return () => ctx.revert();
+  }, []);
+ 
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full overflow-hidden"
+      style={{ backgroundColor: '#121824' }}
+    >
+ 
+      {/* Bridge in — ChatGPT: 180px, 4 stops, very gradual */}
+      <div
+        className="absolute top-0 inset-x-0 pointer-events-none"
+        style={{
+          height  : '180px',
+          zIndex  : 30,
+          background: `linear-gradient(
+            to bottom,
+            rgba(244,245,242,0.08) 0%,
+            rgba(244,245,242,0.035) 24%,
+            rgba(244,245,242,0.012) 48%,
+            transparent 100%
+          )`,
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Image field */}
+      <div
+        className="absolute top-0 bottom-0 right-0 left-0 md:left-[40%] overflow-hidden"
+        aria-hidden="true"
+      >
+        {/* ChatGPT: -10% inset (less than my -12% since scale is added) */}
+        <div ref={imgWrapRef} className="absolute" style={{ inset: '-10%' }}>
+          <img
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png"
+            alt=""
+            role="presentation"
+            loading="lazy"
+            className="w-full h-full object-cover"
+            // ChatGPT: desaturate + dim — less stock photo, more editorial
+            style={{ filter: 'brightness(0.78) saturate(0.82) contrast(1.04)' }}
+          />
+        </div>
+ 
+        {/* ChatGPT: Primary dissolve — 6 stops, more photographic */}
+        <div className="absolute inset-0" style={{
+          background: `linear-gradient(
+            to right,
+            #121824 0%,
+            rgba(18,24,36,0.985) 10%,
+            rgba(18,24,36,0.94) 18%,
+            rgba(18,24,36,0.82) 30%,
+            rgba(18,24,36,0.62) 44%,
+            rgba(18,24,36,0.28) 58%,
+            transparent 78%
+          )`,
+        }} />
+ 
+        {/* ChatGPT: Secondary atmospheric density — left text area protection */}
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(
+            ellipse at 18% 52%,
+            rgba(10,14,22,0.72) 0%,
+            rgba(10,14,22,0.34) 34%,
+            transparent 70%
+          )`,
+        }} />
+ 
+        {/* ChatGPT: Lower shadow — bottom darkening */}
+        <div className="absolute inset-0" style={{
+          background: `linear-gradient(
+            to top,
+            rgba(8,12,18,0.62) 0%,
+            rgba(8,12,18,0.28) 22%,
+            transparent 48%
+          )`,
+        }} />
+ 
+        {/* ChatGPT: Right side falloff */}
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(
+            circle at 92% 52%,
+            transparent 0%,
+            rgba(8,12,18,0.14) 72%,
+            rgba(8,12,18,0.32) 100%
+          )`,
+        }} />
+ 
+        {/* ChatGPT: Warm atmosphere on image */}
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(
+            ellipse at 64% 54%,
+            rgba(176,141,87,0.12) 0%,
+            rgba(176,141,87,0.06) 24%,
+            transparent 62%
+          )`,
+        }} />
+ 
+        {/* ChatGPT: Mobile sculpting — gradient not flat overlay */}
+        <div className="absolute inset-0 md:hidden" style={{
+          background: `linear-gradient(
+            to bottom,
+            rgba(10,14,22,0.84) 0%,
+            rgba(10,14,22,0.64) 22%,
+            rgba(10,14,22,0.56) 46%,
+            rgba(10,14,22,0.76) 100%
+          )`,
+        }} />
+      </div>
+ 
+      {/* Sumba Ikat — titik 2 */}
+      {/* ChatGPT: soft-light + blur(0.2px) + lower opacity — more subtle on dark */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage : 'url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png)',
+          backgroundRepeat: 'repeat',
+          backgroundSize  : '260px',
+          opacity         : 0.022,
+          mixBlendMode    : 'soft-light',
+          filter          : 'blur(0.2px)',
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.04] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+ 
+      {/* Left warmth — candlelight from left */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(
+            ellipse at 4% 58%,
+            rgba(176,141,87,0.08) 0%,
+            rgba(176,141,87,0.03) 28%,
+            transparent 52%
+          )`,
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Content */}
+      {/* ChatGPT: more generous padding */}
+      <div
+        ref={contentRef}
+        className="relative z-10"
+        style={{ padding: 'clamp(92px, 13vh, 132px) 0' }}
+      >
+        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
+          <div className="md:max-w-[43%]">
+ 
+            <p className="anim" style={{
+              fontFamily   : 'Switzer, sans-serif',
+              fontSize     : '11px',
+              letterSpacing: '0.28em',
+              textTransform: 'uppercase',
+              color        : 'rgba(176,141,87,0.74)',
+              fontWeight   : 400,
+              margin       : '0 0 18px 0',
+            }}>
+              Dining
+            </p>
+ 
+            <h2 className="anim" style={{
+              fontFamily   : 'Gambarino, Georgia, serif',
+              fontSize     : 'clamp(30px, 3.6vw, 50px)',
+              lineHeight   : 1.04,
+              letterSpacing: '-0.032em',
+              color        : '#F4F5F2',
+              fontWeight   : 400,
+              margin       : '0 0 clamp(28px, 4vh, 42px) 0',
+              maxWidth     : '22ch',
+            }}>
+              Shaped around the journey and the people sharing it.
+            </h2>
+ 
+            {/* ChatGPT: rule opacity 0.42 — more subtle */}
+            <div className="anim" style={{
+              width     : '30px',
+              height    : '1px',
+              background: 'rgba(176,141,87,0.42)',
+              margin    : '0 0 clamp(26px, 4vh, 40px) 0',
+            }} aria-hidden="true" />
+ 
+            {/* ChatGPT: body opacity 0.56 — better on dark */}
+            <p className="anim" style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontSize  : '15px',
+              lineHeight: 1.92,
+              color     : 'rgba(244,245,242,0.56)',
+              fontWeight: 300,
+              margin    : 0,
+              maxWidth  : '38ch',
+            }}>
+              The chef follows the day, not a menu. What came up
+              from the water. What the weather allowed. What the
+              evening calls for.
+            </p>
+ 
+            <p className="anim" style={{
+              fontFamily: 'Switzer, sans-serif',
+              fontSize  : '15px',
+              lineHeight: 1.92,
+              color     : 'rgba(244,245,242,0.56)',
+              fontWeight: 300,
+              margin    : 'clamp(18px, 2.8vh, 28px) 0 0 0',
+              maxWidth  : '38ch',
+            }}>
+              The table moves — inside when the wind is up,
+              on deck when the sky earns it, ashore when
+              the island invites.
+            </p>
+ 
+          </div>
+        </div>
+      </div>
+ 
+      {/* Bridge out — ChatGPT: 120px, 3 stops, more gradual */}
+      <div
+        className="absolute bottom-0 inset-x-0 pointer-events-none"
+        style={{
+          height    : '120px',
+          background: `linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(244,245,242,0.015) 34%,
+            rgba(244,245,242,0.04) 62%,
+            rgba(244,245,242,0.08) 100%
+          )`,
+        }}
+        aria-hidden="true"
+      />
+ 
+    </section>
+  );
+}
+
+function ExperienceHumanMoments() {
+  const sectionRef = useRef(null);
+
+  const wrap1Ref = useRef(null);
+  const wrap2Ref = useRef(null);
+  const wrap3Ref = useRef(null);
+  const wrap4Ref = useRef(null);
+
+  const inner1Ref = useRef(null);
+  const inner2Ref = useRef(null);
+  const inner3Ref = useRef(null);
+  const inner4Ref = useRef(null);
+
+  useEffect(() => {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const wrappers = [
+      wrap1Ref,
+      wrap2Ref,
+      wrap3Ref,
+      wrap4Ref,
+    ];
+
+    if (reduce) {
+      wrappers.forEach((r) => {
+        if (!r.current) return;
+
+        gsap.set(r.current, {
+          opacity: 1,
+          y: 0,
+        });
+      });
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      const ease = [0.22, 1, 0.36, 1];
+
+      // ─────────────────────────────────────
+      // ENTRANCE
+      // Softer. Slower. Less performative.
+      // ─────────────────────────────────────
+      wrappers.forEach((ref, i) => {
+        if (!ref.current) return;
+
+        gsap.fromTo(
+          ref.current,
+          {
+            opacity: 0,
+            y: 28,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.25,
+            ease,
+            delay: i * 0.08,
+
+            scrollTrigger: {
+              trigger: ref.current,
+              start: "top 90%",
+            },
+          }
+        );
+      });
+
+      // ─────────────────────────────────────
+      // PARALLAX
+      // Memory drift. Not movement.
+      // ─────────────────────────────────────
+      const parallax = [
+        {
+          inner: inner1Ref,
+          wrap: wrap1Ref,
+          scrub: 1.8,
+          y: -28,
+        },
+
+        {
+          inner: inner2Ref,
+          wrap: wrap2Ref,
+          scrub: 2.2,
+          y: -16,
+        },
+
+        {
+          inner: inner3Ref,
+          wrap: wrap3Ref,
+          scrub: 1.6,
+          y: -34,
+        },
+
+        {
+          inner: inner4Ref,
+          wrap: wrap4Ref,
+          scrub: 2.4,
+          y: -10,
+        },
+      ];
+
+      parallax.forEach(
+        ({ inner, wrap, scrub, y }) => {
+          if (!inner.current || !wrap.current)
+            return;
+
+          gsap.fromTo(
+            inner.current,
+            {
+              y: 0,
+              scale: 1.02,
+            },
+            {
+              y,
+              scale: 1.045,
+              ease: "none",
+
+              scrollTrigger: {
+                trigger: wrap.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub,
+              },
+            }
+          );
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // ─────────────────────────────────────────
+  // IMAGES
+  // Mobile now keeps compositional rhythm.
+  // Not just stacked feed.
+  // ─────────────────────────────────────────
+  const images = [
+    {
+      wrapRef: wrap1Ref,
+      innerRef: inner1Ref,
+
+      src:
+        "https://images.pexels.com/photos/1371360/pexels-photo-1371360.jpeg?auto=compress&cs=tinysrgb&w=1200",
+
+      aspect: "4 / 5",
+
+      cls: `
+        w-[92%]
+        md:w-[54%]
+
+        ml-0
+
+        relative
+        z-[2]
+      `,
+    },
+
+    {
+      wrapRef: wrap2Ref,
+      innerRef: inner2Ref,
+
+      src:
+        "https://images.pexels.com/photos/1574843/pexels-photo-1574843.jpeg?auto=compress&cs=tinysrgb&w=900",
+
+      aspect: "3 / 4",
+
+      cls: `
+        w-[72%]
+        md:w-[36%]
+
+        ml-auto
+        mr-[2%]
+
+        mt-[-8vw]
+        md:-mt-[24vh]
+
+        relative
+        z-[3]
+      `,
+    },
+
+    {
+      wrapRef: wrap3Ref,
+      innerRef: inner3Ref,
+
+      src:
+        "https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=1000",
+
+      aspect: "16 / 10",
+
+      cls: `
+        w-[88%]
+        md:w-[50%]
+
+        ml-[4%]
+        md:ml-[14%]
+
+        mt-[12vw]
+        md:mt-[8vh]
+
+        relative
+        z-[1]
+      `,
+    },
+
+    {
+      wrapRef: wrap4Ref,
+      innerRef: inner4Ref,
+
+      src:
+        "https://images.pexels.com/photos/3225528/pexels-photo-3225528.jpeg?auto=compress&cs=tinysrgb&w=800",
+
+      aspect: "1 / 1",
+
+      cls: `
+        w-[56%]
+        md:w-[28%]
+
+        ml-auto
+        mr-[6%]
+
+        mt-[10vw]
+        md:mt-[6vh]
+
+        relative
+        z-[4]
+      `,
+    },
+  ];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="
+        relative
+        w-full
+        overflow-hidden
+      "
+      style={{
+        background: `
+          linear-gradient(
+            to bottom,
+
+            #EDEEE9 0%,
+            #F4F5F2 18%,
+            #F4F5F2 100%
+          )
+        `,
+
+        paddingTop:
+          "clamp(78px, 11vh, 118px)",
+
+        paddingBottom:
+          "clamp(88px, 13vh, 138px)",
+      }}
+    >
+      {/* ─────────────────────────────────────
+          DINING AFTERGLOW
+      ───────────────────────────────────── */}
+      <div
+        className="
+          absolute
+          top-0
+          inset-x-0
+          pointer-events-none
+        "
+        style={{
+          height: "180px",
+
+          background: `
+            linear-gradient(
+              to bottom,
+
+              rgba(18,24,36,0.10) 0%,
+              rgba(18,24,36,0.05) 24%,
+              rgba(18,24,36,0.015) 52%,
+
+              transparent 100%
+            )
+          `,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─────────────────────────────────────
+          IKAT DIVIDER
+      ───────────────────────────────────── */}
+      <div
+        className="
+          relative
+          w-full
+          max-w-[1280px]
+          mx-auto
+
+          px-6
+          md:px-10
+          lg:px-14
+
+          mb-4
+        "
+        aria-hidden="true"
+      >
+        <div
+          style={{
+            position: "relative",
+
+            height: "1px",
+
+            background:
+              "rgba(176,141,87,0.16)",
+
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+
+              inset: "-8px 0",
+
+              backgroundRepeat: "repeat-x",
+
+              backgroundSize: "60px auto",
+
+              backgroundPosition: "center",
+
+              opacity: 0.035,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────
+          GRAIN
+      ───────────────────────────────────── */}
+      <div
+        className="
+          absolute
+          inset-[-10%]
+
+          opacity-[0.028]
+
+          mix-blend-soft-light
+
+          pointer-events-none
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─────────────────────────────────────
+          WARM RESIDUAL ATMOSPHERE
+      ───────────────────────────────────── */}
+      <div
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+        "
+        style={{
+          background: `
+            radial-gradient(
+              circle at 74% 22%,
+
+              rgba(176,141,87,0.045) 0%,
+              rgba(176,141,87,0.018) 24%,
+
+              transparent 54%
+            )
+          `,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─────────────────────────────────────
+          LEFT DENSITY
+      ───────────────────────────────────── */}
+      <div
+        className="
+          absolute
+          inset-0
+          pointer-events-none
+        "
+        style={{
+          background: `
+            radial-gradient(
+              ellipse at 0% 50%,
+
+              rgba(45,60,104,0.035) 0%,
+              transparent 52%
+            )
+          `,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ─────────────────────────────────────
+          IMAGES
+      ───────────────────────────────────── */}
+      <div
+        className="
+          relative
+          w-full
+          max-w-[1280px]
+          mx-auto
+
+          px-6
+          md:px-10
+          lg:px-14
+        "
+      >
+        {images.map((img, i) => (
+          <div
+            key={i}
+            ref={img.wrapRef}
+            className={`
+              relative
+              overflow-hidden
+
+              ${img.cls}
+            `}
+            style={{
+              aspectRatio: img.aspect,
+
+              boxShadow:
+                i === 0
+                  ? "0 34px 80px rgba(18,24,36,0.08)"
+                  : i === 1
+                  ? "0 24px 64px rgba(18,24,36,0.10)"
+                  : i === 2
+                  ? "0 18px 52px rgba(18,24,36,0.06)"
+                  : "0 16px 40px rgba(18,24,36,0.08)",
+            }}
+          >
+            {/* IMAGE */}
+            <div
+              ref={img.innerRef}
+              style={{
+                position: "absolute",
+
+                inset: "-10%",
+              }}
+            >
+              <img
+                src={img.src}
+                alt=""
+                role="presentation"
+                loading="lazy"
+                className="
+                  w-full
+                  h-full
+                  object-cover
+                "
+                style={{
+                  filter: `
+                    brightness(0.90)
+                    saturate(0.84)
+                    contrast(1.02)
+                  `,
+                }}
+              />
+            </div>
+
+            {/* ─────────────────────────────────
+                ATMOSPHERIC TOP FALL-OFF
+            ───────────────────────────────── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `
+                  linear-gradient(
+                    to bottom,
+
+                    rgba(12,18,28,0.12) 0%,
+                    transparent 24%
+                  )
+                `,
+              }}
+            />
+
+            {/* ─────────────────────────────────
+                LOWER SHADOW POCKET
+            ───────────────────────────────── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `
+                  linear-gradient(
+                    to top,
+
+                    rgba(10,14,22,0.22) 0%,
+                    rgba(10,14,22,0.08) 18%,
+
+                    transparent 46%
+                  )
+                `,
+              }}
+            />
+
+            {/* ─────────────────────────────────
+                WARM MEMORY WASH
+            ───────────────────────────────── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `
+                  radial-gradient(
+                    ellipse at 60% 48%,
+
+                    rgba(176,141,87,0.06) 0%,
+                    transparent 68%
+                  )
+                `,
+              }}
+            />
+
+            {/* ─────────────────────────────────
+                EDGE SOFTENING
+            ───────────────────────────────── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                boxShadow:
+                  "inset 0 0 0 1px rgba(255,255,255,0.03)",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* ─────────────────────────────────────
+          MEMORY FADE OUT
+      ───────────────────────────────────── */}
+      <div
+        className="
+          absolute
+          bottom-0
+          inset-x-0
+          pointer-events-none
+        "
+        style={{
+          height: "140px",
+
+          background: `
+            linear-gradient(
+              to bottom,
+
+              transparent 0%,
+
+              rgba(45,60,104,0.025) 54%,
+              rgba(45,60,104,0.08) 100%
+            )
+          `,
+        }}
+        aria-hidden="true"
+      />
+    </section>
+  );
+}
+ 
+
+
+
+
+
+
+function ExperienceRhythm() {
+  // ── Real Unsplash images ──────────────────────────────────────────────
+  const IMAGES = {
+    morning:
+      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2400&auto=format&fit=crop',
+
+    midday:
+      'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=2400&auto=format&fit=crop',
+
+    afternoon:
+      'https://images.unsplash.com/photo-1493558103817-58b2924bce98?q=80&w=2400&auto=format&fit=crop',
+
+    evening:
+      'https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=2400&auto=format&fit=crop',
+  };
+
+  // ── Beat data ─────────────────────────────────────────────────────────
+  const beats = [
+    {
+      key     : 'morning',
+      time    : 'Morning',
+      headline: 'Into the water.',
+      support : 'The sea is coolest before the sun finds it.',
+      bgGrad  : 'linear-gradient(to bottom, #141E30 0%, #1E2D4E 50%, #243456 100%)',
+      radial  : 'radial-gradient(ellipse at 50% 90%, rgba(176,141,87,0.10) 0%, transparent 52%)',
+      overlay : 'rgba(10,16,32,0.50)',
+    },
+    {
+      key     : 'midday',
+      time    : 'Midday',
+      headline: 'Back on deck. Nowhere to be.',
+      support : 'Lunch when it arrives. Conversation when it starts.',
+      bgGrad  : 'linear-gradient(to bottom, #263660 0%, #2D3C68 55%, #243260 100%)',
+      radial  : 'radial-gradient(ellipse at 50% 0%, rgba(244,245,242,0.07) 0%, transparent 46%)',
+      overlay : 'rgba(16,24,48,0.40)',
+    },
+    {
+      key     : 'afternoon',
+      time    : 'Afternoon',
+      headline: 'The sea changes. So does the pace.',
+      support : 'A line in the water. A cold drink. The horizon.',
+      bgGrad  : 'linear-gradient(to bottom, #3A2A1E 0%, #4A3428 48%, #3D2E22 100%)',
+      radial  : 'radial-gradient(ellipse at 68% 28%, rgba(176,141,87,0.26) 0%, transparent 54%)',
+      overlay : 'rgba(26,16,10,0.44)',
+    },
+    {
+      key     : 'evening',
+      time    : 'Evening',
+      headline: 'The table is set. The sea is still.',
+      support : 'Dinner shaped around whoever is there to share it.',
+      bgGrad  : 'linear-gradient(to bottom, #0C1220 0%, #121824 55%, #0E1520 100%)',
+      radial  : 'radial-gradient(ellipse at 38% 52%, rgba(176,141,87,0.14) 0%, transparent 46%)',
+      overlay : 'rgba(6,8,18,0.58)',
+      hasIkat : true,
+    },
+  ];
+
+  // ── Timeline fade fraction ────────────────────────────────────────────
+  const FADE = 0.07;
+
+  const sectionRef = useRef(null);
+
+  const bgRefs       = useRef(beats.map(() => null));
+  const imgRefs      = useRef(beats.map(() => null));
+  const copyRefs     = useRef(beats.map(() => null));
+  const dotRefs      = useRef(beats.map(() => null));
+  const dotLabelRefs = useRef(beats.map(() => null));
+
+  const [activeBeat, setActiveBeat] = useState(0);
+
+  useEffect(() => {
+    const reduce = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    if (reduce) {
+      bgRefs.current.forEach((el, i) =>
+        el && gsap.set(el, {
+          opacity: i === 0 ? 1 : 0,
+        })
+      );
+
+      imgRefs.current.forEach((el, i) =>
+        el && gsap.set(el, {
+          opacity: i === 0 ? 0.28 : 0,
+        })
+      );
+
+      copyRefs.current.forEach((el, i) =>
+        el && gsap.set(el, {
+          opacity: i === 0 ? 1 : 0,
+          y      : 0,
+        })
+      );
+
+      return;
+    }
+
+    // ── Initial states ───────────────────────────────────────────────
+    bgRefs.current.forEach((el, i) =>
+      el &&
+      gsap.set(el, {
+        opacity: i === 0 ? 1 : 0,
+      })
+    );
+
+    imgRefs.current.forEach((el, i) =>
+      el &&
+      gsap.set(el, {
+        opacity: i === 0 ? 0.28 : 0,
+      })
+    );
+
+    copyRefs.current.forEach((el, i) =>
+      el &&
+      gsap.set(el, {
+        opacity: i === 0 ? 1 : 0,
+        y      : i === 0 ? 0 : 28,
+      })
+    );
+
+    dotRefs.current.forEach((el, i) =>
+      el &&
+      gsap.set(el, {
+        backgroundColor:
+          i === 0
+            ? '#B08D57'
+            : 'rgba(244,245,242,0.20)',
+        scale: i === 0 ? 1.5 : 1,
+      })
+    );
+
+    dotLabelRefs.current.forEach((el, i) =>
+      el &&
+      gsap.set(el, {
+        opacity: i === 0 ? 0.85 : 0.28,
+      })
+    );
+
+    // ── Timeline ─────────────────────────────────────────────────────
+    const tl = gsap.timeline({ paused: true });
+
+    beats.forEach((_, i) => {
+      const start  = i / beats.length;
+      const end    = (i + 1) / beats.length;
+      const isLast = i === beats.length - 1;
+
+      // ── Incoming beat ─────────────────────────────────────────────
+      if (i > 0) {
+        tl.fromTo(
+          bgRefs.current[i],
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: FADE,
+            ease: 'none',
+          },
+          start
+        );
+
+        tl.fromTo(
+          imgRefs.current[i],
+          { opacity: 0 },
+          {
+            opacity: 0.28,
+            duration: FADE,
+            ease: 'none',
+          },
+          start
+        );
+
+        tl.fromTo(
+          copyRefs.current[i],
+          {
+            opacity: 0,
+            y: 28,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: FADE,
+            ease: 'none',
+          },
+          start
+        );
+
+        tl.to(
+          dotRefs.current[i],
+          {
+            backgroundColor: '#B08D57',
+            scale: 1.5,
+            duration: FADE / 2,
+            ease: 'none',
+          },
+          start
+        );
+
+        tl.to(
+          dotLabelRefs.current[i],
+          {
+            opacity: 0.85,
+            duration: FADE / 2,
+            ease: 'none',
+          },
+          start
+        );
+      }
+
+      // ── Outgoing beat ─────────────────────────────────────────────
+      if (!isLast) {
+        const fadeStart = end - FADE;
+
+        tl.to(
+          bgRefs.current[i],
+          {
+            opacity: 0,
+            duration: FADE,
+            ease: 'none',
+          },
+          fadeStart
+        );
+
+        tl.to(
+          imgRefs.current[i],
+          {
+            opacity: 0,
+            duration: FADE,
+            ease: 'none',
+          },
+          fadeStart
+        );
+
+        tl.to(
+          copyRefs.current[i],
+          {
+            opacity: 0,
+            y: -20,
+            duration: FADE,
+            ease: 'none',
+          },
+          fadeStart
+        );
+
+        tl.to(
+          dotRefs.current[i],
+          {
+            backgroundColor:
+              'rgba(244,245,242,0.20)',
+            scale: 1,
+            duration: FADE / 2,
+            ease: 'none',
+          },
+          fadeStart
+        );
+
+        tl.to(
+          dotLabelRefs.current[i],
+          {
+            opacity: 0.28,
+            duration: FADE / 2,
+            ease: 'none',
+          },
+          fadeStart
+        );
+      }
+    });
+
+    // ── ScrollTrigger ───────────────────────────────────────────────
+    let lastBeat = 0;
+
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start  : 'top top',
+        end    : 'bottom bottom',
+        scrub  : 1.2,
+
+        onUpdate: (self) => {
+          tl.progress(self.progress);
+
+          const beat = Math.min(
+            Math.floor(self.progress * beats.length),
+            beats.length - 1
+          );
+
+          if (beat !== lastBeat) {
+            lastBeat = beat;
+            setActiveBeat(beat);
+          }
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [beats]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative"
+      style={{ height: '500vh' }}
+    >
+      {/* ── Sticky viewport ───────────────────────────────────────── */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+
+        {/* ── Background layers ───────────────────────────────────── */}
+        {beats.map((beat, i) => (
+          <div
+            key={`bg-${beat.key}`}
+            ref={(el) => (bgRefs.current[i] = el)}
+            className="absolute inset-0"
+          >
+            <div
+              className="absolute inset-0"
+              style={{
+                background: beat.bgGrad,
+              }}
+            />
+
+            <div
+              className="absolute inset-0"
+              style={{
+                background: beat.radial,
+              }}
+            />
+
+            <div
+              className="absolute inset-0"
+              style={{
+                background: beat.overlay,
+              }}
+            />
+
+            {beat.hasIkat && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundRepeat: 'repeat',
+                  backgroundSize  : '260px',
+                  opacity         : 0.04,
+                  mixBlendMode    : 'overlay',
+                }}
+              />
+            )}
+          </div>
+        ))}
+
+        {/* ── Image layers ────────────────────────────────────────── */}
+        {beats.map((beat, i) => (
+          <div
+            key={`img-${beat.key}`}
+            ref={(el) => (imgRefs.current[i] = el)}
+            className="absolute inset-0"
+            style={{
+              mixBlendMode: 'soft-light',
+            }}
+          >
+            <img
+              src={IMAGES[beat.key]}
+              alt=""
+              role="presentation"
+              className="w-full h-full object-cover"
+              loading={i === 0 ? 'eager' : 'lazy'}
+            />
+          </div>
+        ))}
+
+        {/* ── Copy layers ─────────────────────────────────────────── */}
+        {beats.map((beat, i) => (
+          <div
+            key={`copy-${beat.key}`}
+            ref={(el) => (copyRefs.current[i] = el)}
+            className="absolute inset-0 flex items-end pointer-events-none"
+            style={{
+              paddingBottom:
+                'clamp(64px, 10vh, 112px)',
+            }}
+          >
+            <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
+
+              {/* Time */}
+              <p
+                className="mb-[10px]"
+                style={{
+                  fontFamily   : 'Switzer, sans-serif',
+                  fontSize     : '11px',
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  color        : 'rgba(176,141,87,0.82)',
+                  fontWeight   : 400,
+                  margin       : 0,
+                }}
+              >
+                {beat.time}
+              </p>
+
+              {/* Headline */}
+              <h2
+                style={{
+                  fontFamily   : 'Gambarino, Georgia, serif',
+                  fontSize     : 'clamp(36px, 5vw, 68px)',
+                  lineHeight   : 1.05,
+                  letterSpacing: '-0.03em',
+                  color        : '#F4F5F2',
+                  fontWeight   : 400,
+                  margin       : 0,
+                }}
+              >
+                {beat.headline}
+              </h2>
+
+              {/* Support */}
+              <p
+                className="mt-3 md:mt-4"
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontSize  : '14px',
+                  lineHeight: 1.75,
+                  color     : 'rgba(244,245,242,0.58)',
+                  fontWeight: 300,
+                  maxWidth  : '360px',
+                  margin    : 0,
+                }}
+              >
+                {beat.support}
+              </p>
+
+            </div>
+          </div>
+        ))}
+
+        {/* ── Desktop indicator ──────────────────────────────────── */}
+        <div
+          className="absolute right-10 md:right-14 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-end gap-5"
+          aria-hidden="true"
+        >
+          {beats.map((beat, i) => (
+            <div
+              key={`ind-${beat.key}`}
+              className="flex items-center gap-[10px]"
+            >
+              <span
+                ref={(el) =>
+                  (dotLabelRefs.current[i] = el)
+                }
+                style={{
+                  fontFamily   : 'Switzer, sans-serif',
+                  fontSize     : '10px',
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color        : '#F4F5F2',
+                  fontWeight   : 400,
+                }}
+              >
+                {beat.time}
+              </span>
+
+              <div
+                ref={(el) =>
+                  (dotRefs.current[i] = el)
+                }
+                style={{
+                  width          : '6px',
+                  height         : '6px',
+                  borderRadius   : '50%',
+                  backgroundColor:
+                    'rgba(244,245,242,0.20)',
+                  flexShrink: 0,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* ── Mobile indicator ───────────────────────────────────── */}
+        <div
+          className="absolute bottom-8 left-6 flex items-center gap-[10px] md:hidden"
+          aria-hidden="true"
+        >
+          {beats.map((_, i) => (
+            <div
+              key={`mob-dot-${i}`}
+              style={{
+                width          : '5px',
+                height         : '5px',
+                borderRadius   : '50%',
+                backgroundColor:
+                  activeBeat === i
+                    ? '#B08D57'
+                    : 'rgba(244,245,242,0.24)',
+                transition:
+                  'background-color 0.4s ease',
+                flexShrink: 0,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* ── Atmospheric bridge ─────────────────────────────────── */}
+        <div
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{
+            height: '100px',
+            background:
+              'linear-gradient(to bottom, transparent, rgba(244,245,242,0.05) 70%, rgba(244,245,242,0.10) 100%)',
+          }}
+          aria-hidden="true"
+        />
+
       </div>
     </section>
   );
@@ -255,271 +2955,585 @@ function Hero() {
 
  
 function ExperienceMoments() {
-  const ITEMS = [
-    {
-      title: "Move",
-      sub: "water leads before thought",
-      type: "image",
-      src: "https://images.pexels.com/photos/15763646/pexels-photo-15763646.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      offset: false,
-    },
-    {
-      title: "Gather",
-      sub: "shared moments settle on deck",
-      type: "image",
-      src: "https://images.pexels.com/photos/9750736/pexels-photo-9750736.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      offset: true,
-    },
-    {
-      title: "Unwind",
-      sub: "stillness returns at sea",
-      type: "video",
-      src: "https://www.pexels.com/download/video/35594933/",
-      offset: false,
-    },
-  ];
-
-  const containerRef = useRef(null);
-
-  const framesDesktopRef = useRef([]);
-  const framesMobileRef = useRef([]);
-  const imgRefs = useRef([]);
-
-  const tailRef = useRef(null);
-  const threadRef = useRef(null);
-  const scrollTrackRef = useRef(null);
-
-  const [activeIndex, setActiveIndex] = useState(0);
-
+  const sectionRef  = useRef(null);
+  const morningRef  = useRef(null);
+  const middayRef   = useRef(null);
+  const eveningRef  = useRef(null);
+  const tailRef     = useRef(null);
+ 
   useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+    if (reduce) {
+      gsap.set(
+        [morningRef.current, middayRef.current, eveningRef.current, tailRef.current],
+        { opacity: 1, y: 0 }
+      );
+      return;
+    }
+ 
     const ctx = gsap.context(() => {
-      // DESKTOP ANIMATION
-      gsap.from(framesDesktopRef.current, {
-        y: 60,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.14,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 74%",
-        },
+      const ease = [0.22, 1, 0.36, 1];
+ 
+      // Morning — enters first, full width, slower
+      gsap.fromTo(morningRef.current,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 1.3, ease,
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' },
+        }
+      );
+ 
+      // Midday + Evening — staggered after morning
+      [middayRef.current, eveningRef.current].forEach((el, i) => {
+        if (!el) return;
+        gsap.fromTo(el.querySelectorAll('.anim'),
+          { opacity: 0, y: 32 },
+          {
+            opacity: 1, y: 0, duration: 1.1, stagger: 0.12, ease,
+            scrollTrigger: { trigger: el, start: 'top 82%' },
+          }
+        );
       });
-
-      gsap.from(threadRef.current, {
-        scaleX: 0,
-        transformOrigin: "left center",
-        duration: 1.6,
-        ease: "power3.inOut",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
-        },
-      });
-
-      // MOBILE ANIMATION
-      gsap.from(framesMobileRef.current, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.12,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-        },
-      });
-
-      gsap.from(tailRef.current, {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: tailRef.current,
-          start: "top 85%",
-        },
-      });
-
-      // IMAGE BREATHING (DESKTOP ONLY)
-      if (window.innerWidth >= 768) {
-        const durations = [7, 10, 8.5];
-        imgRefs.current.forEach((el, i) => {
-          if (!el) return;
-          gsap.to(el, {
-            scale: 1.06,
-            duration: durations[i],
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            delay: i * 1.2,
-          });
-        });
-      }
-    }, containerRef);
-
+ 
+      gsap.fromTo(tailRef.current,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 1.0, ease,
+          scrollTrigger: { trigger: tailRef.current, start: 'top 88%' },
+        }
+      );
+    }, sectionRef);
+ 
     return () => ctx.revert();
   }, []);
-
-  // SCROLL INDICATOR SYNC
-  useEffect(() => {
-    const el = scrollTrackRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const cardWidth = el.children[0].offsetWidth + 12;
-      const index = Math.round(el.scrollLeft / cardWidth);
-      setActiveIndex(index);
-    };
-
-    el.addEventListener("scroll", onScroll);
-    return () => el.removeEventListener("scroll", onScroll);
-  }, []);
-
+ 
   return (
     <section
-      ref={containerRef}
-      className="w-full bg-[#F4F5F2] py-[80px] md:py-[140px]"
+      ref={sectionRef}
+      className="relative w-full bg-[#F4F5F2] overflow-hidden"
+      style={{ paddingTop: 'clamp(80px, 11vh, 130px)', paddingBottom: 'clamp(80px, 11vh, 130px)' }}
     >
-      {/* 🔥 DESKTOP WIDTH DIBESARIN */}
-      <div className="max-w-[1220px] md:mx-auto md:px-6">
-
-        {/* ================= DESKTOP ================= */}
-        <div className="relative hidden md:block">
-          <div
-            ref={threadRef}
-            className="absolute left-0 right-0 h-px bg-[#2D3C68]/15"
-            style={{ top: "52%", zIndex: 10 }}
+ 
+      {/* Bridge in */}
+      <div
+        className="absolute top-0 inset-x-0 h-[90px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, rgba(45,60,104,0.06), transparent)' }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.03] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+ 
+      <div className="relative w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
+ 
+        {/* ── MORNING — full width, dominant ─────────────────────────────
+            The most expansive moment of the day gets the most space.
+            Full container width. Tall. Bleeds edge to edge of container.
+        ──────────────────────────────────────────────────────────────── */}
+        <div ref={morningRef} className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 7' }}>
+          <img
+            src="https://images.unsplash.com/photo-1540202404-a2f29564651e?w=1600&q=80&fit=crop"
+            alt=""
+            role="presentation"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
           />
-
-          <div className="grid md:grid-cols-3 gap-4 items-start px-4">
-            {ITEMS.map((item, i) => (
-              <div
-                key={i}
-                ref={(el) => (framesDesktopRef.current[i] = el)}
-                className={`relative w-full aspect-[4/5] overflow-hidden group
-                  ${item.offset ? "md:-translate-y-10" : ""}`}
-              >
-                {item.type === "video" ? (
-                  <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover scale-[1.02]">
-                    <source src={item.src} type="video/mp4" />
-                  </video>
-                ) : (
-                  <img
-                    ref={(el) => (imgRefs.current[i] = el)}
-                    src={item.src}
-                    className="absolute inset-0 w-full h-full object-cover scale-[1.02]"
-                  />
-                )}
-
-                {/* emotional progression (subtle) */}
-                <div className={`absolute inset-0 ${
-                  i === 2 ? "bg-black/20" : "bg-black/10"
-                }`} />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/45 via-transparent to-transparent" />
-
-                <div className="absolute top-5 left-5 text-white/40 text-[11px] tracking-[0.25em]">
-                  0{i + 1}
-                </div>
-
-                <div className="absolute bottom-5 left-5 right-5">
-                  <h3 className="font-[Gambarino] text-[38px] text-white leading-none group-hover:-translate-y-6 transition">
-                    {item.title}
-                  </h3>
-                  <p className="text-[12px] text-white/70 mt-1 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition">
-                    {item.sub}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ================= MOBILE ================= */}
-        <div className="md:hidden">
-
-          <div className="px-6 mb-5">
-            <p className="text-[10px] tracking-[0.3em] uppercase text-[#2D3C68]/40">
-              Moments
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(24,32,54,0.52), transparent 52%)' }} />
+ 
+          {/* Copy — bottom left */}
+          <div className="absolute bottom-0 left-0 p-6 md:p-10">
+            <p style={{
+              fontFamily: 'Switzer, sans-serif', fontSize: '11px',
+              letterSpacing: '0.28em', textTransform: 'uppercase',
+              color: 'rgba(176,141,87,0.85)', marginBottom: '10px', fontWeight: 400,
+            }}>
+              Morning
+            </p>
+            <h2 style={{
+              fontFamily: 'Gambarino, Georgia, serif',
+              fontSize: 'clamp(36px, 4.2vw, 62px)',
+              lineHeight: 1.0, letterSpacing: '-0.03em',
+              color: '#F4F5F2', fontWeight: 400, margin: 0,
+            }}>
+              Into the water.
+            </h2>
+            <p style={{
+              fontFamily: 'Switzer, sans-serif', fontSize: '13px',
+              lineHeight: 1.8, color: 'rgba(244,245,242,0.62)',
+              fontWeight: 300, margin: '10px 0 0 0', maxWidth: '32ch',
+            }}>
+              The sea is coolest before the sun finds it.
             </p>
           </div>
-
+        </div>
+ 
+        {/* ── MIDDAY + EVENING — side by side, below morning ─────────────
+            Two moments sharing one row, but not equal:
+            Midday 62% (communal, open), Evening 35% (intimate, smaller).
+            Gap between them is intentional whitespace.
+        ──────────────────────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 mt-4 md:mt-6">
+ 
+          {/* MIDDAY — 62% width, medium height */}
+          <div ref={middayRef} className="md:col-span-7 flex flex-col gap-5">
+            <div className="anim relative w-full overflow-hidden" style={{ aspectRatio: '16 / 10' }}>
+              <img
+                src="https://images.unsplash.com/photo-1566847438217-76e02a251ce2?w=1200&q=80&fit=crop"
+                alt=""
+                role="presentation"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.06)' }} />
+            </div>
+            {/* Copy sits BELOW image — not inside */}
+            <div className="anim">
+              <p style={{
+                fontFamily: 'Switzer, sans-serif', fontSize: '11px',
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                color: 'rgba(176,141,87,0.70)', marginBottom: '10px', fontWeight: 400,
+              }}>
+                Midday
+              </p>
+              <h2 style={{
+                fontFamily: 'Gambarino, Georgia, serif',
+                fontSize: 'clamp(32px, 3.8vw, 56px)',
+                lineHeight: 1.0, letterSpacing: '-0.03em',
+                color: '#2D3C68', fontWeight: 400, margin: 0,
+              }}>
+                Back on deck.
+              </h2>
+              <p style={{
+                fontFamily: 'Switzer, sans-serif', fontSize: '13px',
+                lineHeight: 1.8, color: 'rgba(45,60,104,0.55)',
+                fontWeight: 300, margin: '10px 0 0 0', maxWidth: '36ch',
+              }}>
+                Lunch when it arrives. Conversation when it starts.
+              </p>
+            </div>
+          </div>
+ 
+          {/* EVENING — 35% width, shorter — most intimate */}
+          {/* Offset down to break horizontal alignment with midday */}
           <div
-            ref={scrollTrackRef}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory"
-            style={{
-              paddingLeft: "24px",
-              paddingRight: "24px",
-              scrollbarWidth: "none",
-            }}
+            ref={eveningRef}
+            className="md:col-span-4 md:col-start-9 flex flex-col gap-5 md:mt-[10%]"
           >
-            {ITEMS.map((item, i) => (
-              <div
-                key={i}
-                ref={(el) => (framesMobileRef.current[i] = el)}
-                className="relative shrink-0 snap-start overflow-hidden"
-                style={{ width: "78vw", aspectRatio: "4/5" }}
-              >
-                {item.type === "video" ? (
-                  <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
-                ) : (
-                  <img src={item.src} className="absolute inset-0 w-full h-full object-cover" />
-                )}
+            <div className="anim relative w-full overflow-hidden" style={{ aspectRatio: '3 / 4' }}>
+              <img
+                src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=80&fit=crop"
+                alt=""
+                role="presentation"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.08)' }} />
+            </div>
+            <div className="anim">
+              <p style={{
+                fontFamily: 'Switzer, sans-serif', fontSize: '11px',
+                letterSpacing: '0.28em', textTransform: 'uppercase',
+                color: 'rgba(176,141,87,0.70)', marginBottom: '10px', fontWeight: 400,
+              }}>
+                Evening
+              </p>
+              <h2 style={{
+                fontFamily: 'Gambarino, Georgia, serif',
+                fontSize: 'clamp(28px, 3.0vw, 44px)',
+                lineHeight: 1.0, letterSpacing: '-0.03em',
+                color: '#2D3C68', fontWeight: 400, margin: 0,
+              }}>
+                The light changes.
+              </h2>
+              <p style={{
+                fontFamily: 'Switzer, sans-serif', fontSize: '13px',
+                lineHeight: 1.8, color: 'rgba(45,60,104,0.55)',
+                fontWeight: 300, margin: '10px 0 0 0', maxWidth: '28ch',
+              }}>
+                A line in the water. A cold drink. The horizon.
+              </p>
+            </div>
+          </div>
+ 
+        </div>
+ 
+        {/* ── Tail ───────────────────────────────────────────────────── */}
+        <div
+          ref={tailRef}
+          className="flex items-start gap-7 mt-16 md:mt-20 pt-10 md:pt-12"
+          style={{ borderTop: '1px solid rgba(176,141,87,0.16)' }}
+        >
+          <div
+            className="hidden md:block shrink-0 w-px self-stretch"
+            style={{ background: 'rgba(176,141,87,0.28)' }}
+            aria-hidden="true"
+          />
+          <p style={{
+            fontFamily: 'Gambarino, Georgia, serif',
+            fontSize: 'clamp(20px, 2.5vw, 36px)',
+            lineHeight: 1.18, letterSpacing: '-0.025em',
+            color: '#2D3C68', fontWeight: 400,
+            maxWidth: '28ch', margin: 0,
+          }}>
+            the day moves between water, people,
+            and stillness — without ever needing
+            a fixed sequence
+          </p>
+        </div>
+ 
+      </div>
+ 
+      {/* Bridge out */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04))' }}
+        aria-hidden="true"
+      />
+ 
+    </section>
+  );
+}
 
-                <div className={`absolute inset-0 ${
-                  i === 2 ? "bg-black/20" : "bg-black/10"
-                }`} />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/50 to-transparent" />
-
-                <div className="absolute bottom-6 left-5 right-5">
-                  <h3 className="font-[Gambarino] text-[32px] text-white">
-                    {item.title}
-                  </h3>
-                  <p className="text-[12px] text-white/65 mt-2 italic">
-                    {item.sub}
-                  </p>
+function ExperienceDayOnBoard() {
+  const sectionRef = useRef(null);
+ 
+  const [isVisible,     setIsVisible]     = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [isMobile,      setIsMobile]      = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps,   setScrollSnaps]   = useState([]);
+  const [reduceMotion,  setReduceMotion]  = useState(false);
+ 
+  useEffect(() => {
+    setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
+ 
+  // ChatGPT: containScroll + duration for smoother UX
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align        : 'start',
+    dragFree     : false,
+    containScroll: 'trimSnaps',
+    duration     : 32,
+  });
+ 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+ 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+ 
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+ 
+  useEffect(() => {
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    onSelect();
+    emblaApi.on('select', onSelect);
+    const onPointerDown = () => setHasInteracted(true);
+    emblaApi.on('pointerDown', onPointerDown);
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('pointerDown', onPointerDown);
+    };
+  }, [emblaApi, onSelect]);
+ 
+  const scrollNext = () => {
+    if (!emblaApi) return;
+    emblaApi.scrollNext();
+    setHasInteracted(true);
+  };
+ 
+  const moments = [
+    {
+      id      : 'dawn',
+      time    : 'Morning',
+      label   : 'Before the day has a plan.',
+      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1775031029/ChatGPT_Image_Apr_1_2026_03_07_35_PM_ci1xyi.png',
+      position: '40% 30%',
+    },
+    {
+      id      : 'water',
+      time    : 'Midday',
+      label   : 'Into the reef.',
+      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776152590/Phinisi_yacht_and_vibrant_coral_reef_1_i59pqn.png',
+      position: '50% 60%',
+    },
+    {
+      id      : 'meal',
+      time    : 'Afternoon',
+      label   : 'Lunch finds you on deck.',
+      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776157584/Golden_hour_on_the_phinisi_yacht_1_h8pycj.png',
+      position: '50% 40%',
+    },
+    {
+      id      : 'pause',
+      time    : 'Late Afternoon',
+      label   : 'The hours that don\'t need filling.',
+      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png',
+      position: '50% 50%',
+    },
+    {
+      id      : 'dusk',
+      time    : 'Evening',
+      label   : 'The day settles without announcement.',
+      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1777295006/ChatGPT_Image_Apr_27_2026_07_59_16_PM_mp6lli.png',
+      position: '50% 70%',
+    },
+  ];
+ 
+  return (
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#F4F5F2]"
+      style={{
+        paddingTop   : 'clamp(72px, 10vh, 120px)',
+        paddingBottom: 'clamp(84px, 11vh, 132px)',
+      }}
+    >
+ 
+      {/* Bridge in — strengthened, from dark Hero */}
+      <div
+        className="absolute top-0 inset-x-0 pointer-events-none"
+        style={{
+          height    : '120px',
+          background: 'linear-gradient(to bottom, rgba(45,60,104,0.12) 0%, rgba(45,60,104,0.05) 50%, transparent 100%)',
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Cool atmospheric radial */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.50), transparent 52%)' }}
+        aria-hidden="true"
+      />
+ 
+      {/* Grain */}
+      <div
+        className="absolute inset-[-10%] opacity-[0.028] mix-blend-soft-light pointer-events-none"
+        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
+        aria-hidden="true"
+      />
+ 
+      {/* Sumba Ikat — titik 1 */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage : 'url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png)',
+          backgroundRepeat: 'repeat',
+          backgroundSize  : '280px',
+          opacity         : 0.035,
+          mixBlendMode    : 'overlay',
+        }}
+        aria-hidden="true"
+      />
+ 
+      {/* Header */}
+      <div
+        className="relative max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14"
+        style={{ marginBottom: 'clamp(38px, 6vh, 68px)' }}
+      >
+        <p style={{
+          fontFamily   : 'Switzer, sans-serif',
+          fontSize     : '11px',
+          letterSpacing: '0.28em',
+          textTransform: 'uppercase',
+          color        : 'rgba(45,60,104,0.42)',
+          fontWeight   : 400,
+          margin       : '0 0 12px 0',
+        }}>
+          Life on Board
+        </p>
+ 
+        <h2 style={{
+          fontFamily   : 'Gambarino, Georgia, serif',
+          fontSize     : 'clamp(34px, 4vw, 58px)',
+          lineHeight   : 1.02,
+          letterSpacing: '-0.035em',
+          color        : '#2D3C68',
+          fontWeight   : 400,
+          maxWidth     : '16ch',
+          margin       : '0 0 clamp(20px, 3vh, 32px) 0',
+        }}>
+          A day on board
+          <br />
+          finds its own shape.
+        </h2>
+ 
+        <p style={{
+          fontFamily: 'Switzer, sans-serif',
+          fontSize  : '15px',
+          lineHeight: 1.9,
+          color     : 'rgba(45,60,104,0.64)',
+          fontWeight: 300,
+          maxWidth  : '52ch',
+          margin    : 0,
+        }}>
+          A day on Serenity begins before anyone has decided what it
+          will be. By the time the sun is fully up, someone is already
+          in the water. By the time dinner is ready, no one is quite
+          sure where the afternoon went.
+        </p>
+      </div>
+ 
+      {/* Carousel */}
+      <div
+        style={{
+          opacity  : isVisible || reduceMotion ? 1 : 0,
+          transform: isVisible || reduceMotion ? 'translateY(0)' : 'translateY(24px)',
+          transition: reduceMotion ? 'none' : 'opacity 950ms cubic-bezier(0.22,1,0.36,1), transform 950ms cubic-bezier(0.22,1,0.36,1)',
+        }}
+      >
+        {/* ChatGPT: touch-pan-y select-none cursor-grab for better drag UX */}
+        <div
+          ref={emblaRef}
+          className="overflow-hidden touch-pan-y select-none cursor-grab active:cursor-grabbing"
+        >
+          <div className="flex gap-4 px-6 md:px-10 lg:px-14">
+            {moments.map((m, i) => (
+              <div key={m.id} className="flex-shrink-0 w-[82vw] md:w-[320px]">
+                <div
+                  className="relative overflow-hidden"
+                  style={{ height: 'clamp(360px, 44vh, 470px)' }}
+                >
+                  {/* ChatGPT: draggable=false, pointer-events-none, scale(1.015) */}
+                  <img
+                    src={m.image}
+                    alt={m.label}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    draggable="false"
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    style={{ objectPosition: m.position, transform: 'scale(1.015)' }}
+                  />
+ 
+                  {/* Gradient depth */}
+                  <div className="absolute inset-0" style={{
+                    background: 'linear-gradient(to top, rgba(12,18,32,0.82) 0%, rgba(12,18,32,0.22) 44%, transparent 72%)',
+                  }} />
+ 
+                  {/* ChatGPT: warm film — golden top radial */}
+                  <div className="absolute inset-0" style={{
+                    background: 'radial-gradient(ellipse at 50% 18%, rgba(176,141,87,0.06), transparent 56%)',
+                  }} />
+ 
+                  {/* ChatGPT: unified cool overlay — ties cards together */}
+                  <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.03)' }} />
+ 
+                  {/* ChatGPT: subtle edge masking */}
+                  <div className="absolute inset-0 pointer-events-none" style={{
+                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.03)',
+                  }} />
+ 
+                  {/* Copy */}
+                  <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
+                    <span style={{
+                      display      : 'block',
+                      fontFamily   : 'Switzer, sans-serif',
+                      fontSize     : '10px',
+                      letterSpacing: '0.28em',
+                      textTransform: 'uppercase',
+                      color        : 'rgba(176,141,87,0.82)',
+                      fontWeight   : 400,
+                      marginBottom : '8px',
+                    }}>
+                      {m.time}
+                    </span>
+                    <p style={{
+                      fontFamily   : 'Gambarino, Georgia, serif',
+                      fontSize     : 'clamp(17px, 1.6vw, 21px)',
+                      lineHeight   : 1.18,
+                      letterSpacing: '-0.02em',
+                      color        : '#F4F5F2',
+                      fontWeight   : 400,
+                      margin       : 0,
+                      maxWidth     : '14ch',
+                    }}>
+                      {m.label}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
-
-            <div className="shrink-0 w-[calc(22vw-24px)]" />
+            {/* ChatGPT: w-8 trailing breath */}
+            <div className="flex-shrink-0 w-8" />
           </div>
-
-          {/* REAL INDICATOR */}
-          <div className="px-6 mt-5 flex gap-2">
-            {ITEMS.map((_, i) => (
-              <div
-                key={i}
-                className="h-px transition-all duration-300"
-                style={{
-                  width: activeIndex === i ? "28px" : "10px",
-                  background:
-                    activeIndex === i
-                      ? "#2D3C68"
-                      : "rgba(45,60,104,0.2)",
-                }}
-              />
-            ))}
-          </div>
-
         </div>
-
-        {/* ================= TAIL ================= */}
-        <div
-          ref={tailRef}
-          className="mt-[56px] md:mt-[96px] max-w-[620px] px-6 md:ml-[4px] flex gap-8 items-start"
-        >
-          <div className="hidden md:block w-px bg-[#2D3C68]/20" />
-          <p className="font-[Gambarino] text-[24px] md:text-[40px] text-[#2D3C68] leading-[1.2]">
-            the day moves between water, people, and stillness
-            <br />
-            without ever needing a fixed sequence
-          </p>
+ 
+        {/* Dot indicators */}
+        <div className="flex justify-center items-center gap-[6px]" style={{ marginTop: '26px' }}>
+          {scrollSnaps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => emblaApi && emblaApi.scrollTo(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              style={{
+                height      : '2px',
+                width       : i === selectedIndex ? '24px' : '7px',
+                background  : i === selectedIndex ? '#B08D57' : 'rgba(45,60,104,0.18)',
+                borderRadius: 0,
+                // ChatGPT: animate width and background separately
+                transition  : reduceMotion ? 'none' : 'width 420ms cubic-bezier(0.22,1,0.36,1), background 420ms ease',
+                border      : 'none',
+                cursor      : 'pointer',
+                padding     : 0,
+              }}
+            />
+          ))}
         </div>
-
+ 
+        {/* Mobile scroll hint */}
+        {isMobile && !hasInteracted && selectedIndex < scrollSnaps.length - 1 && (
+          <button
+            onClick={scrollNext}
+            aria-label="Next slide"
+            className="absolute right-3 top-[50%] -translate-y-[50%] z-20"
+            style={{
+              width         : '34px',
+              height        : '34px',
+              display       : 'flex',
+              alignItems    : 'center',
+              justifyContent: 'center',
+              background    : 'rgba(244,245,242,0.56)',
+              backdropFilter: 'blur(6px)',
+              border        : 'none',
+              opacity       : 0.72,
+              cursor        : 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 6L15 12L9 18" stroke="#2D3C68" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
       </div>
+ 
+      {/* Bridge out — ChatGPT: two-stop gradient */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04) 68%, rgba(45,60,104,0.08) 100%)',
+        }}
+        aria-hidden="true"
+      />
+ 
     </section>
   );
 }
@@ -957,7 +3971,7 @@ function ExperienceSelection() {
   )
 }
 
-function ExperienceActivities() {
+function  Activities() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     dragFree: false,

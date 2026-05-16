@@ -771,19 +771,54 @@ function QuickContext() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#2D3C68] py-16 md:py-24">
+      {/* SUMBA IKAT TEXTURE */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            maskImage:
+              "radial-gradient(circle at 18% 22%, black 0%, rgba(0,0,0,0.72) 32%, transparent 68%)",
+            WebkitMaskImage:
+              "radial-gradient(circle at 18% 22%, black 0%, rgba(0,0,0,0.72) 32%, transparent 68%)",
+          }}
+        >
+          <img
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png"
+            alt=""
+            className="
+              absolute
+              -left-[420px]
+              -top-[340px]
+              w-[1100px]
+              md:w-[1450px]
+              max-w-none
+              rotate-[-12deg]
+              opacity-[0.045]
+              mix-blend-soft-light
+              blur-[0.4px]
+              select-none
+            "
+          />
+        </div>
+      </div>
+
       {/* SUBTLE DEPTH */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] via-transparent to-black/[0.06]" />
+
       <div className="pointer-events-none absolute inset-0 opacity-[0.05] bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)]" />
 
       {/* ATMOSPHERIC BRIDGE OUT */}
       <div className="pointer-events-none absolute bottom-0 left-0 h-[100px] w-full bg-gradient-to-b from-transparent to-[#F4F5F2]/08" />
 
+      {/* CONTENT */}
       <div className="relative mx-auto max-w-[1120px] px-6">
         <div className="grid grid-cols-2 items-end gap-y-12 md:grid-cols-4 md:gap-y-0">
           {stats.map((stat, i) => (
             <div
               key={i}
-              className={`text-center ${i > 0 ? "md:border-l md:border-white/10" : ""}`}
+              className={`text-center ${
+                i > 0 ? "md:border-l md:border-white/10" : ""
+              }`}
             >
               <div
                 className={`font-[Gambarino] leading-none text-[#F4F5F2] ${
