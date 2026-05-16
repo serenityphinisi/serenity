@@ -53,6 +53,9 @@ function Hero() {
   const contentRef = useRef(null);
 
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [showOpening, setShowOpening] = useState(true);
+  const [allowHeroContent, setAllowHeroContent] =
+    useState(false);
 
   const heroMedia = {
     type: "video",
@@ -67,8 +70,65 @@ function Hero() {
 
   const ease = [0.22, 1, 0.36, 1];
 
+  // =========================================================
+  // OPENING SEQUENCE
+  // =========================================================
+
   useEffect(() => {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (reduce) {
+      setShowOpening(false);
+      setAllowHeroContent(true);
+      return;
+    }
+
+    const openingSequence = async () => {
+      /*
+        OPENING HARUS SELALU ADA
+      */
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 2350)
+      );
+
+      /*
+        HERO CONTENT MULAI MUNCUL
+        sedikit sebelum opening benar-benar hilang
+      */
+
+      setAllowHeroContent(true);
+
+      setTimeout(() => {
+        setShowOpening(false);
+      }, 240);
+    };
+
+    openingSequence();
+  }, []);
+
+  // =========================================================
+  // GSAP
+  // =========================================================
+
+  useEffect(() => {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
     const ctx = gsap.context(() => {
+      if (reduce) {
+        gsap.set(contentRef.current, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+        });
+
+        return;
+      }
+
       // BG PARALLAX
       gsap.to(bgRef.current, {
         y: "18%",
@@ -106,7 +166,10 @@ function Hero() {
       ref={sectionRef}
       className="relative h-screen w-full overflow-hidden bg-[#F4F5F2]"
     >
-      {/* SCROLL INDICATOR KEYFRAME */}
+      {/* ========================================================= */}
+      {/* KEYFRAMES */}
+      {/* ========================================================= */}
+
       <style>{`
         @keyframes scrollDrop {
           0% {
@@ -121,9 +184,307 @@ function Hero() {
         .scroll-drop {
           animation: scrollDrop 1.8s ease-in-out infinite;
         }
+
+        @keyframes grainMove {
+          0% {
+            transform: translate(0px, 0px);
+          }
+
+          25% {
+            transform: translate(-1%, 1%);
+          }
+
+          50% {
+            transform: translate(1%, -1%);
+          }
+
+          75% {
+            transform: translate(0.5%, 1%);
+          }
+
+          100% {
+            transform: translate(0px, 0px);
+          }
+        }
+
+        @keyframes oceanLight {
+          0% {
+            transform: translate3d(-3%, 0%, 0) scale(1);
+            opacity: 0.03;
+          }
+
+          50% {
+            transform: translate3d(3%, -2%, 0) scale(1.08);
+            opacity: 0.07;
+          }
+
+          100% {
+            transform: translate3d(-3%, 0%, 0) scale(1);
+            opacity: 0.03;
+          }
+        }
+
+        @keyframes logoFloat {
+          0% {
+            transform: translateY(0px);
+          }
+
+          50% {
+            transform: translateY(-5px);
+          }
+
+          100% {
+            transform: translateY(0px);
+          }
+        }
+
+        @keyframes logoGlow {
+          0% {
+            filter: drop-shadow(0px 0px 0px rgba(255,255,255,0));
+          }
+
+          50% {
+            filter: drop-shadow(0px 0px 18px rgba(255,255,255,0.06));
+          }
+
+          100% {
+            filter: drop-shadow(0px 0px 0px rgba(255,255,255,0));
+          }
+        }
+
+        @keyframes vignettePulse {
+          0% {
+            opacity: 0.42;
+          }
+
+          50% {
+            opacity: 0.52;
+          }
+
+          100% {
+            opacity: 0.42;
+          }
+        }
+
+        @keyframes heroBloom {
+          0% {
+            opacity: 0;
+            transform: scale(0.92);
+          }
+
+          50% {
+            opacity: 0.12;
+          }
+
+          100% {
+            opacity: 0;
+            transform: scale(1.08);
+          }
+        }
+
+        .grain-layer {
+          animation: grainMove 8s steps(6) infinite;
+        }
+
+        .ocean-light {
+          animation: oceanLight 12s ease-in-out infinite;
+        }
+
+        .logo-float {
+          animation:
+            logoFloat 5s ease-in-out infinite,
+            logoGlow 7s ease-in-out infinite;
+        }
+
+        .vignette-pulse {
+          animation: vignettePulse 7s ease-in-out infinite;
+        }
+
+        .hero-bloom {
+          animation: heroBloom 2.8s ease-out forwards;
+        }
       `}</style>
 
+      {/* ========================================================= */}
+      {/* OPENING */}
+      {/* ========================================================= */}
+
+      <AnimatePresence>
+        {showOpening && (
+          <motion.div
+            initial={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            transition={{
+              duration: 1.8,
+              ease,
+            }}
+            className="
+              absolute
+              inset-0
+              z-[100]
+              overflow-hidden
+              bg-[#0B1322]
+            "
+          >
+            {/* ATMOSPHERIC LIGHT */}
+            <div
+              className="
+                ocean-light
+                absolute
+                inset-0
+                bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.08)_0%,transparent_58%)]
+                mix-blend-soft-light
+              "
+            />
+
+            {/* TOP WARMTH */}
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-b
+                from-[#8B6A4F]/10
+                via-transparent
+                to-transparent
+              "
+            />
+
+            {/* EDGE VIGNETTE */}
+            <div
+              className="
+                vignette-pulse
+                absolute
+                inset-0
+                bg-[radial-gradient(circle_at_center,transparent_34%,rgba(0,0,0,0.52)_100%)]
+              "
+            />
+
+            {/* DEPTH */}
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-t
+                from-black/44
+                via-transparent
+                to-transparent
+              "
+            />
+
+            {/* FOG */}
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                h-[74vw]
+                w-[74vw]
+                -translate-x-1/2
+                -translate-y-1/2
+                rounded-full
+                bg-[radial-gradient(circle,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_36%,transparent_72%)]
+                blur-3xl
+              "
+            />
+
+            {/* SECONDARY FOG */}
+            <div
+              className="
+                absolute
+                left-[54%]
+                top-[46%]
+                h-[44vw]
+                w-[44vw]
+                -translate-x-1/2
+                -translate-y-1/2
+                rounded-full
+                bg-[radial-gradient(circle,rgba(176,141,87,0.06)_0%,transparent_72%)]
+                blur-3xl
+              "
+            />
+
+            {/* GRAIN */}
+            <div
+              className="
+                grain-layer
+                absolute
+                inset-[-50%]
+                opacity-[0.05]
+                mix-blend-soft-light
+              "
+              style={{
+                backgroundImage:
+                  "url('https://res.cloudinary.com/dombq6plz/image/upload/v1778809642/noise_xq6m6w.png')",
+                backgroundSize: "420px",
+              }}
+            />
+
+            {/* CENTER LOGO */}
+            <div
+              className="
+                relative
+                z-10
+                flex
+                h-full
+                items-center
+                justify-center
+                px-6
+              "
+            >
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 20,
+                  scale: 0.94,
+                  rotate: -0.6,
+                  filter: "blur(12px)",
+                }}
+                animate={{
+                  opacity: 0.94,
+                  y: 0,
+                  scale: 1,
+                  rotate: 0,
+                  filter: "blur(0px)",
+                }}
+                transition={{
+                  duration: 2,
+                  delay: 0.18,
+                  ease,
+                }}
+                className="
+                  logo-float
+                  relative
+                  w-[230px]
+                  md:w-[320px]
+                "
+              >
+                <Image
+                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_zc65st.png"
+                  alt="Serenity Phinisi"
+                  width={700}
+                  height={260}
+                  priority
+                  className="
+                    h-auto
+                    w-full
+                    object-contain
+                    select-none
+                  "
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================= */}
       {/* BACKGROUND */}
+      {/* ========================================================= */}
+
       <div
         ref={bgRef}
         className="absolute inset-0 scale-[1.06] will-change-transform"
@@ -155,12 +516,12 @@ function Hero() {
               absolute inset-0
               overflow-hidden
               transition-all
-              duration-[1800ms]
-              ease-out
+              duration-[2200ms]
+              ease-[cubic-bezier(0.22,1,0.36,1)]
               ${
                 isVideoLoaded
                   ? "scale-100 blur-0 opacity-100"
-                  : "scale-[1.08] blur-2xl opacity-70"
+                  : "scale-[1.1] blur-[18px] opacity-65"
               }
             `}
           >
@@ -171,7 +532,13 @@ function Hero() {
               playsInline
               preload="auto"
               onLoadedData={() => setIsVideoLoaded(true)}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="
+                absolute
+                inset-0
+                h-full
+                w-full
+                object-cover
+              "
             >
               <source src={heroMedia.src} type="video/mp4" />
             </video>
@@ -180,11 +547,20 @@ function Hero() {
             <div
               className={`
                 absolute inset-0
-                bg-[#2D3C68]/30
+                bg-[#2D3C68]/36
                 transition-opacity
-                duration-[1600ms]
+                duration-[1800ms]
                 ${isVideoLoaded ? "opacity-0" : "opacity-100"}
               `}
+            />
+
+            {/* CINEMATIC VIGNETTE */}
+            <div
+              className="
+                absolute
+                inset-0
+                bg-[radial-gradient(circle_at_center,transparent_32%,rgba(7,10,18,0.42)_100%)]
+              "
             />
           </div>
         )}
@@ -203,177 +579,271 @@ function Hero() {
 
         {/* ATMOSPHERIC LIGHT */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)] opacity-[0.04] mix-blend-soft-light" />
+
+        {/* HERO BLOOM */}
+        <AnimatePresence>
+          {allowHeroContent && (
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{
+                opacity: 0,
+              }}
+              transition={{
+                duration: 1.4,
+              }}
+              className="
+                hero-bloom
+                pointer-events-none
+                absolute
+                left-1/2
+                top-[24%]
+                h-[42vw]
+                w-[42vw]
+                -translate-x-1/2
+                rounded-full
+                bg-[radial-gradient(circle,rgba(176,141,87,0.14)_0%,rgba(176,141,87,0.04)_34%,transparent_72%)]
+                blur-3xl
+              "
+            />
+          )}
+        </AnimatePresence>
       </div>
 
+      {/* ========================================================= */}
       {/* CONTENT */}
+      {/* ========================================================= */}
+
       <div
         ref={contentRef}
-        className="relative z-10 flex h-full items-end justify-center px-6 pb-[12vh] text-center will-change-transform md:px-10"
+        className="
+          relative
+          z-10
+          flex
+          h-full
+          items-end
+          justify-center
+          px-6
+          pb-[12vh]
+          text-center
+          will-change-transform
+          md:px-10
+        "
       >
         <div className="mx-auto max-w-[860px]">
           {/* MICRO LABEL */}
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 22,
-              filter: "blur(6px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-            }}
-            transition={{
-              duration: 1.1,
-              ease,
-            }}
-            className="mb-6 text-[11px] tracking-[0.32em] text-[#F4F5F2]/76 md:text-[12px]"
-          >
-            INDONESIAN PHINISI YACHT
-          </motion.div>
+          <AnimatePresence>
+            {allowHeroContent && (
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 24,
+                  filter: "blur(6px)",
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                }}
+                transition={{
+                  duration: 1.2,
+                  ease,
+                }}
+                className="
+                  mb-6
+                  text-[11px]
+                  tracking-[0.32em]
+                  text-[#F4F5F2]/76
+                  md:text-[12px]
+                "
+              >
+                INDONESIAN PHINISI YACHT
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* HEADLINE */}
           <h1 className="font-[Gambarino] text-[50px] leading-[0.98] tracking-[-0.04em] text-[#F4F5F2] md:text-[76px] lg:text-[92px]">
-            <motion.span
-              initial={{
-                opacity: 0,
-                y: 48,
-                filter: "blur(8px)",
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-              }}
-              transition={{
-                duration: 1.35,
-                ease,
-              }}
-              className="block"
-            >
-              Explore Indonesia
-            </motion.span>
+            <AnimatePresence>
+              {allowHeroContent && (
+                <>
+                  <motion.span
+                    initial={{
+                      opacity: 0,
+                      y: 56,
+                      filter: "blur(10px)",
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      filter: "blur(0px)",
+                    }}
+                    transition={{
+                      duration: 1.45,
+                      delay: 0.04,
+                      ease,
+                    }}
+                    className="block"
+                  >
+                    Indonesia Waits
+                  </motion.span>
 
-            <motion.span
-              initial={{
-                opacity: 0,
-                y: 48,
-                filter: "blur(8px)",
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-              }}
-              transition={{
-                duration: 1.35,
-                delay: 0.14,
-                ease,
-              }}
-              className="block opacity-95"
-            >
-              by Sea
-            </motion.span>
+                  <motion.span
+                    initial={{
+                      opacity: 0,
+                      y: 56,
+                      filter: "blur(10px)",
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      filter: "blur(0px)",
+                    }}
+                    transition={{
+                      duration: 1.45,
+                      delay: 0.16,
+                      ease,
+                    }}
+                    className="block opacity-95"
+                  >
+                    at Sea
+                  </motion.span>
+                </>
+              )}
+            </AnimatePresence>
           </h1>
 
           {/* SUBCOPY */}
-          <motion.p
-            initial={{
-              opacity: 0,
-              y: 28,
-              filter: "blur(6px)",
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
-            }}
-            transition={{
-              duration: 1.25,
-              delay: 0.28,
-              ease,
-            }}
-            className="mx-auto mt-5 max-w-[590px] text-[15px] leading-relaxed text-[#F4F5F2]/90 md:text-[17px] "
-          >
-            Sail through Raja Ampat and Komodo with only twelve guests
-            aboard a handcrafted phinisi built for intimate ocean
-            adventures.
-          </motion.p>
-
-          {/* CTA */}
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 18,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            transition={{
-              duration: 1.15,
-              delay: 0.48,
-              ease,
-            }}
-            className="mt-10 flex flex-col items-center gap-4"
-          >
-            <button
-              className="
-                group
-                rounded-full
-                border
-                border-[#F4F5F2]/68
-                px-8
-                py-3
-                text-[13px]
-                tracking-[0.02em]
-                text-[#F4F5F2]
-                transition-all
-                duration-500
-                hover:border-[#F4F5F2]
-                hover:bg-[#F4F5F2]
-                hover:text-[#2D3C68]
-              "
-            >
-              <span
+          <AnimatePresence>
+            {allowHeroContent && (
+              <motion.p
+                initial={{
+                  opacity: 0,
+                  y: 30,
+                  filter: "blur(8px)",
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                }}
+                transition={{
+                  duration: 1.3,
+                  delay: 0.32,
+                  ease,
+                }}
                 className="
-                  inline-block
-                  transition-transform
-                  duration-500
-                  group-hover:-translate-y-[2px]
+                  mx-auto
+                  mt-5
+                  max-w-[590px]
+                  text-[15px]
+                  leading-relaxed
+                  text-[#F4F5F2]/90
+                  md:text-[17px]
                 "
               >
-                Begin Your Voyage →
-              </span>
-            </button>
-          </motion.div>
+                Sail through Raja Ampat and Komodo with twelve
+                guests aboard a handcrafted phinisi built for
+                intimate ocean adventures
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* CTA */}
+          <AnimatePresence>
+            {allowHeroContent && (
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 18,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration: 1.15,
+                  delay: 0.5,
+                  ease,
+                }}
+                className="mt-10 flex flex-col items-center gap-4"
+              >
+                <button
+                  className="
+                    group
+                    rounded-full
+                    border
+                    border-[#F4F5F2]/68
+                    px-8
+                    py-3
+                    text-[13px]
+                    tracking-[0.02em]
+                    text-[#F4F5F2]
+                    transition-all
+                    duration-500
+                    hover:border-[#F4F5F2]
+                    hover:bg-[#F4F5F2]
+                    hover:text-[#2D3C68]
+                  "
+                >
+                  <span
+                    className="
+                      inline-block
+                      transition-transform
+                      duration-500
+                      group-hover:-translate-y-[2px]
+                    "
+                  >
+                    Begin Your Voyage →
+                  </span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
+      {/* ========================================================= */}
       {/* SCROLL INDICATOR */}
-      <motion.div
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          delay: 1.35,
-          duration: 1.1,
-        }}
-        className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2"
-      >
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-[10px] tracking-[0.24em] text-[#F4F5F2]/58">
-            SCROLL
-          </span>
+      {/* ========================================================= */}
 
-          <div className="relative h-8 w-[1px] overflow-hidden bg-[#B08D57]/28">
-            <div className="scroll-drop absolute left-0 top-0 h-4 w-full bg-[#F4F5F2]/80" />
-          </div>
-        </div>
-      </motion.div>
+      <AnimatePresence>
+        {allowHeroContent && (
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            transition={{
+              delay: 1.35,
+              duration: 1.1,
+            }}
+            className="
+              absolute
+              bottom-6
+              left-1/2
+              z-20
+              -translate-x-1/2
+            "
+          >
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-[10px] tracking-[0.24em] text-[#F4F5F2]/58">
+                SCROLL
+              </span>
+
+              <div className="relative h-8 w-[1px] overflow-hidden bg-[#B08D57]/28">
+                <div className="scroll-drop absolute left-0 top-0 h-4 w-full bg-[#F4F5F2]/80" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -615,7 +1085,7 @@ function Introduction() {
           </span>
 
           <span className="line block">
-          few ever find
+          at open water
           </span>
         </h2>
 
@@ -633,11 +1103,7 @@ function Introduction() {
             md:text-[15px]
           "
         >
-          There is a rhythm that only open water creates — 
-   unhurried, instinctive, entirely unplanned. On board 
-   Serenity, you stop moving through time and start 
-   moving with it, alongside eleven others who chose 
-   the same
+          Six in the morning, someone is already in the water. By afternoon, the anchor is down somewhere the crew knows well. By day three, the only schedule is the tide
         </p>
 
      
@@ -1064,7 +1530,7 @@ function Experiences() {
               md:text-[68px]
             "
           >
-            Life on board, as it happens
+            Leave the schedule on shore
           </h2>
 
           <p
@@ -1853,7 +2319,7 @@ function Yacht() {
           >
             Designed for the way
             <br />
-            people actually live at sea
+            people live at sea
           </h2>
 
           <p
