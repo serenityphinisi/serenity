@@ -1508,87 +1508,726 @@ function Experiences() {
   );
 } 
 
-function About() {
+function Destinations() {
+  const sectionRef = useRef(null);
+
+  const leftClipRef = useRef(null);
+  const rightClipRef = useRef(null);
+
+  const leftImgRef = useRef(null);
+  const rightImgRef = useRef(null);
+
+  const seamRef = useRef(null);
+
+  const eyebrowRef = useRef(null);
+  const leftContentRef = useRef(null);
+  const rightContentRef = useRef(null);
+  const ctaRef = useRef(null);
+
+  const DESTINATIONS = [
+    {
+      name: ["Raja", "Ampat"],
+      sub: "West Papua · Coral reefs and limestone passages",
+      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
+    },
+    {
+      name: ["Labuan", "Bajo"],
+      sub: "East Nusa Tenggara · Volcanic islands and open sea",
+      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
+    },
+  ];
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const SEAM_TOP = mobile ? 63 : 53.5;
+        const SEAM_BOTTOM = mobile ? 49 : 49.5;
+
+        const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
+
+        const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
+
+        const setSeamCoordinates = () => {
+          if (!seamRef.current) return;
+
+          seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
+          seamRef.current.setAttribute("y1", "0%");
+          seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
+          seamRef.current.setAttribute("y2", "100%");
+        };
+
+        setSeamCoordinates();
+
+        if (reduceMotion) {
+          gsap.set(leftClipRef.current, {
+            clipPath: LEFT_CLIP,
+          });
+
+          gsap.set(rightClipRef.current, {
+            clipPath: RIGHT_CLIP,
+          });
+
+          gsap.set([leftImgRef.current, rightImgRef.current], {
+            scale: 1,
+            y: 0,
+          });
+
+          gsap.set(seamRef.current, {
+            opacity: mobile ? 0.08 : 0.065,
+            scaleY: 1,
+            transformOrigin: "center center",
+          });
+
+          gsap.set(
+            [
+              eyebrowRef.current,
+              leftContentRef.current,
+              rightContentRef.current,
+              ctaRef.current,
+            ].filter(Boolean),
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+            }
+          );
+
+          return;
+        }
+
+        const ctx = gsap.context(() => {
+          gsap.set(leftClipRef.current, {
+            clipPath:
+              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+          });
+
+          gsap.set(rightClipRef.current, {
+            clipPath:
+              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+          });
+
+          gsap.set([leftImgRef.current, rightImgRef.current], {
+            scale: mobile ? 1.12 : 1.085,
+            y: 0,
+            force3D: true,
+          });
+
+          gsap.set(seamRef.current, {
+            opacity: 0,
+            scaleY: 0,
+            transformOrigin: "center center",
+          });
+
+          gsap.set(eyebrowRef.current, {
+            opacity: 0,
+            y: 10,
+          });
+
+          gsap.set(leftContentRef.current, {
+            opacity: 0,
+            x: mobile ? -18 : -28,
+            y: mobile ? 10 : 0,
+          });
+
+          gsap.set(rightContentRef.current, {
+            opacity: 0,
+            x: mobile ? 18 : 28,
+            y: mobile ? 14 : 0,
+          });
+
+          gsap.set(ctaRef.current, {
+            opacity: 0,
+            y: 12,
+          });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: mobile ? "+=125%" : "+=155%",
+              scrub: mobile ? 0.85 : 1.1,
+              pin: true,
+              pinSpacing: true,
+            },
+          });
+
+          /*
+            PHASE 1 — SPLIT REVEAL
+          */
+
+          tl.to(
+            leftClipRef.current,
+            {
+              clipPath: LEFT_CLIP,
+              duration: 1,
+              ease: "power2.out",
+            },
+            0
+          );
+
+          tl.to(
+            rightClipRef.current,
+            {
+              clipPath: RIGHT_CLIP,
+              duration: 1,
+              ease: "power2.out",
+            },
+            mobile ? 0.16 : 0.025
+          );
+
+          tl.to(
+            leftImgRef.current,
+            {
+              scale: mobile ? 1.035 : 1.012,
+              duration: 1.15,
+              ease: "power1.out",
+            },
+            0
+          );
+
+          tl.to(
+            rightImgRef.current,
+            {
+              scale: mobile ? 1.04 : 1.02,
+              duration: 1.18,
+              ease: "power1.out",
+            },
+            mobile ? 0.08 : 0
+          );
+
+          /*
+            PHASE 2 — SEAM + EYEBROW
+          */
+
+          tl.to(
+            seamRef.current,
+            {
+              opacity: mobile ? 0.1 : 0.085,
+              scaleY: 1,
+              duration: 0.72,
+              ease: "sine.inOut",
+            },
+            mobile ? 0.4 : 0.44
+          );
+
+          tl.to(
+            eyebrowRef.current,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power2.out",
+            },
+            0.52
+          );
+
+          /*
+            PHASE 3 — DESTINATION CONTENT
+          */
+
+          tl.to(
+            leftContentRef.current,
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 0.9,
+              ease: "power3.out",
+            },
+            mobile ? 0.58 : 0.76
+          );
+
+          tl.to(
+            rightContentRef.current,
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 0.9,
+              ease: "power3.out",
+            },
+            mobile ? 0.72 : 0.81
+          );
+
+          /*
+            PHASE 4 — CTA
+          */
+
+          tl.to(
+            ctaRef.current,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power3.out",
+            },
+            mobile ? 0.9 : 1.12
+          );
+
+          /*
+            PHASE 5 — ENVIRONMENTAL DRIFT
+            integrated into the pinned timeline
+          */
+
+          tl.to(
+            leftImgRef.current,
+            {
+              y: mobile ? -18 : -26,
+              duration: 0.95,
+              ease: "none",
+            },
+            mobile ? 0.98 : 1.12
+          );
+
+          tl.to(
+            rightImgRef.current,
+            {
+              y: mobile ? -24 : -38,
+              duration: 0.95,
+              ease: "none",
+            },
+            mobile ? 1.02 : 1.12
+          );
+
+          /*
+            PHASE 6 — SEAM RELEASE
+          */
+
+          tl.to(
+            seamRef.current,
+            {
+              opacity: mobile ? 0.055 : 0.04,
+              duration: 0.75,
+              ease: "sine.out",
+            },
+            mobile ? 1.08 : 1.2
+          );
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, []);
+
   return (
-    <section className="bg-[#2D3C68] py-[90px] md:py-[110px] px-6 text-white">
+    <section
+      ref={sectionRef}
+      className="
+        relative
+        w-full
+        overflow-hidden
+        bg-[#0B1322]
+      "
+    >
+      <div
+        className="
+          relative
+          h-[100svh]
+          min-h-[620px]
+          overflow-hidden
+          md:h-screen
+          md:min-h-[720px]
+        "
+      >
+        {/* GLOBAL ATMOSPHERE */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[3]
+            bg-gradient-to-t
+            from-[#0B1322]/54
+            via-[#0B1322]/[0.06]
+            to-[#0B1322]/14
+            md:from-[#0B1322]/46
+            md:via-transparent
+            md:to-[#0B1322]/16
+          "
+        />
 
-      <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-14 md:gap-16 items-center">
+        {/* ATMOSPHERIC BRIDGE — IN */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            top-0
+            z-[4]
+            h-[220px]
+            bg-gradient-to-b
+            from-[#F4F5F2]/10
+            via-[#F4F5F2]/[0.025]
+            to-transparent
+          "
+        />
 
-        {/* ================= LEFT ================= */}
-        <div>
+        {/* ATMOSPHERIC BRIDGE — OUT */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            bottom-0
+            z-[4]
+            h-[180px]
+            bg-gradient-to-b
+            from-transparent
+            via-[#F4F5F2]/[0.035]
+            to-[#F4F5F2]/10
+          "
+        />
 
-          {/* LABEL */}
-          <p className="text-[11px] tracking-[0.35em] text-white/50 uppercase">
-            About
-          </p>
+        {/* MOBILE RADIAL DEPTH */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[5]
+            md:hidden
+          "
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
+        </div>
 
-          {/* TITLE */}
-          <h2 className="mt-5 font-[Gambarino] text-[42px] md:text-[56px] leading-[1.15] max-w-[520px]">
-            Life, Carried
-            <br />
-            by the Sea
-          </h2>
+        {/* LEFT CLIP */}
+        <div
+          ref={leftClipRef}
+          className="absolute inset-0 overflow-hidden"
+          style={{
+            clipPath:
+              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            willChange: "clip-path",
+          }}
+        >
+          <div
+            ref={leftImgRef}
+            className="absolute inset-0"
+            style={{
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
+          >
+            <div className="absolute inset-x-0 -top-[10%] h-[120%]">
+              <Image
+                src={DESTINATIONS[0].img}
+                alt={DESTINATIONS[0].name.join(" ")}
+                fill
+                sizes="100vw"
+                draggable={false}
+                className="
+                  select-none
+                  object-cover
+                  object-center
+                "
+              />
+            </div>
 
-          {/* TEXT BLOCK 1 */}
-          <p className="mt-6 text-[15px] text-white/75 leading-[1.7] max-w-[520px]">
-            Serenity is not about where you go. It’s about how you spend your time at sea. 
-            Days move without a fixed structure, shifting naturally between water, rest, 
-            and shared moments on board.
-          </p>
+            <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
 
-          {/* TEXT BLOCK 2 */}
-          <p className="mt-4 text-[15px] text-white/75 leading-[1.7] max-w-[520px]">
-            You wake, swim, sit, eat, and talk without needing to follow a plan. 
-            The boat becomes a space to live in, not just something that takes you somewhere. 
-            Everything happens at a pace that feels natural, supported quietly by the crew and the environment around you.
-          </p>
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-r
+                from-[#0B1322]/22
+                via-[#0B1322]/[0.035]
+                to-transparent
+                md:from-[#0B1322]/14
+                md:via-transparent
+              "
+            />
+          </div>
+        </div>
+
+        {/* RIGHT CLIP */}
+        <div
+          ref={rightClipRef}
+          className="absolute inset-0 overflow-hidden"
+          style={{
+            clipPath:
+              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+            willChange: "clip-path",
+          }}
+        >
+          <div
+            ref={rightImgRef}
+            className="absolute inset-0"
+            style={{
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
+          >
+            <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
+              <Image
+                src={DESTINATIONS[1].img}
+                alt={DESTINATIONS[1].name.join(" ")}
+                fill
+                sizes="100vw"
+                draggable={false}
+                className="
+                  select-none
+                  object-cover
+                  object-center
+                "
+              />
+            </div>
+
+            <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
+
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-l
+                from-[#0B1322]/24
+                via-[#0B1322]/[0.04]
+                to-transparent
+                md:from-[#0B1322]/16
+                md:via-transparent
+              "
+            />
+          </div>
+        </div>
+
+        {/* SEAM — SVG LINE MATCHES CLIP PATH */}
+        <svg
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-20
+            h-full
+            w-full
+          "
+          aria-hidden="true"
+          preserveAspectRatio="none"
+        >
+          <line
+            ref={seamRef}
+            x1="53.5%"
+            y1="0%"
+            x2="49.5%"
+            y2="100%"
+            stroke="rgba(244,245,242,0.24)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            style={{
+              opacity: 0,
+              filter: "blur(0.1px)",
+              transformOrigin: "center center",
+              willChange: "transform, opacity",
+            }}
+          />
+        </svg>
+
+        {/* CONTENT */}
+        <div
+          className="
+            absolute
+            inset-0
+            z-30
+            flex
+            flex-col
+            justify-end
+            px-6
+            pb-[max(36px,env(safe-area-inset-bottom))]
+            md:px-10
+            md:pb-16
+          "
+        >
+          {/* EYEBROW */}
+          <div
+            ref={eyebrowRef}
+            className="
+              pointer-events-none
+              absolute
+              inset-x-0
+              top-[13.5%]
+              flex
+              justify-center
+              md:top-[15%]
+            "
+          >
+            <span
+              className="
+                whitespace-nowrap
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#F4F5F2]/26
+              "
+            >
+              Indonesian Archipelago
+            </span>
+          </div>
+
+          {/* DESTINATIONS ROW */}
+          <div
+            className="
+              flex
+              items-end
+              justify-between
+              gap-3
+              md:gap-4
+            "
+          >
+            {/* LEFT */}
+            <div
+              ref={leftContentRef}
+              className="
+                relative
+                z-10
+                max-w-[190px]
+                md:max-w-[420px]
+              "
+            >
+              <h2
+                className="
+                  font-[Gambarino]
+                  text-[42px]
+                  leading-[0.88]
+                  tracking-[-0.055em]
+                  text-[#F4F5F2]
+                  md:text-[76px]
+                "
+              >
+                {DESTINATIONS[0].name[0]}
+                <br />
+                {DESTINATIONS[0].name[1]}
+              </h2>
+
+              <p
+                className="
+                  mt-4
+                  max-w-[185px]
+                  text-[11px]
+                  leading-[1.82]
+                  tracking-[0.04em]
+                  text-[#F4F5F2]/52
+                  md:max-w-[300px]
+                  md:text-[12px]
+                  md:leading-[1.88]
+                  md:tracking-[0.045em]
+                "
+              >
+                {DESTINATIONS[0].sub}
+              </p>
+            </div>
+
+            {/* RIGHT */}
+            <div
+              ref={rightContentRef}
+              className="
+                relative
+                z-10
+                max-w-[180px]
+                text-right
+                md:mb-[-2vh]
+                md:mr-[5vw]
+                md:max-w-[390px]
+              "
+            >
+              <h2
+                className="
+                  font-[Gambarino]
+                  text-[38px]
+                  leading-[0.88]
+                  tracking-[-0.055em]
+                  text-[#F4F5F2]
+                  md:text-[64px]
+                "
+              >
+                {DESTINATIONS[1].name[0]}
+                <br />
+                {DESTINATIONS[1].name[1]}
+              </h2>
+
+              <p
+                className="
+                  ml-auto
+                  mt-3
+                  max-w-[170px]
+                  text-[11px]
+                  leading-[1.82]
+                  tracking-[0.04em]
+                  text-[#F4F5F2]/50
+                  md:max-w-[270px]
+                  md:text-[12px]
+                  md:leading-[1.85]
+                "
+              >
+                {DESTINATIONS[1].sub}
+              </p>
+            </div>
+          </div>
 
           {/* CTA */}
-          <div className="mt-7">
-            <button className="group text-[13px] tracking-[0.18em] uppercase text-white border-b border-white/30 hover:border-white transition">
-              Explore Life On Board
-              <span className="inline-block ml-2 transition-transform duration-300 group-hover:translate-x-1">
+          <div
+            ref={ctaRef}
+            className="
+              mt-8
+              flex
+              justify-center
+              md:absolute
+              md:inset-x-0
+              md:bottom-12
+            "
+          >
+            <Link
+              href="/destinations"
+              className="
+                group
+                inline-flex
+                items-center
+                gap-4
+                border-b
+                border-[#F4F5F2]/28
+                pb-[10px]
+                text-[11px]
+                uppercase
+                tracking-[0.24em]
+                text-[#F4F5F2]/80
+                transition-colors
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#F4F5F2]/72
+                hover:text-[#F4F5F2]
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+              "
+            >
+              Explore the Routes
+              <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
                 →
               </span>
-            </button>
+            </Link>
           </div>
-
         </div>
-
-        {/* ================= RIGHT ================= */}
-        <div className="relative h-[440px] md:h-[480px]">
-
-          {/* MAIN — HUMAN MOMENT */}
-          <div className="absolute top-0 right-0 w-[78%] h-[300px] md:h-[320px] overflow-hidden rounded-[4px]">
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068969/43_fcprng.webp"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* SECOND — RELAXED */}
-          <div className="absolute bottom-0 left-0 w-[52%] h-[180px] md:h-[200px] overflow-hidden rounded-[4px]">
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/04_fqtqkn.webp"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* ACCENT — DETAIL */}
-          <div className="absolute bottom-[110px] md:bottom-[120px] right-[4%] w-[40%] h-[120px] md:h-[130px] overflow-hidden rounded-[4px]">
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068892/01_oomiyy.webp"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-        </div>
-
       </div>
-
     </section>
-  )
-}
+  );
+} 
 
 function Yacht() {
   const configRef = useRef(null);
@@ -3959,6 +4598,23 @@ function FramesAtSea() {
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function FinalCTA() {
   const configRef = useRef(null);
 
@@ -4413,11 +5069,87 @@ function FinalCTA() {
   );
 }
 
- 
+function About() {
+  return (
+    <section className="bg-[#2D3C68] py-[90px] md:py-[110px] px-6 text-white">
 
+      <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-14 md:gap-16 items-center">
 
+        {/* ================= LEFT ================= */}
+        <div>
 
+          {/* LABEL */}
+          <p className="text-[11px] tracking-[0.35em] text-white/50 uppercase">
+            About
+          </p>
 
+          {/* TITLE */}
+          <h2 className="mt-5 font-[Gambarino] text-[42px] md:text-[56px] leading-[1.15] max-w-[520px]">
+            Life, Carried
+            <br />
+            by the Sea
+          </h2>
+
+          {/* TEXT BLOCK 1 */}
+          <p className="mt-6 text-[15px] text-white/75 leading-[1.7] max-w-[520px]">
+            Serenity is not about where you go. It’s about how you spend your time at sea. 
+            Days move without a fixed structure, shifting naturally between water, rest, 
+            and shared moments on board.
+          </p>
+
+          {/* TEXT BLOCK 2 */}
+          <p className="mt-4 text-[15px] text-white/75 leading-[1.7] max-w-[520px]">
+            You wake, swim, sit, eat, and talk without needing to follow a plan. 
+            The boat becomes a space to live in, not just something that takes you somewhere. 
+            Everything happens at a pace that feels natural, supported quietly by the crew and the environment around you.
+          </p>
+
+          {/* CTA */}
+          <div className="mt-7">
+            <button className="group text-[13px] tracking-[0.18em] uppercase text-white border-b border-white/30 hover:border-white transition">
+              Explore Life On Board
+              <span className="inline-block ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                →
+              </span>
+            </button>
+          </div>
+
+        </div>
+
+        {/* ================= RIGHT ================= */}
+        <div className="relative h-[440px] md:h-[480px]">
+
+          {/* MAIN — HUMAN MOMENT */}
+          <div className="absolute top-0 right-0 w-[78%] h-[300px] md:h-[320px] overflow-hidden rounded-[4px]">
+            <img
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068969/43_fcprng.webp"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* SECOND — RELAXED */}
+          <div className="absolute bottom-0 left-0 w-[52%] h-[180px] md:h-[200px] overflow-hidden rounded-[4px]">
+            <img
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/04_fqtqkn.webp"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* ACCENT — DETAIL */}
+          <div className="absolute bottom-[110px] md:bottom-[120px] right-[4%] w-[40%] h-[120px] md:h-[130px] overflow-hidden rounded-[4px]">
+            <img
+              src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068892/01_oomiyy.webp"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  )
+}
 
 function Crew() {
   const sectionRef = useRef(null);
@@ -7677,726 +8409,7 @@ function Expedition() {
 }
 
 
-function Destinations() {
-  const sectionRef = useRef(null);
 
-  const leftClipRef = useRef(null);
-  const rightClipRef = useRef(null);
-
-  const leftImgRef = useRef(null);
-  const rightImgRef = useRef(null);
-
-  const seamRef = useRef(null);
-
-  const eyebrowRef = useRef(null);
-  const leftContentRef = useRef(null);
-  const rightContentRef = useRef(null);
-  const ctaRef = useRef(null);
-
-  const DESTINATIONS = [
-    {
-      name: ["Raja", "Ampat"],
-      sub: "West Papua · Coral reefs and limestone passages",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
-    },
-    {
-      name: ["Labuan", "Bajo"],
-      sub: "East Nusa Tenggara · Volcanic islands and open sea",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
-    },
-  ];
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    const mm = gsap.matchMedia();
-
-    mm.add(
-      {
-        mobile: "(max-width: 767px)",
-        desktop: "(min-width: 768px)",
-      },
-      (context) => {
-        const { mobile } = context.conditions;
-
-        const SEAM_TOP = mobile ? 63 : 53.5;
-        const SEAM_BOTTOM = mobile ? 49 : 49.5;
-
-        const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
-
-        const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
-
-        const setSeamCoordinates = () => {
-          if (!seamRef.current) return;
-
-          seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
-          seamRef.current.setAttribute("y1", "0%");
-          seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
-          seamRef.current.setAttribute("y2", "100%");
-        };
-
-        setSeamCoordinates();
-
-        if (reduceMotion) {
-          gsap.set(leftClipRef.current, {
-            clipPath: LEFT_CLIP,
-          });
-
-          gsap.set(rightClipRef.current, {
-            clipPath: RIGHT_CLIP,
-          });
-
-          gsap.set([leftImgRef.current, rightImgRef.current], {
-            scale: 1,
-            y: 0,
-          });
-
-          gsap.set(seamRef.current, {
-            opacity: mobile ? 0.08 : 0.065,
-            scaleY: 1,
-            transformOrigin: "center center",
-          });
-
-          gsap.set(
-            [
-              eyebrowRef.current,
-              leftContentRef.current,
-              rightContentRef.current,
-              ctaRef.current,
-            ].filter(Boolean),
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-            }
-          );
-
-          return;
-        }
-
-        const ctx = gsap.context(() => {
-          gsap.set(leftClipRef.current, {
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-          });
-
-          gsap.set(rightClipRef.current, {
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
-          });
-
-          gsap.set([leftImgRef.current, rightImgRef.current], {
-            scale: mobile ? 1.12 : 1.085,
-            y: 0,
-            force3D: true,
-          });
-
-          gsap.set(seamRef.current, {
-            opacity: 0,
-            scaleY: 0,
-            transformOrigin: "center center",
-          });
-
-          gsap.set(eyebrowRef.current, {
-            opacity: 0,
-            y: 10,
-          });
-
-          gsap.set(leftContentRef.current, {
-            opacity: 0,
-            x: mobile ? -18 : -28,
-            y: mobile ? 10 : 0,
-          });
-
-          gsap.set(rightContentRef.current, {
-            opacity: 0,
-            x: mobile ? 18 : 28,
-            y: mobile ? 14 : 0,
-          });
-
-          gsap.set(ctaRef.current, {
-            opacity: 0,
-            y: 12,
-          });
-
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: mobile ? "+=125%" : "+=155%",
-              scrub: mobile ? 0.85 : 1.1,
-              pin: true,
-              pinSpacing: true,
-            },
-          });
-
-          /*
-            PHASE 1 — SPLIT REVEAL
-          */
-
-          tl.to(
-            leftClipRef.current,
-            {
-              clipPath: LEFT_CLIP,
-              duration: 1,
-              ease: "power2.out",
-            },
-            0
-          );
-
-          tl.to(
-            rightClipRef.current,
-            {
-              clipPath: RIGHT_CLIP,
-              duration: 1,
-              ease: "power2.out",
-            },
-            mobile ? 0.16 : 0.025
-          );
-
-          tl.to(
-            leftImgRef.current,
-            {
-              scale: mobile ? 1.035 : 1.012,
-              duration: 1.15,
-              ease: "power1.out",
-            },
-            0
-          );
-
-          tl.to(
-            rightImgRef.current,
-            {
-              scale: mobile ? 1.04 : 1.02,
-              duration: 1.18,
-              ease: "power1.out",
-            },
-            mobile ? 0.08 : 0
-          );
-
-          /*
-            PHASE 2 — SEAM + EYEBROW
-          */
-
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.1 : 0.085,
-              scaleY: 1,
-              duration: 0.72,
-              ease: "sine.inOut",
-            },
-            mobile ? 0.4 : 0.44
-          );
-
-          tl.to(
-            eyebrowRef.current,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.65,
-              ease: "power2.out",
-            },
-            0.52
-          );
-
-          /*
-            PHASE 3 — DESTINATION CONTENT
-          */
-
-          tl.to(
-            leftContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            mobile ? 0.58 : 0.76
-          );
-
-          tl.to(
-            rightContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            mobile ? 0.72 : 0.81
-          );
-
-          /*
-            PHASE 4 — CTA
-          */
-
-          tl.to(
-            ctaRef.current,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.65,
-              ease: "power3.out",
-            },
-            mobile ? 0.9 : 1.12
-          );
-
-          /*
-            PHASE 5 — ENVIRONMENTAL DRIFT
-            integrated into the pinned timeline
-          */
-
-          tl.to(
-            leftImgRef.current,
-            {
-              y: mobile ? -18 : -26,
-              duration: 0.95,
-              ease: "none",
-            },
-            mobile ? 0.98 : 1.12
-          );
-
-          tl.to(
-            rightImgRef.current,
-            {
-              y: mobile ? -24 : -38,
-              duration: 0.95,
-              ease: "none",
-            },
-            mobile ? 1.02 : 1.12
-          );
-
-          /*
-            PHASE 6 — SEAM RELEASE
-          */
-
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.055 : 0.04,
-              duration: 0.75,
-              ease: "sine.out",
-            },
-            mobile ? 1.08 : 1.2
-          );
-        }, sectionRef);
-
-        return () => ctx.revert();
-      }
-    );
-
-    return () => mm.revert();
-  }, []);
-
-  return (
-    <section
-      ref={sectionRef}
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#0B1322]
-      "
-    >
-      <div
-        className="
-          relative
-          h-[100svh]
-          min-h-[620px]
-          overflow-hidden
-          md:h-screen
-          md:min-h-[720px]
-        "
-      >
-        {/* GLOBAL ATMOSPHERE */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[3]
-            bg-gradient-to-t
-            from-[#0B1322]/54
-            via-[#0B1322]/[0.06]
-            to-[#0B1322]/14
-            md:from-[#0B1322]/46
-            md:via-transparent
-            md:to-[#0B1322]/16
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — IN */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            top-0
-            z-[4]
-            h-[220px]
-            bg-gradient-to-b
-            from-[#F4F5F2]/10
-            via-[#F4F5F2]/[0.025]
-            to-transparent
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — OUT */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            bottom-0
-            z-[4]
-            h-[180px]
-            bg-gradient-to-b
-            from-transparent
-            via-[#F4F5F2]/[0.035]
-            to-[#F4F5F2]/10
-          "
-        />
-
-        {/* MOBILE RADIAL DEPTH */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[5]
-            md:hidden
-          "
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
-        </div>
-
-        {/* LEFT CLIP */}
-        <div
-          ref={leftClipRef}
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            willChange: "clip-path",
-          }}
-        >
-          <div
-            ref={leftImgRef}
-            className="absolute inset-0"
-            style={{
-              willChange: "transform",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <div className="absolute inset-x-0 -top-[10%] h-[120%]">
-              <Image
-                src={DESTINATIONS[0].img}
-                alt={DESTINATIONS[0].name.join(" ")}
-                fill
-                sizes="100vw"
-                draggable={false}
-                className="
-                  select-none
-                  object-cover
-                  object-center
-                "
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
-
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-r
-                from-[#0B1322]/22
-                via-[#0B1322]/[0.035]
-                to-transparent
-                md:from-[#0B1322]/14
-                md:via-transparent
-              "
-            />
-          </div>
-        </div>
-
-        {/* RIGHT CLIP */}
-        <div
-          ref={rightClipRef}
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
-            willChange: "clip-path",
-          }}
-        >
-          <div
-            ref={rightImgRef}
-            className="absolute inset-0"
-            style={{
-              willChange: "transform",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
-              <Image
-                src={DESTINATIONS[1].img}
-                alt={DESTINATIONS[1].name.join(" ")}
-                fill
-                sizes="100vw"
-                draggable={false}
-                className="
-                  select-none
-                  object-cover
-                  object-center
-                "
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
-
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-l
-                from-[#0B1322]/24
-                via-[#0B1322]/[0.04]
-                to-transparent
-                md:from-[#0B1322]/16
-                md:via-transparent
-              "
-            />
-          </div>
-        </div>
-
-        {/* SEAM — SVG LINE MATCHES CLIP PATH */}
-        <svg
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-20
-            h-full
-            w-full
-          "
-          aria-hidden="true"
-          preserveAspectRatio="none"
-        >
-          <line
-            ref={seamRef}
-            x1="53.5%"
-            y1="0%"
-            x2="49.5%"
-            y2="100%"
-            stroke="rgba(244,245,242,0.24)"
-            strokeWidth="1"
-            vectorEffect="non-scaling-stroke"
-            style={{
-              opacity: 0,
-              filter: "blur(0.1px)",
-              transformOrigin: "center center",
-              willChange: "transform, opacity",
-            }}
-          />
-        </svg>
-
-        {/* CONTENT */}
-        <div
-          className="
-            absolute
-            inset-0
-            z-30
-            flex
-            flex-col
-            justify-end
-            px-6
-            pb-[max(36px,env(safe-area-inset-bottom))]
-            md:px-10
-            md:pb-16
-          "
-        >
-          {/* EYEBROW */}
-          <div
-            ref={eyebrowRef}
-            className="
-              pointer-events-none
-              absolute
-              inset-x-0
-              top-[13.5%]
-              flex
-              justify-center
-              md:top-[15%]
-            "
-          >
-            <span
-              className="
-                whitespace-nowrap
-                text-[10px]
-                uppercase
-                tracking-[0.34em]
-                text-[#F4F5F2]/26
-              "
-            >
-              Indonesian Archipelago
-            </span>
-          </div>
-
-          {/* DESTINATIONS ROW */}
-          <div
-            className="
-              flex
-              items-end
-              justify-between
-              gap-3
-              md:gap-4
-            "
-          >
-            {/* LEFT */}
-            <div
-              ref={leftContentRef}
-              className="
-                relative
-                z-10
-                max-w-[190px]
-                md:max-w-[420px]
-              "
-            >
-              <h2
-                className="
-                  font-[Gambarino]
-                  text-[42px]
-                  leading-[0.88]
-                  tracking-[-0.055em]
-                  text-[#F4F5F2]
-                  md:text-[76px]
-                "
-              >
-                {DESTINATIONS[0].name[0]}
-                <br />
-                {DESTINATIONS[0].name[1]}
-              </h2>
-
-              <p
-                className="
-                  mt-4
-                  max-w-[185px]
-                  text-[11px]
-                  leading-[1.82]
-                  tracking-[0.04em]
-                  text-[#F4F5F2]/52
-                  md:max-w-[300px]
-                  md:text-[12px]
-                  md:leading-[1.88]
-                  md:tracking-[0.045em]
-                "
-              >
-                {DESTINATIONS[0].sub}
-              </p>
-            </div>
-
-            {/* RIGHT */}
-            <div
-              ref={rightContentRef}
-              className="
-                relative
-                z-10
-                max-w-[180px]
-                text-right
-                md:mb-[-2vh]
-                md:mr-[5vw]
-                md:max-w-[390px]
-              "
-            >
-              <h2
-                className="
-                  font-[Gambarino]
-                  text-[38px]
-                  leading-[0.88]
-                  tracking-[-0.055em]
-                  text-[#F4F5F2]
-                  md:text-[64px]
-                "
-              >
-                {DESTINATIONS[1].name[0]}
-                <br />
-                {DESTINATIONS[1].name[1]}
-              </h2>
-
-              <p
-                className="
-                  ml-auto
-                  mt-3
-                  max-w-[170px]
-                  text-[11px]
-                  leading-[1.82]
-                  tracking-[0.04em]
-                  text-[#F4F5F2]/50
-                  md:max-w-[270px]
-                  md:text-[12px]
-                  md:leading-[1.85]
-                "
-              >
-                {DESTINATIONS[1].sub}
-              </p>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div
-            ref={ctaRef}
-            className="
-              mt-8
-              flex
-              justify-center
-              md:absolute
-              md:inset-x-0
-              md:bottom-12
-            "
-          >
-            <Link
-              href="/destinations"
-              className="
-                group
-                inline-flex
-                items-center
-                gap-4
-                border-b
-                border-[#F4F5F2]/28
-                pb-[10px]
-                text-[11px]
-                uppercase
-                tracking-[0.24em]
-                text-[#F4F5F2]/80
-                transition-colors
-                duration-500
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-                hover:border-[#F4F5F2]/72
-                hover:text-[#F4F5F2]
-                focus-visible:outline
-                focus-visible:outline-2
-                focus-visible:outline-offset-4
-                focus-visible:outline-[#B08D57]
-              "
-            >
-              Explore the Routes
-              <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
-                →
-              </span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-} 
  
 
 function YachtDua() {
