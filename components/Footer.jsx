@@ -1,14 +1,16 @@
+"use client";
+
+const nav = [
+  { label: "The Yacht", href: "/yacht" },
+  { label: "Destinations", href: "/destinations" },
+  { label: "Experiences", href: "/experiences" },
+  { label: "Rates & Schedule", href: "/rates-and-schedule" },
+  { label: "About", href: "/about" },
+];
+
+const stats = ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"];
+
 export default function Footer() {
-  const nav = [
-    { label: "The Yacht", href: "/yacht" },
-    { label: "Destinations", href: "/destinations" },
-    { label: "Experiences", href: "/experiences" },
-    { label: "Rates & Schedule", href: "/rates-and-schedule" },
-    { label: "About", href: "/about" },
-  ];
-
-  const stats = ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"];
-
   return (
     <>
       <footer className="serenity-footer relative overflow-hidden border-t border-[#D9DDD6] bg-[#F4F5F2] text-[#2D3C68]">
@@ -16,13 +18,21 @@ export default function Footer() {
         {/* ATMOSPHERE */}
         <div className="pointer-events-none absolute inset-0">
           <div className="serenity-gold-line absolute inset-x-0 top-0 h-[1.5px]" />
-          <div className="serenity-band absolute inset-x-0 top-0 h-[180px] overflow-hidden">
+
+          {/*
+            IKAT — top band only, fade ke bawah.
+            Pattern Cloudinary di-mask dengan gradient vertikal:
+            visible di top, transparent di bottom.
+            Konten footer di bawahnya clean.
+            opacity dikurangi ke 0.10 — cukup terasa, tidak jadi wallpaper.
+          */}
+          <div className="serenity-ikat-band absolute inset-x-0 top-0 h-[220px] overflow-hidden">
             <img
               src="https://res.cloudinary.com/dombq6plz/image/upload/v1777477537/ChatGPT_Image_Apr_29_2026_10_44_09_PM_1_hrigkq.png"
               alt=""
-              className="h-full w-full object-cover opacity-[0.18] mix-blend-multiply scale-[1.04]"
+              className="h-full w-full object-cover opacity-[0.10] mix-blend-multiply scale-[1.04]"
             />
-            <div className="serenity-band-mask absolute inset-0" />
+            <div className="serenity-ikat-mask absolute inset-0" />
           </div>
         </div>
 
@@ -31,7 +41,7 @@ export default function Footer() {
           {/* MAIN */}
           <section className="pt-16 pb-12 sm:pt-20 sm:pb-14 lg:pt-24 lg:pb-20">
 
-            {/* ── DESKTOP: 3-col unchanged ── */}
+            {/* ── DESKTOP: 3-col ── */}
             <div className="hidden lg:grid gap-x-10 lg:grid-cols-[220px_minmax(0,1fr)_220px] lg:items-start">
 
               {/* LEFT — CONTACT */}
@@ -101,8 +111,6 @@ export default function Footer() {
 
             {/* ── MOBILE LAYOUT ── */}
             <div className="lg:hidden flex flex-col items-center">
-
-              {/* CENTER BLOCK — logo + tagline + email */}
               <div className="flex flex-col items-center text-center w-full">
                 <img
                   src="https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_1_ahyyak.png"
@@ -117,8 +125,6 @@ export default function Footer() {
                 <p className="mt-4 max-w-[300px] text-[13px] leading-[1.85] text-[#2D3C68]/55 font-light tracking-[0.01em]">
                   A private phinisi yacht shaped by Indonesian craft, calm waters, and journeys that move at a better pace.
                 </p>
-
-                {/* EMAIL INPUT */}
                 <div className="mt-6 w-full max-w-[320px]">
                   <p className="text-[9px] uppercase tracking-[0.34em] text-[#2D3C68]/36 font-normal mb-[12px]">
                     Private Access
@@ -129,45 +135,25 @@ export default function Footer() {
                       placeholder="Your email"
                       className="h-10 w-full bg-transparent text-[13px] font-light outline-none placeholder:text-[#2D3C68]/32"
                     />
-                    <button
-                      type="button"
-                      className="shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center text-[10px] font-normal uppercase tracking-[0.24em] text-[#2D3C68] transition duration-300 hover:opacity-45"
-                    >
+                    <button type="button" className="shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center text-[10px] font-normal uppercase tracking-[0.24em] text-[#2D3C68] transition duration-300 hover:opacity-45">
                       Join
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* CONTACT + NAV — 2 col side by side */}
               <div className="mt-10 w-full grid grid-cols-2 gap-x-6 border-t border-[#2D3C68]/10 pt-8">
-
-                {/* Contact */}
                 <div>
-                  <p className="mb-3 text-[9px] uppercase tracking-[0.34em] text-[#2D3C68]/36 font-normal">
-                    Contact
-                  </p>
-                  <a href="mailto:hello@serenityyacht.com" className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">
-                    hello@serenityyacht.com
-                  </a>
-                  <a href="https://wa.me/620000000000" className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">
-                    +62 000 0000 0000
-                  </a>
-                  <p className="mt-3 text-[12px] leading-[1.9] text-[#2D3C68]/40 font-light">
-                    Indonesia<br />Komodo · Raja Ampat
-                  </p>
+                  <p className="mb-3 text-[9px] uppercase tracking-[0.34em] text-[#2D3C68]/36 font-normal">Contact</p>
+                  <a href="mailto:hello@serenityyacht.com" className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">hello@serenityyacht.com</a>
+                  <a href="https://wa.me/620000000000" className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">+62 000 0000 0000</a>
+                  <p className="mt-3 text-[12px] leading-[1.9] text-[#2D3C68]/40 font-light">Indonesia<br />Komodo · Raja Ampat</p>
                 </div>
-
-                {/* Nav */}
                 <div className="text-right">
-                  <p className="mb-3 text-[9px] uppercase tracking-[0.34em] text-[#2D3C68]/36 font-normal">
-                    Explore
-                  </p>
+                  <p className="mb-3 text-[9px] uppercase tracking-[0.34em] text-[#2D3C68]/36 font-normal">Explore</p>
                   <nav>
                     {nav.map((item) => (
-                      <a key={item.label} href={item.href} className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">
-                        {item.label}
-                      </a>
+                      <a key={item.label} href={item.href} className="block text-[12.5px] leading-[2] text-[#2D3C68]/65">{item.label}</a>
                     ))}
                   </nav>
                 </div>
@@ -181,9 +167,7 @@ export default function Footer() {
             <div className="relative flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
               {stats.map((item, i) => (
                 <div key={item} className="flex items-center gap-6">
-                  <span className="text-[9px] uppercase tracking-[0.28em] text-[#2D3C68]/50 font-normal">
-                    {item}
-                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.28em] text-[#2D3C68]/50 font-normal">{item}</span>
                   {i !== stats.length - 1 && (
                     <span className="hidden h-[3px] w-[3px] rounded-full bg-[#B08D57]/60 sm:block" />
                   )}
@@ -222,22 +206,27 @@ export default function Footer() {
           );
         }
 
-        .serenity-band-mask {
+        /*
+          IKAT MASK — fade ke bawah agresif.
+          Top 30%: pattern visible.
+          Bottom: fully transparent — konten footer clean.
+          Kiri kanan juga fade supaya tidak hard edge.
+        */
+        .serenity-ikat-mask {
           background:
             linear-gradient(
               to bottom,
-              rgba(244, 245, 242, 0.55) 0%,
-              rgba(244, 245, 242, 0.18) 30%,
-              rgba(244, 245, 242, 0.08) 55%,
-              rgba(244, 245, 242, 0.62) 78%,
+              rgba(244, 245, 242, 0) 0%,
+              rgba(244, 245, 242, 0.4) 45%,
+              rgba(244, 245, 242, 0.85) 70%,
               rgba(244, 245, 242, 1) 100%
             ),
             linear-gradient(
               to right,
-              rgba(244, 245, 242, 0.92) 0%,
-              rgba(244, 245, 242, 0.06) 14%,
-              rgba(244, 245, 242, 0.06) 86%,
-              rgba(244, 245, 242, 0.92) 100%
+              rgba(244, 245, 242, 0.88) 0%,
+              rgba(244, 245, 242, 0) 12%,
+              rgba(244, 245, 242, 0) 88%,
+              rgba(244, 245, 242, 0.88) 100%
             );
         }
 
@@ -260,12 +249,6 @@ export default function Footer() {
 
         .serenity-divider-line--right {
           background: linear-gradient(to left, transparent, rgba(176, 141, 87, 0.55));
-        }
-
-        @media (max-width: 1023px) {
-          .serenity-band {
-            height: 120px;
-          }
         }
       `}</style>
     </>

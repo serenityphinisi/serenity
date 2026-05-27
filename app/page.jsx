@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react"
 import { gsap, ScrollTrigger } from "../lib/gsap"
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform , useInView} from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform , useInView} from "framer-motion";
+import Link from "next/link";
+import { FaInstagram, FaMessage } from "react-icons/fa6";
 
 import Footer from '../components/Footer'
  
@@ -19,6 +21,10 @@ export default function Home() {
       <Experiences/>
       <Destinations/>
       <Yacht/>
+      <OnboardCare/>
+      <RatesSnapshot/>
+      <FramesAtSea/>
+      {/* <FinalCTA/> */}
       
       
       {/* <Activities/> */}
@@ -37,9 +43,10 @@ export default function Home() {
       {/* <Testimonials/> */}
       {/* <SerenityTestimonials/> */}
       {/* <Social/> */}
-      <Closing/>
+    {/* <Closing/> */}
       {/* <Yacht/>   */}
-      <Footer/>
+      {/* <Footer/> */}
+      <ClosingSuite/>
     </main>
   )
 }
@@ -55,10 +62,10 @@ function Hero() {
   const bgRef = useRef(null);
   const contentRef = useRef(null);
 
+  const shouldReduceMotion = useReducedMotion();
+  const reduceMotion = Boolean(shouldReduceMotion);
+
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const [showOpening, setShowOpening] = useState(true);
-  const [allowHeroContent, setAllowHeroContent] =
-    useState(false);
 
   const heroMedia = {
     type: "video",
@@ -68,61 +75,26 @@ function Hero() {
       https://res.cloudinary.com/dombq6plz/image/upload/v1777307172/ChatGPT_Image_Apr_27_2026_10_24_29_PM_1_ou4x2n.png
     */
 
-    src: "https://www.pexels.com/download/video/29525835/",
+      // https://www.pexels.com/download/video/29525835/
+    src: "https://res.cloudinary.com/dombq6plz/video/upload/v1779878587/taaser_jyqk2t.mp4",
   };
 
   const ease = [0.22, 1, 0.36, 1];
-
-  // =========================================================
-  // OPENING SEQUENCE
-  // =========================================================
-
-  useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (reduce) {
-      setShowOpening(false);
-      setAllowHeroContent(true);
-      return;
-    }
-
-    const openingSequence = async () => {
-      /*
-        OPENING HARUS SELALU ADA
-      */
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 2350)
-      );
-
-      /*
-        HERO CONTENT MULAI MUNCUL
-        sedikit sebelum opening benar-benar hilang
-      */
-
-      setAllowHeroContent(true);
-
-      setTimeout(() => {
-        setShowOpening(false);
-      }, 240);
-    };
-
-    openingSequence();
-  }, []);
 
   // =========================================================
   // GSAP
   // =========================================================
 
   useEffect(() => {
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+    if (!sectionRef.current || !bgRef.current || !contentRef.current) return;
 
     const ctx = gsap.context(() => {
-      if (reduce) {
+      if (reduceMotion) {
+        gsap.set(bgRef.current, {
+          y: 0,
+          scale: 1.06,
+        });
+
         gsap.set(contentRef.current, {
           opacity: 1,
           y: 0,
@@ -137,7 +109,6 @@ function Hero() {
         y: "18%",
         scale: 1.08,
         ease: "none",
-
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
@@ -151,7 +122,6 @@ function Hero() {
         y: "6%",
         opacity: 0,
         ease: "none",
-
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
@@ -162,335 +132,33 @@ function Hero() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-[#F4F5F2]"
+      className="
+        relative
+        h-[100svh]
+        min-h-[620px]
+        w-full
+        overflow-hidden
+        bg-[#0B1322]
+        md:min-h-screen
+      "
     >
-      {/* ========================================================= */}
-      {/* KEYFRAMES */}
-      {/* ========================================================= */}
-
-      <style>{`
-        @keyframes scrollDrop {
-          0% {
-            transform: translateY(-100%);
-          }
-
-          100% {
-            transform: translateY(220%);
-          }
-        }
-
-        .scroll-drop {
-          animation: scrollDrop 1.8s ease-in-out infinite;
-        }
-
-        @keyframes grainMove {
-          0% {
-            transform: translate(0px, 0px);
-          }
-
-          25% {
-            transform: translate(-1%, 1%);
-          }
-
-          50% {
-            transform: translate(1%, -1%);
-          }
-
-          75% {
-            transform: translate(0.5%, 1%);
-          }
-
-          100% {
-            transform: translate(0px, 0px);
-          }
-        }
-
-        @keyframes oceanLight {
-          0% {
-            transform: translate3d(-3%, 0%, 0) scale(1);
-            opacity: 0.03;
-          }
-
-          50% {
-            transform: translate3d(3%, -2%, 0) scale(1.08);
-            opacity: 0.07;
-          }
-
-          100% {
-            transform: translate3d(-3%, 0%, 0) scale(1);
-            opacity: 0.03;
-          }
-        }
-
-        @keyframes logoFloat {
-          0% {
-            transform: translateY(0px);
-          }
-
-          50% {
-            transform: translateY(-5px);
-          }
-
-          100% {
-            transform: translateY(0px);
-          }
-        }
-
-        @keyframes logoGlow {
-          0% {
-            filter: drop-shadow(0px 0px 0px rgba(255,255,255,0));
-          }
-
-          50% {
-            filter: drop-shadow(0px 0px 18px rgba(255,255,255,0.06));
-          }
-
-          100% {
-            filter: drop-shadow(0px 0px 0px rgba(255,255,255,0));
-          }
-        }
-
-        @keyframes vignettePulse {
-          0% {
-            opacity: 0.42;
-          }
-
-          50% {
-            opacity: 0.52;
-          }
-
-          100% {
-            opacity: 0.42;
-          }
-        }
-
-        @keyframes heroBloom {
-          0% {
-            opacity: 0;
-            transform: scale(0.92);
-          }
-
-          50% {
-            opacity: 0.12;
-          }
-
-          100% {
-            opacity: 0;
-            transform: scale(1.08);
-          }
-        }
-
-        .grain-layer {
-          animation: grainMove 8s steps(6) infinite;
-        }
-
-        .ocean-light {
-          animation: oceanLight 12s ease-in-out infinite;
-        }
-
-        .logo-float {
-          animation:
-            logoFloat 5s ease-in-out infinite,
-            logoGlow 7s ease-in-out infinite;
-        }
-
-        .vignette-pulse {
-          animation: vignettePulse 7s ease-in-out infinite;
-        }
-
-        .hero-bloom {
-          animation: heroBloom 2.8s ease-out forwards;
-        }
-      `}</style>
-
-      {/* ========================================================= */}
-      {/* OPENING */}
-      {/* ========================================================= */}
-
-      <AnimatePresence>
-        {showOpening && (
-          <motion.div
-            initial={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
-            transition={{
-              duration: 1.8,
-              ease,
-            }}
-            className="
-              absolute
-              inset-0
-              z-[100]
-              overflow-hidden
-              bg-[#0B1322]
-            "
-          >
-            {/* ATMOSPHERIC LIGHT */}
-            <div
-              className="
-                ocean-light
-                absolute
-                inset-0
-                bg-[radial-gradient(circle_at_50%_42%,rgba(255,255,255,0.08)_0%,transparent_58%)]
-                mix-blend-soft-light
-              "
-            />
-
-            {/* TOP WARMTH */}
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-b
-                from-[#8B6A4F]/10
-                via-transparent
-                to-transparent
-              "
-            />
-
-            {/* EDGE VIGNETTE */}
-            <div
-              className="
-                vignette-pulse
-                absolute
-                inset-0
-                bg-[radial-gradient(circle_at_center,transparent_34%,rgba(0,0,0,0.52)_100%)]
-              "
-            />
-
-            {/* DEPTH */}
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-t
-                from-black/44
-                via-transparent
-                to-transparent
-              "
-            />
-
-            {/* FOG */}
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                h-[74vw]
-                w-[74vw]
-                -translate-x-1/2
-                -translate-y-1/2
-                rounded-full
-                bg-[radial-gradient(circle,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_36%,transparent_72%)]
-                blur-3xl
-              "
-            />
-
-            {/* SECONDARY FOG */}
-            <div
-              className="
-                absolute
-                left-[54%]
-                top-[46%]
-                h-[44vw]
-                w-[44vw]
-                -translate-x-1/2
-                -translate-y-1/2
-                rounded-full
-                bg-[radial-gradient(circle,rgba(176,141,87,0.06)_0%,transparent_72%)]
-                blur-3xl
-              "
-            />
-
-            {/* GRAIN */}
-            <div
-              className="
-                grain-layer
-                absolute
-                inset-[-50%]
-                opacity-[0.05]
-                mix-blend-soft-light
-              "
-              style={{
-                backgroundImage:
-                  "url('https://res.cloudinary.com/dombq6plz/image/upload/v1778809642/noise_xq6m6w.png')",
-                backgroundSize: "420px",
-              }}
-            />
-
-            {/* CENTER LOGO */}
-            <div
-              className="
-                relative
-                z-10
-                flex
-                h-full
-                items-center
-                justify-center
-                px-6
-              "
-            >
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 20,
-                  scale: 0.94,
-                  rotate: -0.6,
-                  filter: "blur(12px)",
-                }}
-                animate={{
-                  opacity: 0.94,
-                  y: 0,
-                  scale: 1,
-                  rotate: 0,
-                  filter: "blur(0px)",
-                }}
-                transition={{
-                  duration: 2,
-                  delay: 0.18,
-                  ease,
-                }}
-                className="
-                  logo-float
-                  relative
-                  w-[230px]
-                  md:w-[320px]
-                "
-              >
-                <Image
-                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_zc65st.png"
-                  alt="Serenity Phinisi"
-                  width={700}
-                  height={260}
-                  priority
-                  className="
-                    h-auto
-                    w-full
-                    object-contain
-                    select-none
-                  "
-                />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ========================================================= */}
       {/* BACKGROUND */}
       {/* ========================================================= */}
 
       <div
         ref={bgRef}
-        className="absolute inset-0 scale-[1.06] will-change-transform"
+        className="
+          absolute
+          inset-0
+          scale-[1.06]
+          will-change-transform
+        "
         style={{
           transformOrigin: "center top",
         }}
@@ -505,7 +173,11 @@ function Hero() {
             alt="Guests walking aboard Serenity through the Indonesian archipelago"
             fill
             priority
-            className="object-cover"
+            sizes="100vw"
+            className="
+              object-cover
+              object-center
+            "
           />
         )}
 
@@ -516,16 +188,14 @@ function Hero() {
         {heroMedia.type === "video" && (
           <div
             className={`
-              absolute inset-0
+              absolute
+              inset-0
               overflow-hidden
-              transition-all
-              duration-[2200ms]
+              bg-[#0B1322]
+              transition-opacity
+              duration-[1200ms]
               ease-[cubic-bezier(0.22,1,0.36,1)]
-              ${
-                isVideoLoaded
-                  ? "scale-100 blur-0 opacity-100"
-                  : "scale-[1.1] blur-[18px] opacity-65"
-              }
+              ${isVideoLoaded ? "opacity-100" : "opacity-0"}
             `}
           >
             <video
@@ -541,21 +211,11 @@ function Hero() {
                 h-full
                 w-full
                 object-cover
+                object-center
               "
             >
               <source src={heroMedia.src} type="video/mp4" />
             </video>
-
-            {/* PRELOAD ATMOSPHERE */}
-            <div
-              className={`
-                absolute inset-0
-                bg-[#2D3C68]/36
-                transition-opacity
-                duration-[1800ms]
-                ${isVideoLoaded ? "opacity-0" : "opacity-100"}
-              `}
-            />
 
             {/* CINEMATIC VIGNETTE */}
             <div
@@ -567,6 +227,19 @@ function Hero() {
             />
           </div>
         )}
+
+        {/* PRELOAD ATMOSPHERE — NO IMAGE, NO POSTER */}
+        <div
+          className={`
+            absolute
+            inset-0
+            bg-[#0B1322]
+            transition-opacity
+            duration-[1200ms]
+            ease-[cubic-bezier(0.22,1,0.36,1)]
+            ${isVideoLoaded ? "opacity-0" : "opacity-100"}
+          `}
+        />
 
         {/* BASE MARITIME TINT */}
         <div className="absolute inset-0 bg-[#2D3C68]/14" />
@@ -582,39 +255,6 @@ function Hero() {
 
         {/* ATMOSPHERIC LIGHT */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)] opacity-[0.04] mix-blend-soft-light" />
-
-        {/* HERO BLOOM */}
-        <AnimatePresence>
-          {allowHeroContent && (
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-              }}
-              transition={{
-                duration: 1.4,
-              }}
-              className="
-                hero-bloom
-                pointer-events-none
-                absolute
-                left-1/2
-                top-[24%]
-                h-[42vw]
-                w-[42vw]
-                -translate-x-1/2
-                rounded-full
-                bg-[radial-gradient(circle,rgba(176,141,87,0.14)_0%,rgba(176,141,87,0.04)_34%,transparent_72%)]
-                blur-3xl
-              "
-            />
-          )}
-        </AnimatePresence>
       </div>
 
       {/* ========================================================= */}
@@ -631,222 +271,216 @@ function Hero() {
           items-end
           justify-center
           px-6
-          pb-[12vh]
+          pb-[8vh]
           text-center
           will-change-transform
+          sm:pb-[9vh]
           md:px-10
+          md:pb-[9vh]
+          lg:pb-[9vh]
         "
       >
         <div className="mx-auto max-w-[860px]">
           {/* MICRO LABEL */}
-          <AnimatePresence>
-            {allowHeroContent && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 24,
-                  filter: "blur(6px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  filter: "blur(0px)",
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease,
-                }}
-                className="
-                  mb-6
-                  text-[11px]
-                  tracking-[0.32em]
-                  text-[#F4F5F2]/76
-                  md:text-[12px]
-                "
-              >
-                INDONESIAN PHINISI YACHT
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 24,
+                    filter: "blur(6px)",
+                  }
+            }
+            animate={{
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+            }}
+            transition={{
+              duration: 1.2,
+              delay: 0.1,
+              ease,
+            }}
+            className="
+              mb-5
+              text-[10px]
+              tracking-[0.3em]
+              text-[#F4F5F2]/76
+              sm:mb-6
+              sm:text-[11px]
+              md:text-[12px]
+              md:tracking-[0.32em]
+            "
+          >
+            INDONESIAN PHINISI YACHT
+          </motion.div>
 
           {/* HEADLINE */}
-          <h1 className="font-[Gambarino] text-[50px] leading-[0.98] tracking-[-0.04em] text-[#F4F5F2] md:text-[76px] lg:text-[92px]">
-            <AnimatePresence>
-              {allowHeroContent && (
-                <>
-                  <motion.span
-                    initial={{
+          <h1
+            className="
+              font-[Gambarino]
+              text-[46px]
+              leading-[0.98]
+              tracking-[-0.04em]
+              text-[#F4F5F2]
+              sm:text-[56px]
+              md:text-[76px]
+              lg:text-[92px]
+            "
+          >
+            <motion.span
+              initial={
+                reduceMotion
+                  ? false
+                  : {
                       opacity: 0,
                       y: 56,
                       filter: "blur(10px)",
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      filter: "blur(0px)",
-                    }}
-                    transition={{
-                      duration: 1.45,
-                      delay: 0.04,
-                      ease,
-                    }}
-                    className="block"
-                  >
-                    Indonesia Waits
-                  </motion.span>
+                    }
+              }
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
+              transition={{
+                duration: 1.45,
+                delay: 0.18,
+                ease,
+              }}
+              className="block"
+            >
+              Indonesia Waits
+            </motion.span>
 
-                  <motion.span
-                    initial={{
+            <motion.span
+              initial={
+                reduceMotion
+                  ? false
+                  : {
                       opacity: 0,
                       y: 56,
                       filter: "blur(10px)",
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                      filter: "blur(0px)",
-                    }}
-                    transition={{
-                      duration: 1.45,
-                      delay: 0.16,
-                      ease,
-                    }}
-                    className="block opacity-95"
-                  >
-                    at Sea
-                  </motion.span>
-                </>
-              )}
-            </AnimatePresence>
+                    }
+              }
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+              }}
+              transition={{
+                duration: 1.45,
+                delay: 0.3,
+                ease,
+              }}
+              className="block opacity-95"
+            >
+              at Sea
+            </motion.span>
           </h1>
 
           {/* SUBCOPY */}
-          <AnimatePresence>
-            {allowHeroContent && (
-              <motion.p
-                initial={{
-                  opacity: 0,
-                  y: 30,
-                  filter: "blur(8px)",
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  filter: "blur(0px)",
-                }}
-                transition={{
-                  duration: 1.3,
-                  delay: 0.32,
-                  ease,
-                }}
-                className="
-                  mx-auto
-                  mt-5
-                  max-w-[590px]
-                  text-[15px]
-                  leading-relaxed
-                  text-[#F4F5F2]/90
-                  md:text-[17px]
-                "
-              >
-                Sail through Raja Ampat and Komodo with twelve
-                guests aboard a handcrafted phinisi built for
-                intimate ocean adventures
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          {/* CTA */}
-          <AnimatePresence>
-            {allowHeroContent && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 18,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                transition={{
-                  duration: 1.15,
-                  delay: 0.5,
-                  ease,
-                }}
-                className="mt-10 flex flex-col items-center gap-4"
-              >
-                <button
-                  className="
-                    group
-                    rounded-full
-                    border
-                    border-[#F4F5F2]/68
-                    px-8
-                    py-3
-                    text-[13px]
-                    tracking-[0.02em]
-                    text-[#F4F5F2]
-                    transition-all
-                    duration-500
-                    hover:border-[#F4F5F2]
-                    hover:bg-[#F4F5F2]
-                    hover:text-[#2D3C68]
-                  "
-                >
-                  <span
-                    className="
-                      inline-block
-                      transition-transform
-                      duration-500
-                      group-hover:-translate-y-[2px]
-                    "
-                  >
-                    Begin Your Voyage →
-                  </span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* SCROLL INDICATOR */}
-      {/* ========================================================= */}
-
-      <AnimatePresence>
-        {allowHeroContent && (
-          <motion.div
-            initial={{
-              opacity: 0,
-            }}
+          <motion.p
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 30,
+                    filter: "blur(8px)",
+                  }
+            }
             animate={{
               opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
             }}
             transition={{
-              delay: 1.35,
-              duration: 1.1,
+              duration: 1.3,
+              delay: 0.46,
+              ease,
             }}
             className="
-              absolute
-              bottom-6
-              left-1/2
-              z-20
-              -translate-x-1/2
+              mx-auto
+              mt-5
+              max-w-[560px]
+              text-[14px]
+              leading-[1.75]
+              text-[#F4F5F2]/90
+              sm:text-[15px]
+              md:max-w-[590px]
+              md:text-[17px]
+              md:leading-[1.8]
             "
           >
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] tracking-[0.24em] text-[#F4F5F2]/58">
-                SCROLL
-              </span>
+            Sail through Raja Ampat and Komodo with twelve guests
+            aboard a handcrafted phinisi built for intimate ocean
+            adventures
+          </motion.p>
 
-              <div className="relative h-8 w-[1px] overflow-hidden bg-[#B08D57]/28">
-                <div className="scroll-drop absolute left-0 top-0 h-4 w-full bg-[#F4F5F2]/80" />
-              </div>
-            </div>
+          {/* CTA */}
+          <motion.div
+            initial={
+              reduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 18,
+                  }
+            }
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 1.15,
+              delay: 0.62,
+              ease,
+            }}
+            className="
+              mt-9
+              flex
+              flex-col
+              items-center
+              gap-4
+              sm:mt-10
+            "
+          >
+            <Link
+              href="/contact"
+              className="
+                inline-flex
+                min-h-[46px]
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#F4F5F2]/68
+                bg-[#F4F5F2]/[0.025]
+                px-8
+                py-3
+                text-[13px]
+                tracking-[0.02em]
+                text-[#F4F5F2]
+                backdrop-blur-[6px]
+                transition-colors
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#F4F5F2]
+                hover:bg-[#F4F5F2]
+                hover:text-[#2D3C68]
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+              "
+            >
+              Begin Your Voyage →
+            </Link>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
     </section>
   );
 }
@@ -856,19 +490,23 @@ function Hero() {
 
 
 function Introduction() {
+  const configRef = useRef(null);
 
-  function getConfig() {
-    return {
-
+  if (!configRef.current) {
+    configRef.current = {
       images: {
-        left:
-          "https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp",
+        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png",
 
         center:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
 
         right:
-          "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png",
+      },
+
+      pattern: {
+        ikat:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png",
       },
 
       text: {
@@ -883,21 +521,36 @@ function Introduction() {
       },
 
       animation: {
+        ease: "power3.out",
+
+        label: {
+          from: {
+            opacity: 0,
+            y: 10,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+          },
+
+          start: "top 88%",
+        },
 
         headline: {
           from: {
             opacity: 0,
-            y: 34,
-            filter: "blur(8px)",
+            y: 24,
+            filter: "blur(7px)",
           },
 
           to: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.3,
-            stagger: 0.16,
-            ease: "power3.out",
+            duration: 1.38,
+            stagger: 0.14,
           },
 
           start: "top 84%",
@@ -906,17 +559,16 @@ function Introduction() {
         description: {
           from: {
             opacity: 0,
-            y: 24,
-            filter: "blur(6px)",
+            y: 18,
+            filter: "blur(5px)",
           },
 
           to: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.3,
+            duration: 1.28,
             delay: 0.1,
-            ease: "power2.out",
           },
 
           start: "top 88%",
@@ -925,7 +577,7 @@ function Introduction() {
         mobileImage: {
           from: {
             opacity: 0,
-            scale: 1.04,
+            scale: 1.035,
             y: 24,
           },
 
@@ -933,8 +585,7 @@ function Introduction() {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 1.5,
-            ease: "power3.out",
+            duration: 1.45,
           },
 
           start: "top 90%",
@@ -943,15 +594,14 @@ function Introduction() {
         desktopGrid: {
           from: {
             opacity: 0,
-            y: 28,
+            y: 26,
           },
 
           to: {
             opacity: 1,
             y: 0,
-            duration: 1.3,
+            duration: 1.32,
             stagger: 0.12,
-            ease: "power3.out",
           },
 
           start: "top 88%",
@@ -959,18 +609,22 @@ function Introduction() {
       },
 
       classes: {
-
         section:
-          "relative w-full overflow-hidden bg-[#F4F5F2] px-6 py-24 md:px-10 md:py-32",
+          "relative w-full overflow-hidden bg-[#F4F5F2] px-6 py-24 text-[#2D3C68] md:px-10 md:py-32",
 
         topBridge:
-          "pointer-events-none absolute left-0 top-0 h-[140px] w-full bg-gradient-to-b from-[#2D3C68]/14 via-[#2D3C68]/05 to-transparent",
+          "pointer-events-none absolute left-0 top-0 z-[2] h-[150px] w-full bg-gradient-to-b from-[#2D3C68]/[0.10] via-[#2D3C68]/[0.04] to-transparent",
 
         radialTexture:
-          "pointer-events-none absolute inset-0 opacity-[0.03] mix-blend-multiply bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_62%)]",
+          "pointer-events-none absolute inset-0 z-[1] opacity-[0.025] mix-blend-multiply bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_62%)]",
 
-        textWrapper:
-          "relative mx-auto max-w-6xl text-center",
+        ikatMask:
+          "pointer-events-none absolute inset-0 z-[1] hidden overflow-hidden md:block",
+
+        ikatImage:
+          "absolute bottom-[-13%] right-[-15%] w-[min(760px,58vw)] max-w-none rotate-[-4deg] select-none opacity-[0.048] mix-blend-multiply",
+
+        textWrapper: "relative z-10 mx-auto max-w-6xl text-center",
 
         label:
           "mb-5 text-[10px] uppercase tracking-[0.38em] text-[#2D3C68]/58",
@@ -979,16 +633,16 @@ function Introduction() {
           "mx-auto max-w-[620px] font-[Gambarino] text-[40px] leading-[1.04] tracking-[-0.03em] text-[#2D3C68] sm:text-[46px] md:text-[68px]",
 
         description:
-          "mx-auto mt-5 max-w-[520px] text-[14px] leading-[1.72] text-[#2D3C68]/72 md:mt-6 md:text-[15px]",
+          "mx-auto mt-5 max-w-[560px] text-[15px] leading-[1.78] text-[#2D3C68]/78 md:mt-6 md:text-[16px] md:leading-[1.82]",
 
         mobileWrapper:
-          "md:hidden mx-auto mt-14 max-w-[300px]",
+          "relative z-10 mx-auto mt-12 w-full max-w-[330px] md:hidden",
 
         mobileImage:
           "relative aspect-[4/5] overflow-hidden shadow-[0_18px_44px_rgba(45,60,104,0.08)]",
 
         desktopGrid:
-          "relative mx-auto mt-20 hidden max-w-6xl md:grid md:grid-cols-[1fr_1.4fr_1fr] md:items-end md:gap-4",
+          "relative z-10 mx-auto mt-20 hidden max-w-6xl md:grid md:grid-cols-[1fr_1.4fr_1fr] md:items-end md:gap-5 lg:gap-6",
 
         sideImage:
           "relative aspect-[3/4] overflow-hidden shadow-[0_18px_40px_rgba(45,60,104,0.08)]",
@@ -997,61 +651,65 @@ function Introduction() {
           "relative aspect-[4/5] overflow-hidden shadow-[0_24px_60px_rgba(22,32,55,0.10)]",
 
         image:
-          "object-cover transition-transform duration-[1800ms] hover:scale-[1.03]",
+          "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]",
 
         overlayLeft:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/08 to-transparent",
+          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.08] to-transparent",
 
         overlayCenter:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 to-transparent",
+          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.12] to-transparent",
 
         overlayMobile:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/10 to-transparent",
+          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.10] to-transparent",
 
         bottomBridge:
-          "pointer-events-none absolute bottom-0 left-0 h-[80px] w-full bg-gradient-to-t from-[#F4F5F2] to-transparent",
+          "pointer-events-none absolute bottom-0 left-0 z-[2] h-[120px] w-full bg-gradient-to-t from-[#2D3C68]/[0.06] to-transparent",
       },
     };
   }
 
-  const config = getConfig();
+  const config = configRef.current;
 
   const sectionRef = useRef(null);
-
+  const labelRef = useRef(null);
   const headlineRef = useRef(null);
-
   const descRef = useRef(null);
-
   const mobileImgRef = useRef(null);
-
   const gridRef = useRef(null);
-
   const imgLeftRef = useRef(null);
-
   const imgCtrRef = useRef(null);
-
   const imgRightRef = useRef(null);
 
   useEffect(() => {
-
     if (!sectionRef.current) return;
-
-    const isDesktop = window.innerWidth >= 768;
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    const lines = headlineRef.current?.querySelectorAll(".line") ?? [];
+
+    const imageColumns = [
+      imgLeftRef.current,
+      imgCtrRef.current,
+      imgRightRef.current,
+    ].filter(Boolean);
+
     if (prefersReducedMotion) {
+      if (labelRef.current) {
+        gsap.set(labelRef.current, {
+          opacity: 1,
+          y: 0,
+        });
+      }
 
-      const lines =
-        headlineRef.current?.querySelectorAll(".line") ?? [];
-
-      gsap.set(lines, {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-      });
+      if (lines.length > 0) {
+        gsap.set(lines, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+        });
+      }
 
       if (descRef.current) {
         gsap.set(descRef.current, {
@@ -1069,14 +727,8 @@ function Introduction() {
         });
       }
 
-      const cols = [
-        imgLeftRef.current,
-        imgCtrRef.current,
-        imgRightRef.current,
-      ].filter(Boolean);
-
-      if (cols.length > 0) {
-        gsap.set(cols, {
+      if (imageColumns.length > 0) {
+        gsap.set(imageColumns, {
           opacity: 1,
           y: 0,
         });
@@ -1086,9 +738,24 @@ function Introduction() {
     }
 
     const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia();
+      const ease = config.animation.ease;
 
-      const lines =
-        headlineRef.current?.querySelectorAll(".line") ?? [];
+      if (labelRef.current) {
+        gsap.fromTo(
+          labelRef.current,
+          config.animation.label.from,
+          {
+            ...config.animation.label.to,
+            ease,
+            scrollTrigger: {
+              trigger: labelRef.current,
+              start: config.animation.label.start,
+              once: true,
+            },
+          }
+        );
+      }
 
       if (lines.length > 0) {
         gsap.fromTo(
@@ -1096,10 +763,11 @@ function Introduction() {
           config.animation.headline.from,
           {
             ...config.animation.headline.to,
-
+            ease,
             scrollTrigger: {
               trigger: headlineRef.current,
               start: config.animation.headline.start,
+              once: true,
             },
           }
         );
@@ -1111,201 +779,156 @@ function Introduction() {
           config.animation.description.from,
           {
             ...config.animation.description.to,
-
+            ease,
             scrollTrigger: {
               trigger: descRef.current,
               start: config.animation.description.start,
+              once: true,
             },
           }
         );
       }
 
-      if (!isDesktop && mobileImgRef.current) {
+      mm.add("(max-width: 767px)", () => {
+        if (!mobileImgRef.current) return;
+
         gsap.fromTo(
           mobileImgRef.current,
           config.animation.mobileImage.from,
           {
             ...config.animation.mobileImage.to,
-
+            ease,
             scrollTrigger: {
               trigger: mobileImgRef.current,
               start: config.animation.mobileImage.start,
+              once: true,
             },
           }
         );
-      }
+      });
 
-      if (isDesktop && gridRef.current) {
+      mm.add("(min-width: 768px)", () => {
+        if (!gridRef.current || imageColumns.length === 0) return;
 
-        const cols = [
-          imgLeftRef.current,
-          imgCtrRef.current,
-          imgRightRef.current,
-        ].filter(Boolean);
+        gsap.fromTo(
+          imageColumns,
+          config.animation.desktopGrid.from,
+          {
+            ...config.animation.desktopGrid.to,
+            ease,
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: config.animation.desktopGrid.start,
+              once: true,
+            },
+          }
+        );
+      });
 
-        if (cols.length > 0) {
-          gsap.fromTo(
-            cols,
-            config.animation.desktopGrid.from,
-            {
-              ...config.animation.desktopGrid.to,
-
-              scrollTrigger: {
-                trigger: gridRef.current,
-                start: config.animation.desktopGrid.start,
-              },
-            }
-          );
-        }
-      }
-
+      return () => mm.revert();
     }, sectionRef);
 
     return () => ctx.revert();
-
-  }, [config.animation]);
+  }, [config]);
 
   return (
     <section
       ref={sectionRef}
       className={config.classes.section}
+      style={{
+        backgroundColor: "#F4F5F2",
+      }}
     >
-
-      {/* atmospheric bridge — top */}
-
       <div className={config.classes.topBridge} />
-
-      {/* radial texture */}
 
       <div className={config.classes.radialTexture} />
 
-      {/* TEXT BLOCK */}
+      <div
+        className={config.classes.ikatMask}
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.62) 34%, rgba(0,0,0,0.78) 66%, transparent 100%)",
+          maskImage:
+            "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.62) 34%, rgba(0,0,0,0.78) 66%, transparent 100%)",
+        }}
+      >
+        <img
+          src={config.pattern.ikat}
+          alt=""
+          aria-hidden="true"
+          className={config.classes.ikatImage}
+        />
+      </div>
 
       <div className={config.classes.textWrapper}>
-
-        {/* label */}
-
-        <div className={config.classes.label}>
+        <div ref={labelRef} className={config.classes.label}>
           {config.text.label}
         </div>
 
-        {/* headline */}
+        <h2 ref={headlineRef} className={config.classes.headline}>
+          <span className="line block">{config.text.headlineLine1}</span>
 
-        <h2
-          ref={headlineRef}
-          className={config.classes.headline}
-        >
-          <span className="line block">
-            {config.text.headlineLine1}
-          </span>
-
-          <span className="line block">
-            {config.text.headlineLine2}
-          </span>
+          <span className="line block">{config.text.headlineLine2}</span>
         </h2>
 
-        {/* description */}
-
-        <p
-          ref={descRef}
-          className={config.classes.description}
-        >
+        <p ref={descRef} className={config.classes.description}>
           {config.text.description}
         </p>
-
       </div>
 
-      {/* MOBILE IMAGE */}
-
       <div className={config.classes.mobileWrapper}>
-
-        <div
-          ref={mobileImgRef}
-          className={config.classes.mobileImage}
-        >
-
+        <div ref={mobileImgRef} className={config.classes.mobileImage}>
           <Image
             src={config.images.center}
             alt="Life on board Serenity"
             fill
-            priority
+            sizes="(max-width: 767px) 330px, 0px"
             className={config.classes.image}
           />
 
           <div className={config.classes.overlayMobile} />
-
         </div>
-
       </div>
 
-      {/* DESKTOP GRID */}
-
-      <div
-        ref={gridRef}
-        className={config.classes.desktopGrid}
-      >
-
-        {/* LEFT */}
-
-        <div
-          ref={imgLeftRef}
-          className={config.classes.sideImage}
-        >
-
+      <div ref={gridRef} className={config.classes.desktopGrid}>
+        <div ref={imgLeftRef} className={config.classes.sideImage}>
           <Image
             src={config.images.left}
             alt="Open sea moment on board Serenity"
             fill
+            sizes="(min-width: 768px) 26vw, 0px"
             className={config.classes.image}
           />
 
           <div className={config.classes.overlayLeft} />
-
         </div>
 
-        {/* CENTER */}
-
-        <div
-          ref={imgCtrRef}
-          className={config.classes.centerImage}
-        >
-
+        <div ref={imgCtrRef} className={config.classes.centerImage}>
           <Image
             src={config.images.center}
             alt="Life on board Serenity"
             fill
-            priority
+            sizes="(min-width: 768px) 38vw, 0px"
             className={config.classes.image}
           />
 
           <div className={config.classes.overlayCenter} />
-
         </div>
 
-        {/* RIGHT */}
-
-        <div
-          ref={imgRightRef}
-          className={config.classes.sideImage}
-        >
-
+        <div ref={imgRightRef} className={config.classes.sideImage}>
           <Image
             src={config.images.right}
             alt="Interior space on board Serenity"
             fill
+            sizes="(min-width: 768px) 26vw, 0px"
             className={config.classes.image}
           />
 
           <div className={config.classes.overlayLeft} />
-
         </div>
-
       </div>
 
-      {/* atmospheric bridge — bottom */}
-
       <div className={config.classes.bottomBridge} />
-
     </section>
   );
 }
@@ -1313,77 +936,186 @@ function Introduction() {
  
 
 function QuickContext() {
-  const stats = [
-    { number: "12", label: "Only Twelve Guests" },
-    { number: "4", label: "Private Cabins" },
-    { number: "10", label: "Ten Crew Aboard" },
-    { number: "Phinisi", label: "Tanah Beru · Sulawesi", small: true },
-  ];
+  const sectionRef = useRef(null);
+  const statRefs = useRef([]);
+
+  const config = {
+    stats: [
+      { number: "12", label: "Only Twelve Guests" },
+      { number: "4", label: "Private Cabins" },
+      { number: "10", label: "Ten Crew Aboard" },
+      {
+        number: "Phinisi",
+        label: "Tanah Beru · Sulawesi",
+        small: true,
+      },
+    ],
+
+    motif: {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png",
+    },
+
+    animation: {
+      ease: "power3.out",
+
+      stat: {
+        from: {
+          opacity: 0,
+          y: 14,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          stagger: 0.08,
+        },
+
+        start: "top 86%",
+      },
+    },
+
+    classes: {
+      section:
+        "relative w-full overflow-hidden bg-[#2D3C68] py-20 text-[#F4F5F2] md:py-28",
+
+      topBridge:
+        "pointer-events-none absolute left-0 top-0 h-[120px] w-full bg-gradient-to-b from-[#F4F5F2]/08 via-[#F4F5F2]/03 to-transparent",
+
+      motifWrap:
+        "pointer-events-none absolute inset-0 overflow-hidden",
+
+      motifMask: "absolute inset-0",
+
+      motifImage:
+        "absolute -left-[360px] -top-[300px] w-[1050px] max-w-none rotate-[-10deg] opacity-[0.03] blur-[0.35px] select-none md:-left-[420px] md:-top-[360px] md:w-[1500px]",
+
+      depth:
+        "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.035] via-transparent to-[#1A1A1A]/[0.025]",
+
+      radial:
+        "pointer-events-none absolute inset-0 opacity-[0.045] bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)]",
+
+      bottomBridge:
+        "pointer-events-none absolute bottom-0 left-0 h-[120px] w-full bg-gradient-to-b from-transparent via-[#F4F5F2]/04 to-[#F4F5F2]/08",
+
+      content: "relative mx-auto max-w-[1120px] px-6 md:px-10",
+
+      grid:
+        "grid grid-cols-2 items-end gap-x-6 gap-y-12 md:grid-cols-4 md:gap-x-0 md:gap-y-0",
+
+      statBase: "text-center",
+
+      divider: "md:border-l md:border-[#F4F5F2]/12",
+
+      number:
+        "font-[Gambarino] leading-none tracking-[-0.03em] text-[#F4F5F2]",
+
+      numberRegular: "text-[44px] md:text-[64px]",
+
+      numberSmall: "text-[34px] md:text-[48px]",
+
+      label:
+        "mt-3 text-[10px] uppercase leading-[1.65] tracking-[0.24em] text-[#F4F5F2]/62 md:text-[11px] md:tracking-[0.28em]",
+    },
+  };
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const statItems = statRefs.current.filter(Boolean);
+
+    if (prefersReducedMotion) {
+      if (statItems.length > 0) {
+        gsap.set(statItems, {
+          opacity: 1,
+          y: 0,
+        });
+      }
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (statItems.length > 0) {
+        gsap.fromTo(statItems, config.animation.stat.from, {
+          ...config.animation.stat.to,
+          ease: config.animation.ease,
+
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: config.animation.stat.start,
+            once: true,
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#2D3C68] py-16 md:py-24">
-      {/* SUMBA IKAT TEXTURE */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <section ref={sectionRef} className={config.classes.section}>
+      {/* ATMOSPHERIC BRIDGE — IN */}
+      <div className={config.classes.topBridge} />
+
+      {/* SUMBA IKAT — ULTRA SUBTLE ATMOSPHERIC FIELD */}
+      <div className={config.classes.motifWrap} aria-hidden="true">
         <div
-          className="absolute inset-0"
+          className={config.classes.motifMask}
           style={{
             maskImage:
-              "radial-gradient(circle at 18% 22%, black 0%, rgba(0,0,0,0.72) 32%, transparent 68%)",
+              "radial-gradient(circle at 18% 24%, black 0%, rgba(0,0,0,0.58) 30%, transparent 72%)",
             WebkitMaskImage:
-              "radial-gradient(circle at 18% 22%, black 0%, rgba(0,0,0,0.72) 32%, transparent 68%)",
+              "radial-gradient(circle at 18% 24%, black 0%, rgba(0,0,0,0.58) 30%, transparent 72%)",
           }}
         >
           <img
-            src="https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png"
+            src={config.motif.src}
             alt=""
-            className="
-              absolute
-              -left-[420px]
-              -top-[340px]
-              w-[1100px]
-              md:w-[1450px]
-              max-w-none
-              rotate-[-12deg]
-              opacity-[0.045]
-              mix-blend-soft-light
-              blur-[0.4px]
-              select-none
-            "
+            className={config.classes.motifImage}
+            draggable="false"
           />
         </div>
       </div>
 
       {/* SUBTLE DEPTH */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.03] via-transparent to-black/[0.06]" />
+      <div className={config.classes.depth} />
 
-      <div className="pointer-events-none absolute inset-0 opacity-[0.05] bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)]" />
+      {/* ATMOSPHERIC LIGHT */}
+      <div className={config.classes.radial} />
 
-      {/* ATMOSPHERIC BRIDGE OUT */}
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[100px] w-full bg-gradient-to-b from-transparent to-[#F4F5F2]/08" />
+      {/* ATMOSPHERIC BRIDGE — OUT */}
+      <div className={config.classes.bottomBridge} />
 
       {/* CONTENT */}
-      <div className="relative mx-auto max-w-[1120px] px-6">
-        <div className="grid grid-cols-2 items-end gap-y-12 md:grid-cols-4 md:gap-y-0">
-          {stats.map((stat, i) => (
+      <div className={config.classes.content}>
+        <div className={config.classes.grid}>
+          {config.stats.map((stat, index) => (
             <div
-              key={i}
-              className={`text-center ${
-                i > 0 ? "md:border-l md:border-white/10" : ""
+              key={`${stat.number}-${stat.label}`}
+              ref={(el) => {
+                statRefs.current[index] = el;
+              }}
+              className={`${config.classes.statBase} ${
+                index > 0 ? config.classes.divider : ""
               }`}
             >
               <div
-                className={`font-[Gambarino] leading-none text-[#F4F5F2] ${
+                className={`${config.classes.number} ${
                   stat.small
-                    ? "text-[36px] md:text-[52px]"
-                    : "text-[42px] md:text-[64px]"
+                    ? config.classes.numberSmall
+                    : config.classes.numberRegular
                 }`}
               >
                 {stat.number}
               </div>
 
-              <div className="mt-3 text-[11px] uppercase tracking-[0.22em] text-white/64">
-                {stat.label}
-              </div>
+              <div className={config.classes.label}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -1394,35 +1126,229 @@ function QuickContext() {
  
 
 function Experiences() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      images: {
+        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778424753/ChatGPT_Image_May_10_2026_09_51_01_PM_xfhbnv.png",
+
+        right:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
+      },
+
+      text: {
+        label: "On Board",
+
+        headline: "Leave the schedule on shore",
+
+        description:
+          "Days move between the deck, the water, and moments in between. Nothing feels scheduled, yet everything settles naturally into rhythm.",
+
+        leftTitle: "Open Deck Living",
+
+        leftDescription:
+          "Sunlight, sea air, and space to linger. Much of the day unfolds outside, without needing a plan or destination.",
+
+        rightTitle: "Quiet When You Need It",
+
+        rightDescription:
+          "When the rhythm slows, private interiors offer calm, comfort, and space entirely your own.",
+
+        cta: "Step Inside the Yacht →",
+      },
+
+      animation: {
+        ease: "power3.out",
+
+        label: {
+          from: {
+            opacity: 0,
+            y: 10,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+          },
+
+          start: "top 88%",
+        },
+
+        headline: {
+          from: {
+            opacity: 0,
+            y: 24,
+            filter: "blur(7px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.38,
+          },
+
+          start: "top 84%",
+        },
+
+        description: {
+          from: {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.28,
+            delay: 0.08,
+          },
+
+          start: "top 88%",
+        },
+
+        card: {
+          from: {
+            opacity: 0,
+            y: 26,
+            scale: 1.01,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.32,
+            stagger: 0.12,
+          },
+
+          start: "top 86%",
+        },
+
+        cta: {
+          from: {
+            opacity: 0,
+            y: 14,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 0.95,
+            delay: 0.05,
+          },
+
+          start: "top 92%",
+        },
+      },
+
+      classes: {
+        section:
+          "relative overflow-hidden bg-[#F4F5F2] px-6 pb-24 pt-24 text-[#2D3C68] md:px-10 md:pb-32 md:pt-32",
+
+        topBridge:
+          "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/06 via-[#2D3C68]/[0.025] to-transparent",
+
+        coolTexture:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)] opacity-[0.025] mix-blend-multiply",
+
+        warmAtmosphere:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(176,141,87,0.06)_0%,transparent_48%)]",
+
+        bottomBridge:
+          "pointer-events-none absolute bottom-0 left-0 h-[170px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.025] to-[#2D3C68]/08",
+
+        inner: "relative mx-auto max-w-[1240px]",
+
+        header:
+          "mx-auto mb-16 max-w-[760px] text-center md:mb-24",
+
+        label:
+          "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/58",
+
+        headline:
+          "mx-auto mt-5 max-w-[760px] font-[Gambarino] text-[42px] leading-[1.02] tracking-[-0.03em] text-[#2D3C68] sm:text-[54px] md:text-[68px]",
+
+        description:
+          "mx-auto mt-6 max-w-[620px] text-[15px] leading-[1.8] text-[#2D3C68]/72 md:text-[16px]",
+
+        grid:
+          "grid items-start gap-14 md:grid-cols-2 md:gap-12 xl:gap-16",
+
+        card:
+          "mx-auto w-full max-w-[480px]",
+
+        rightCard:
+          "mx-auto w-full max-w-[480px] md:pt-14",
+
+        imageFrame:
+          "relative aspect-[4/5] overflow-hidden shadow-[0_24px_60px_rgba(45,60,104,0.08)]",
+
+        image:
+          "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]",
+
+        overlayLeft:
+          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent",
+
+        overlayRight:
+          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/14 via-transparent to-transparent",
+
+        cardText: "mt-8",
+
+        cardTitle:
+          "font-[Gambarino] text-[30px] leading-[1.08] tracking-[-0.02em] text-[#2D3C68]",
+
+        cardBody:
+          "mt-3 max-w-[460px] text-[15px] leading-[1.82] text-[#2D3C68]/68",
+
+        cardBodyRight:
+          "mt-3 max-w-[450px] text-[15px] leading-[1.82] text-[#2D3C68]/68",
+
+        ctaWrap: "mt-16 flex justify-center md:mt-20",
+
+        cta:
+          "inline-flex items-center justify-center rounded-full border border-[#2D3C68]/24 px-7 py-3 text-[12px] uppercase tracking-[0.14em] text-[#2D3C68]/72 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:text-[#2D3C68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
   const sectionRef = useRef(null);
-
-  const headerRef = useRef(null);
-
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const descRef = useRef(null);
   const leftRef = useRef(null);
   const rightRef = useRef(null);
+  const ctaRef = useRef(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
-
-    gsap.registerPlugin(ScrollTrigger);
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    const cards = [leftRef.current, rightRef.current].filter(Boolean);
+
     if (prefersReducedMotion) {
       gsap.set(
         [
-          headerRef.current,
-          leftRef.current,
-          rightRef.current,
-        ],
+          labelRef.current,
+          headlineRef.current,
+          descRef.current,
+          ...cards,
+          ctaRef.current,
+        ].filter(Boolean),
         {
           opacity: 1,
           y: 0,
           scale: 1,
           filter: "blur(0px)",
-          clearProps: "all",
         }
       );
 
@@ -1430,394 +1356,165 @@ function Experiences() {
     }
 
     const ctx = gsap.context(() => {
-      const isDesktop = window.innerWidth >= 768;
+      const ease = config.animation.ease;
 
-      /* ========================================= */
-      /* SHARED EASE */
-      /* ========================================= */
-
-      const ease = "power3.out";
-
-      /* ========================================= */
-      /* HEADER */
-      /* ========================================= */
-
-      gsap.fromTo(
-        headerRef.current,
-        {
-          opacity: 0,
-          y: 28,
-          filter: "blur(10px)",
-        },
-        {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 1.25,
+      if (labelRef.current) {
+        gsap.fromTo(labelRef.current, config.animation.label.from, {
+          ...config.animation.label.to,
           ease,
-
           scrollTrigger: {
-            trigger: headerRef.current,
-            start: "top 84%",
+            trigger: labelRef.current,
+            start: config.animation.label.start,
             once: true,
-          },
-        }
-      );
-
-      /* ========================================= */
-      /* LEFT CARD */
-      /* ========================================= */
-
-      gsap.fromTo(
-        leftRef.current,
-        {
-          opacity: 0,
-          y: 34,
-          scale: 1.015,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.35,
-          ease,
-
-          scrollTrigger: {
-            trigger: leftRef.current,
-            start: "top 86%",
-            once: true,
-          },
-        }
-      );
-
-      /* ========================================= */
-      /* RIGHT CARD */
-      /* ========================================= */
-
-      gsap.fromTo(
-        rightRef.current,
-        {
-          opacity: 0,
-          y: 34,
-          scale: 1.015,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.35,
-          delay: 0.08,
-          ease,
-
-          scrollTrigger: {
-            trigger: rightRef.current,
-            start: "top 86%",
-            once: true,
-          },
-        }
-      );
-
-      /* ========================================= */
-      /* DESKTOP PARALLAX */
-      /* ========================================= */
-
-      if (isDesktop) {
-        gsap.to(leftRef.current, {
-          y: -24,
-          ease: "none",
-
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
           },
         });
+      }
 
-        gsap.to(rightRef.current, {
-          y: -34,
-          ease: "none",
-
+      if (headlineRef.current) {
+        gsap.fromTo(headlineRef.current, config.animation.headline.from, {
+          ...config.animation.headline.to,
+          ease,
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
+            trigger: headlineRef.current,
+            start: config.animation.headline.start,
+            once: true,
+          },
+        });
+      }
+
+      if (descRef.current) {
+        gsap.fromTo(descRef.current, config.animation.description.from, {
+          ...config.animation.description.to,
+          ease,
+          scrollTrigger: {
+            trigger: descRef.current,
+            start: config.animation.description.start,
+            once: true,
+          },
+        });
+      }
+
+      if (cards.length > 0) {
+        gsap.fromTo(cards, config.animation.card.from, {
+          ...config.animation.card.to,
+          ease,
+          scrollTrigger: {
+            trigger: leftRef.current,
+            start: config.animation.card.start,
+            once: true,
+          },
+        });
+      }
+
+      if (ctaRef.current) {
+        gsap.fromTo(ctaRef.current, config.animation.cta.from, {
+          ...config.animation.cta.to,
+          ease,
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: config.animation.cta.start,
+            once: true,
           },
         });
       }
     }, sectionRef);
 
-    return () => {
-      ctx.revert();
-    };
-  }, []);
+    return () => ctx.revert();
+  }, [config]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="
-        relative
-        overflow-hidden
-        bg-[#F4F5F2]
-        px-6
-        pb-24
-        pt-28
-        md:px-10
-        md:pb-32
-        md:pt-36
-      "
-    >
-      {/* TOP DEPTH */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[160px] bg-gradient-to-b from-[#2D3C68]/10 via-[#2D3C68]/[0.04] to-transparent" />
+    <section ref={sectionRef} className={config.classes.section}>
+      {/* ATMOSPHERIC BRIDGE — IN */}
+      <div className={config.classes.topBridge} />
 
-      {/* SUBTLE TEXTURE */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)] opacity-[0.03] mix-blend-multiply" />
+      {/* COOL MEMORY */}
+      <div className={config.classes.coolTexture} />
 
-      {/* ATMOSPHERIC BRIDGE OUT */}
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[180px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.03] to-[#2D3C68]/10" />
+      {/* WARM ONBOARD ATMOSPHERE */}
+      <div className={config.classes.warmAtmosphere} />
 
-      <div className="relative mx-auto max-w-[1240px]">
-        {/* ========================================= */}
+      {/* ATMOSPHERIC BRIDGE — OUT */}
+      <div className={config.classes.bottomBridge} />
+
+      <div className={config.classes.inner}>
         {/* HEADER */}
-        {/* ========================================= */}
-
-        <div
-          ref={headerRef}
-          className="
-            mx-auto
-            mb-16
-            max-w-[760px]
-            text-center
-            md:mb-24
-          "
-        >
-          <p
-            className="
-              text-[11px]
-              uppercase
-              tracking-[0.34em]
-              text-[#2D3C68]/60
-            "
-          >
-            On Board
+        <div className={config.classes.header}>
+          <p ref={labelRef} className={config.classes.label}>
+            {config.text.label}
           </p>
 
-          <h2
-            className="
-              mt-5
-              font-[Gambarino]
-              text-[42px]
-              leading-[1.02]
-              tracking-[-0.03em]
-              text-[#2D3C68]
-              sm:text-[54px]
-              md:text-[68px]
-            "
-          >
-            Leave the schedule on shore
+          <h2 ref={headlineRef} className={config.classes.headline}>
+            {config.text.headline}
           </h2>
 
-          <p
-            className="
-              mx-auto
-              mt-6
-              max-w-[620px]
-              text-[15px]
-              leading-[1.8]
-              text-[#5E5E5E]
-              md:text-[16px]
-            "
-          >
-            Days move between the deck, the water, and moments in
-            between. Nothing feels scheduled, yet everything settles
-            naturally into rhythm.
+          <p ref={descRef} className={config.classes.description}>
+            {config.text.description}
           </p>
         </div>
 
-        {/* ========================================= */}
         {/* GRID */}
-        {/* ========================================= */}
-
-        <div
-          className="
-            grid
-            items-start
-            gap-14
-            md:grid-cols-2
-            md:gap-12
-            xl:gap-16
-          "
-        >
-          {/* ========================================= */}
+        <div className={config.classes.grid}>
           {/* LEFT */}
-          {/* ========================================= */}
-
-          <div
-            ref={leftRef}
-            className="
-              mx-auto
-              w-full
-              max-w-[480px]
-            "
-          >
-            <div
-              className="
-                relative
-                aspect-[4/5]
-                overflow-hidden
-                shadow-[0_24px_60px_rgba(45,60,104,0.08)]
-              "
-            >
-              <img
-                src="https://res.cloudinary.com/dombq6plz/image/upload/v1778424753/ChatGPT_Image_May_10_2026_09_51_01_PM_xfhbnv.png"
+          <div ref={leftRef} className={config.classes.card}>
+            <div className={config.classes.imageFrame}>
+              <Image
+                src={config.images.left}
                 alt="Gathering on the deck of Serenity"
-                className="
-                  h-full
-                  w-full
-                  object-cover
-                  transition-transform
-                  duration-[1800ms]
-                  hover:scale-[1.03]
-                "
+                fill
+                sizes="(max-width: 767px) 100vw, 40vw"
+                className={config.classes.image}
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent" />
+              <div className={config.classes.overlayLeft} />
             </div>
 
-            <div className="mt-8">
-              <h3
-                className="
-                  font-[Gambarino]
-                  text-[30px]
-                  leading-[1.08]
-                  tracking-[-0.02em]
-                  text-[#1D1D1D]
-                "
-              >
-                Open Deck Living
+            <div className={config.classes.cardText}>
+              <h3 className={config.classes.cardTitle}>
+                {config.text.leftTitle}
               </h3>
 
-              <p
-                className="
-                  mt-3
-                  max-w-[460px]
-                  text-[15px]
-                  leading-[1.82]
-                  text-[#5C5C5C]
-                "
-              >
-                Sunlight, sea air, and space to linger. Much of the day
-                unfolds outside, without needing a plan or destination.
+              <p className={config.classes.cardBody}>
+                {config.text.leftDescription}
               </p>
             </div>
           </div>
 
-          {/* ========================================= */}
           {/* RIGHT */}
-          {/* ========================================= */}
-
-          <div
-            ref={rightRef}
-            className="
-              mx-auto
-              w-full
-              max-w-[480px]
-              md:pt-14
-            "
-          >
-            <div
-              className="
-                relative
-                aspect-[4/5]
-                overflow-hidden
-                shadow-[0_24px_60px_rgba(45,60,104,0.08)]
-              "
-            >
-              <img
-                src="https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png"
+          <div ref={rightRef} className={config.classes.rightCard}>
+            <div className={config.classes.imageFrame}>
+              <Image
+                src={config.images.right}
                 alt="Quiet moment on board Serenity"
-                className="
-                  h-full
-                  w-full
-                  object-cover
-                  transition-transform
-                  duration-[1800ms]
-                  hover:scale-[1.03]
-                "
+                fill
+                sizes="(max-width: 767px) 100vw, 40vw"
+                className={config.classes.image}
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/14 via-transparent to-transparent" />
+              <div className={config.classes.overlayRight} />
             </div>
 
-            <div className="mt-8">
-              <h3
-                className="
-                  font-[Gambarino]
-                  text-[30px]
-                  leading-[1.08]
-                  tracking-[-0.02em]
-                  text-[#1D1D1D]
-                "
-              >
-                Quiet When You Need It
+            <div className={config.classes.cardText}>
+              <h3 className={config.classes.cardTitle}>
+                {config.text.rightTitle}
               </h3>
 
-              <p
-                className="
-                  mt-3
-                  max-w-[450px]
-                  text-[15px]
-                  leading-[1.82]
-                  text-[#5C5C5C]
-                "
-              >
-                When the rhythm slows, private interiors offer calm,
-                comfort, and space entirely your own.
+              <p className={config.classes.cardBodyRight}>
+                {config.text.rightDescription}
               </p>
             </div>
           </div>
         </div>
 
-        {/* ========================================= */}
         {/* CTA */}
-        {/* ========================================= */}
-
-        <div className="mt-16 flex justify-center md:mt-20">
-          <button
-            className="
-              group
-              rounded-full
-              border
-              border-[#2D3C68]/22
-              px-7
-              py-3
-              text-[12px]
-              uppercase
-              tracking-[0.14em]
-              text-[#2D3C68]/68
-              transition-all
-              duration-500
-              hover:border-[#2D3C68]
-              hover:text-[#2D3C68]
-            "
-          >
-            <span
-              className="
-                inline-block
-                transition-transform
-                duration-500
-                group-hover:translate-x-[3px]
-              "
-            >
-              Step Inside the Yacht →
-            </span>
-          </button>
+        <div ref={ctaRef} className={config.classes.ctaWrap}>
+          <Link href="/yacht" className={config.classes.cta}>
+            {config.text.cta}
+          </Link>
         </div>
       </div>
     </section>
   );
-}
+} 
 
 
 function About() {
@@ -1931,30 +1628,393 @@ function ParallaxImage({ src, alt }) {
 
 
 function Yacht() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      images: {
+        yacht:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1777394633/e75ce606-c6fd-4eae-8739-12516236bfec_1_ohoghl.png",
+
+        upperDeck:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
+
+        cabins:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp",
+
+        crew:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp",
+      },
+
+      text: {
+        label: "The Yacht",
+
+        headlineLine1: "Designed for the way",
+
+        headlineLine2: "people live at sea",
+
+        description:
+          "Open decks, quiet cabins, shared spaces, and enough room for twelve people to move through the day without ever feeling crowded.",
+
+        upperDeckTitle: "Upper Deck",
+
+        upperDeckDesc:
+          "Sunbeds, open sky, and the full width of the sea on every side.",
+
+        cabinsTitle: "Four Cabins",
+
+        cabinsDesc:
+          "Private rooms designed for calm, rest, and time entirely your own.",
+
+        crewTitle: "Crew",
+
+        crewDesc: "Ten crew who know every current by name.",
+
+        microLabel: "Vessel",
+
+        microNumber: "40.75m",
+
+        microMobileDesc:
+          "Handcrafted phinisi, built 2025 in South Sulawesi.",
+
+        microDesktopDesc:
+          "Handcrafted phinisi, built 2025 in Tanah Beru, South Sulawesi.",
+
+        primaryCta: "Explore The Yacht",
+
+        utilityDeckPlan: "View Deck Plan",
+
+        utilityBrochure: "Download Brochure",
+
+        utilitySpecs: "View Specifications",
+      },
+
+      routes: {
+        yacht: "/yacht",
+
+        deckPlan: "/yacht#deck-plan",
+
+        brochure: "/brochure.pdf",
+
+        specifications: "/yacht#specifications",
+      },
+
+      animation: {
+        ease: "power3.out",
+
+        label: {
+          from: {
+            opacity: 0,
+            y: 10,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+          },
+        },
+
+        headline: {
+          from: {
+            opacity: 0,
+            y: 24,
+            filter: "blur(7px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.36,
+          },
+        },
+
+        description: {
+          from: {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.28,
+          },
+        },
+
+        mobileCards: {
+          from: {
+            opacity: 0,
+            y: 28,
+            filter: "blur(7px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.04,
+            stagger: 0.12,
+          },
+        },
+
+        desktopYacht: {
+          from: {
+            opacity: 0,
+            scale: 0.965,
+            y: 36,
+            filter: "blur(12px)",
+          },
+
+          to: {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.7,
+          },
+        },
+
+        desktopCards: {
+          from: {
+            opacity: 0,
+            y: 34,
+            filter: "blur(8px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1,
+            stagger: 0.13,
+          },
+        },
+
+        cta: {
+          from: {
+            opacity: 0,
+            y: 18,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 0.9,
+          },
+        },
+      },
+
+      classes: {
+        section:
+          "relative w-full overflow-hidden bg-[#F4F5F2] px-5 pb-[120px] pt-[88px] text-[#2D3C68] md:px-6 md:pb-[130px] md:pt-[120px]",
+
+        topBridge:
+          "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.07] via-[#2D3C68]/[0.025] to-transparent",
+
+        bottomBridge:
+          "pointer-events-none absolute bottom-0 left-0 h-[130px] w-full bg-gradient-to-b from-transparent to-[#2D3C68]/[0.05]",
+
+        coolAtmosphere:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,60,104,0.05),transparent_48%)]",
+
+        warmAtmosphere:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(176,141,87,0.05),transparent_38%)]",
+
+        container: "relative mx-auto max-w-[1440px]",
+
+        header:
+          "mx-auto mb-14 max-w-[680px] text-center md:mb-32",
+
+        label:
+          "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/56",
+
+        headline:
+          "mt-6 font-[Gambarino] text-[42px] leading-[0.96] tracking-[-0.03em] text-[#2D3C68] md:text-[66px]",
+
+        description:
+          "mx-auto mt-5 max-w-[520px] text-[15px] leading-[1.86] text-[#2D3C68]/72 md:leading-[1.9]",
+
+        mobileStack: "mx-auto max-w-[390px] md:hidden",
+
+        mobileYachtPanel:
+          "relative mx-auto flex justify-center pt-2",
+
+        mobileYachtGlow:
+          "pointer-events-none absolute left-1/2 top-[9%] h-[360px] w-[150px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/18 blur-[72px]",
+
+        mobileYachtFrame:
+          "relative h-[430px] w-[122px]",
+
+        mobileYachtShadow:
+          "absolute inset-0 translate-y-[16px] scale-[0.92] rounded-full bg-[#2D3C68]/[0.075] blur-[24px]",
+
+        mobileYachtHaze:
+          "absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_58%)]",
+
+        mobileYachtImageWrap:
+          "relative h-full w-full opacity-[0.985] saturate-[0.95]",
+
+        mobileYachtImage:
+          "object-contain drop-shadow-[0_26px_42px_rgba(18,28,48,0.12)]",
+
+        mobileSpecCard:
+          "relative mt-9 overflow-hidden border border-[#2D3C68]/[0.08] bg-[#F4F5F2]/82 px-6 py-6 shadow-[0_26px_70px_rgba(20,30,50,0.06)] backdrop-blur-md",
+
+        mobileSpecWarm:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_56%)]",
+
+        mobileSpecShine:
+          "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.16] to-transparent",
+
+        mobileSpecLabel:
+          "relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50",
+
+        mobileSpecNumber:
+          "relative mt-2 font-[Gambarino] text-[40px] leading-none tracking-[-0.03em] text-[#2D3C68]",
+
+        mobileSpecDesc:
+          "relative mt-3 max-w-[280px] text-[13px] leading-[1.72] text-[#2D3C68]/68",
+
+        mobileFeatureList:
+          "mt-10 divide-y divide-[#2D3C68]/10 border-y border-[#2D3C68]/10",
+
+        mobileFeatureRow:
+          "grid grid-cols-[96px_1fr] items-center gap-5 py-5",
+
+        mobileFeatureThumb:
+          "relative aspect-[4/5] overflow-hidden shadow-[0_18px_42px_rgba(45,60,104,0.075)]",
+
+        mobileFeatureImage:
+          "object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+
+        mobileFeatureOverlay:
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent",
+
+        mobileFeatureTitle:
+          "font-[Gambarino] text-[26px] leading-[1.06] tracking-[-0.02em] text-[#2D3C68]",
+
+        mobileFeatureDesc:
+          "mt-2 text-[13px] leading-[1.7] text-[#2D3C68]/68",
+
+        microCard:
+          "relative overflow-hidden border border-[#2D3C68]/[0.06] bg-[#F4F5F2]/80 px-5 py-5 shadow-[0_28px_70px_rgba(20,30,50,0.05)] backdrop-blur-md md:px-7 md:py-7 md:shadow-[0_30px_80px_rgba(20,30,50,0.05)]",
+
+        microWarm:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_54%)] md:bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.08),transparent_58%)]",
+
+        microShine:
+          "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent",
+
+        microLabel:
+          "relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50",
+
+        microNumber:
+          "relative mt-2 font-[Gambarino] text-[36px] leading-none text-[#2D3C68] md:mt-3 md:text-[44px]",
+
+        microDesc:
+          "relative mt-2 text-[12px] leading-[1.75] text-[#2D3C68]/68 md:mt-3 md:text-[13px] md:leading-[1.8]",
+
+        desktop: "hidden md:block",
+
+        desktopStage: "relative h-[clamp(1180px,92vw,1320px)]",
+
+        yachtGlow:
+          "pointer-events-none absolute left-1/2 top-[18%] z-10 h-[560px] w-[240px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/15 opacity-0 blur-[92px]",
+
+        svg:
+          "pointer-events-none absolute inset-0 z-20 h-full w-full",
+
+        yachtParallax:
+          "pointer-events-none absolute left-1/2 top-[-3%] z-20 -translate-x-1/2",
+
+        yachtSize:
+          "relative h-[clamp(900px,72vw,1020px)] w-[clamp(224px,17.5vw,252px)]",
+
+        yachtShadow:
+          "absolute inset-0 translate-y-[22px] scale-[0.94] rounded-full bg-black/[0.07] blur-[36px]",
+
+        yachtHaze:
+          "absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_58%)]",
+
+        yachtImageWrap:
+          "relative h-full w-full opacity-[0.985] saturate-[0.95]",
+
+        yachtImage:
+          "object-contain drop-shadow-[0_34px_56px_rgba(18,28,48,0.10)]",
+
+        desktopCardA:
+          "absolute left-[6.25%] top-[12.9%] z-30 w-[clamp(300px,25vw,360px)]",
+
+        desktopCardB:
+          "absolute right-[8.33%] top-[25%] z-30 w-[clamp(248px,20.1vw,290px)]",
+
+        desktopCardC:
+          "absolute left-[8.33%] top-[62.9%] z-30 w-[clamp(265px,21.5vw,310px)]",
+
+        desktopMicro:
+          "absolute right-[10.42%] top-[70.5%] z-30 w-[clamp(220px,17.3vw,250px)]",
+
+        ctaWrapMobile:
+          "flex flex-col items-center gap-5 pt-10",
+
+        ctaWrapDesktop:
+          "mt-10 flex justify-center",
+
+        ctaInner: "flex flex-col items-center gap-6",
+
+        ctaDivider:
+          "h-px w-[140px] bg-gradient-to-r from-transparent via-[#B08D57]/40 to-transparent md:w-[150px]",
+
+        primaryCta:
+          "group inline-flex items-center gap-3 rounded-full border border-[#2D3C68]/18 px-7 py-3 text-[12px] uppercase tracking-[0.22em] text-[#2D3C68] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:bg-[#2D3C68] hover:text-[#F4F5F2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
+
+        primaryArrow:
+          "transition-transform duration-500 group-hover:translate-x-[3px] md:group-hover:translate-x-[4px]",
+
+        utilityMobile:
+          "flex flex-col items-center gap-3 pt-1",
+
+        utilityDesktop: "flex items-center gap-7",
+
+        utilityLink:
+          "text-[11px] uppercase tracking-[0.18em] text-[#2D3C68]/44 transition-colors duration-300 hover:text-[#2D3C68]/72 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
+
+        utilityDivider: "h-3 w-px bg-[#2D3C68]/14",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
   const sectionRef = useRef(null);
+
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const descRef = useRef(null);
+
+  const mobileYachtRef = useRef(null);
+  const mobileSpecRef = useRef(null);
+  const mobileFeatureARef = useRef(null);
+  const mobileFeatureBRef = useRef(null);
+  const mobileFeatureCRef = useRef(null);
+  const mobileCtaRef = useRef(null);
 
   const yachtParallaxRef = useRef(null);
   const yachtFloatRef = useRef(null);
-
   const yachtGlowRef = useRef(null);
-
   const svgRef = useRef(null);
 
-  const headerRef = useRef(null);
-
-  const cardARef = useRef(null);
-  const cardBRef = useRef(null);
-  const cardCRef = useRef(null);
-
-  const microRef = useRef(null);
-
-  const ctaRef = useRef(null);
-
-  const ease = [0.22, 1, 0.36, 1];
+  const desktopCardARef = useRef(null);
+  const desktopCardBRef = useRef(null);
+  const desktopCardCRef = useRef(null);
+  const desktopMicroRef = useRef(null);
+  const desktopCtaRef = useRef(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     if (!sectionRef.current) return;
 
     const mm = gsap.matchMedia();
@@ -1971,58 +2031,33 @@ function Yacht() {
           "(prefers-reduced-motion: reduce)"
         ).matches;
 
-        /*
-          ========================================
-          NODE SYSTEM
-          ========================================
-        */
+        const headerNodes = [
+          labelRef.current,
+          headlineRef.current,
+          descRef.current,
+        ].filter(Boolean);
 
-        const mobileNodes = mobile
-          ? [
-              headerRef.current,
+        const mobileNodes = [
+          mobileYachtRef.current,
+          mobileSpecRef.current,
+          mobileFeatureARef.current,
+          mobileFeatureBRef.current,
+          mobileFeatureCRef.current,
+          mobileCtaRef.current,
+        ].filter(Boolean);
 
-              cardARef.current,
-
-              microRef.current,
-
-              cardBRef.current,
-
-              cardCRef.current,
-
-              ctaRef.current,
-            ].filter(Boolean)
-          : [];
-
-        const desktopNodes = !mobile
-          ? [
-              headerRef.current,
-
-              yachtParallaxRef.current,
-
-              cardARef.current,
-
-              cardBRef.current,
-
-              cardCRef.current,
-
-              microRef.current,
-
-              ctaRef.current,
-            ].filter(Boolean)
-          : [];
-
-        const allNodes = mobile
-          ? mobileNodes
-          : desktopNodes;
-
-        /*
-          ========================================
-          REDUCED MOTION
-          ========================================
-        */
+        const desktopNodes = [
+          yachtGlowRef.current,
+          yachtParallaxRef.current,
+          desktopCardARef.current,
+          desktopCardBRef.current,
+          desktopCardCRef.current,
+          desktopMicroRef.current,
+          desktopCtaRef.current,
+        ].filter(Boolean);
 
         if (reduce) {
-          gsap.set(allNodes, {
+          gsap.set([...headerNodes, ...mobileNodes, ...desktopNodes], {
             opacity: 1,
             x: 0,
             y: 0,
@@ -2030,612 +2065,389 @@ function Yacht() {
             filter: "blur(0px)",
           });
 
-          if (!mobile && svgRef.current) {
-            const paths =
-              svgRef.current.querySelectorAll("path");
+          if (svgRef.current) {
+            const paths = svgRef.current.querySelectorAll("path");
 
             gsap.set(paths, {
               strokeDashoffset: 0,
-              opacity: 0.12,
+              opacity: 0.14,
             });
           }
 
           return;
         }
 
-        /*
-          ========================================
-          ENTRY TIMELINE
-          ========================================
-        */
+        const ctx = gsap.context(() => {
+          const ease = config.animation.ease;
 
-        const tl = gsap.timeline({
-          defaults: {
-            ease,
-          },
+          const tl = gsap.timeline({
+            defaults: {
+              ease,
+            },
 
-          scrollTrigger: {
-            trigger: sectionRef.current,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: mobile ? "top bottom-=40" : "top bottom-=100",
+              once: true,
+            },
+          });
 
-            start: mobile
-              ? "top bottom-=40"
-              : "top bottom-=100",
+          /*
+            TEXT — SEA-BREATH SYSTEM
+          */
 
-            once: true,
-          },
-        });
-
-        /*
-          ========================================
-          HEADER
-          ========================================
-        */
-
-        tl.fromTo(
-          headerRef.current,
-          {
-            opacity: 0,
-
-            y: 28,
-
-            filter: "blur(10px)",
-          },
-          {
-            opacity: 1,
-
-            y: 0,
-
-            filter: "blur(0px)",
-
-            duration: 1.1,
+          if (labelRef.current) {
+            tl.fromTo(
+              labelRef.current,
+              config.animation.label.from,
+              {
+                ...config.animation.label.to,
+                ease,
+              },
+              0
+            );
           }
-        );
 
-        /*
-          ========================================
-          MOBILE FLOW
-          ========================================
-        */
+          if (headlineRef.current) {
+            tl.fromTo(
+              headlineRef.current,
+              config.animation.headline.from,
+              {
+                ...config.animation.headline.to,
+                ease,
+              },
+              0.08
+            );
+          }
 
-        if (mobile) {
-          tl.fromTo(
-            [
-              cardARef.current,
-
-              microRef.current,
-
-              cardBRef.current,
-
-              cardCRef.current,
-            ],
-            {
-              opacity: 0,
-
-              y: 36,
-
-              filter: "blur(10px)",
-            },
-            {
-              opacity: 1,
-
-              y: 0,
-
-              filter: "blur(0px)",
-
-              duration: 1,
-
-              stagger: 0.16,
-            },
-            "-=0.5"
-          ).fromTo(
-            ctaRef.current,
-            {
-              opacity: 0,
-
-              y: 20,
-            },
-            {
-              opacity: 1,
-
-              y: 0,
-
-              duration: 0.9,
-            },
-            "-=0.4"
-          );
-        }
-
-        /*
-          ========================================
-          DESKTOP FLOW
-          ========================================
-        */
-
-        else {
-          /*
-            YACHT
-          */
-
-          tl.fromTo(
-            yachtParallaxRef.current,
-            {
-              opacity: 0,
-
-              scale: 0.965,
-
-              y: 36,
-
-              filter: "blur(12px)",
-            },
-            {
-              opacity: 1,
-
-              scale: 1,
-
-              y: 0,
-
-              filter: "blur(0px)",
-
-              duration: 1.7,
-            },
-            "-=0.5"
-          );
+          if (descRef.current) {
+            tl.fromTo(
+              descRef.current,
+              config.animation.description.from,
+              {
+                ...config.animation.description.to,
+                ease,
+              },
+              0.22
+            );
+          }
 
           /*
-            CARD ORBIT
+            MOBILE FLOW
           */
+
+          if (mobile) {
+            tl.fromTo(
+              [
+                mobileYachtRef.current,
+                mobileSpecRef.current,
+                mobileFeatureARef.current,
+                mobileFeatureBRef.current,
+                mobileFeatureCRef.current,
+              ].filter(Boolean),
+              config.animation.mobileCards.from,
+              {
+                ...config.animation.mobileCards.to,
+                ease,
+              },
+              0.5
+            );
+
+            if (mobileCtaRef.current) {
+              tl.fromTo(
+                mobileCtaRef.current,
+                config.animation.cta.from,
+                {
+                  ...config.animation.cta.to,
+                  ease,
+                },
+                "-=0.3"
+              );
+            }
+
+            return;
+          }
+
+          /*
+            DESKTOP FLOW
+          */
+
+          if (yachtGlowRef.current) {
+            tl.fromTo(
+              yachtGlowRef.current,
+              {
+                opacity: 0,
+                scale: 0.98,
+              },
+              {
+                opacity: 1,
+                scale: 1,
+                duration: 1.5,
+                ease,
+              },
+              0.34
+            );
+          }
+
+          if (yachtParallaxRef.current) {
+            tl.fromTo(
+              yachtParallaxRef.current,
+              config.animation.desktopYacht.from,
+              {
+                ...config.animation.desktopYacht.to,
+                ease,
+              },
+              0.42
+            );
+          }
 
           tl.fromTo(
             [
-              cardARef.current,
-
-              cardBRef.current,
-
-              cardCRef.current,
-
-              microRef.current,
-            ],
+              desktopCardARef.current,
+              desktopCardBRef.current,
+              desktopCardCRef.current,
+              desktopMicroRef.current,
+            ].filter(Boolean),
+            config.animation.desktopCards.from,
             {
-              opacity: 0,
-
-              y: 38,
-
-              filter: "blur(10px)",
+              ...config.animation.desktopCards.to,
+              ease,
             },
-            {
-              opacity: 1,
-
-              y: 0,
-
-              filter: "blur(0px)",
-
-              duration: 1,
-
-              stagger: 0.13,
-            },
-            "-=1.1"
+            0.9
           );
 
-          /*
-            CTA
-          */
-
-          tl.fromTo(
-            ctaRef.current,
-            {
-              opacity: 0,
-
-              y: 20,
-            },
-            {
-              opacity: 1,
-
-              y: 0,
-
-              duration: 0.9,
-            },
-            "-=0.45"
-          );
+          if (desktopCtaRef.current) {
+            tl.fromTo(
+              desktopCtaRef.current,
+              config.animation.cta.from,
+              {
+                ...config.animation.cta.to,
+                ease,
+              },
+              1.15
+            );
+          }
 
           /*
-            SVG
+            CONNECTOR LINES
           */
 
           if (svgRef.current) {
-            const paths =
-              svgRef.current.querySelectorAll("path");
+            const paths = svgRef.current.querySelectorAll("path");
 
             paths.forEach((path) => {
               const length = path.getTotalLength();
 
               gsap.set(path, {
                 strokeDasharray: length,
-
                 strokeDashoffset: length,
-
                 opacity: 0,
               });
             });
 
             gsap.to(paths, {
               strokeDashoffset: 0,
-
-              opacity: 0.24,
-
+              opacity: 0.16,
               duration: 2,
-
               stagger: 0.24,
-
-              ease,
+              ease: "power2.out",
 
               scrollTrigger: {
                 trigger: sectionRef.current,
-
                 start: "top 60%",
-
                 once: true,
               },
             });
           }
 
           /*
-            PARALLAX
+            PARALLAX — STRUCTURAL, NOT FLOATING CARDS
           */
 
-          gsap.to(yachtParallaxRef.current, {
-            y: -24,
+          if (yachtParallaxRef.current) {
+            gsap.to(yachtParallaxRef.current, {
+              y: -24,
+              ease: "none",
 
-            ease: "none",
-
-            scrollTrigger: {
-              trigger: sectionRef.current,
-
-              start: "top bottom",
-
-              end: "bottom top",
-
-              scrub: 1,
-            },
-          });
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1,
+              },
+            });
+          }
 
           /*
-            FLOAT
+            SINGLE AMBIENT LOOP — YACHT ONLY
           */
 
-          gsap.to(yachtFloatRef.current, {
-            y: "+=10",
+          if (yachtFloatRef.current) {
+            gsap.to(yachtFloatRef.current, {
+              y: "+=10",
+              duration: 5.4,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+        }, sectionRef);
 
-            duration: 5.4,
-
-            repeat: -1,
-
-            yoyo: true,
-
-            ease: "sine.inOut",
-          });
-
-          /*
-            GLOW
-          */
-
-          gsap.to(yachtGlowRef.current, {
-            opacity: 0.72,
-
-            scale: 1.035,
-
-            duration: 4.8,
-
-            repeat: -1,
-
-            yoyo: true,
-
-            ease: "sine.inOut",
-          });
-        }
-
-        return () => {};
+        return () => ctx.revert();
       }
     );
 
     return () => mm.revert();
-  }, []);
+  }, [config]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#F4F5F2]
-        px-5
-        pb-[120px]
-        pt-[78px]
-        md:px-6
-        md:pb-[130px]
-        md:pt-[120px]
-      "
-    >
-      {/* ========================================= */}
+    <section ref={sectionRef} className={config.classes.section}>
       {/* ATMOSPHERIC TRANSITIONS */}
-      {/* ========================================= */}
+      <div className={config.classes.topBridge} />
+      <div className={config.classes.bottomBridge} />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[140px] bg-gradient-to-b from-[#2D3C68]/[0.07] to-transparent" />
-
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[120px] w-full bg-gradient-to-b from-transparent to-[#2D3C68]/[0.05]" />
-
-      {/* ========================================= */}
       {/* GLOBAL ATMOSPHERE */}
-      {/* ========================================= */}
+      <div className={config.classes.coolAtmosphere} />
+      <div className={config.classes.warmAtmosphere} />
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,60,104,0.05),transparent_48%)]" />
-
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(176,141,87,0.05),transparent_38%)]" />
-
-      <div className="mx-auto max-w-[1440px]">
-        {/* ========================================= */}
+      <div className={config.classes.container}>
         {/* HEADER */}
-        {/* ========================================= */}
-
-        <div
-          ref={headerRef}
-          className="
-            mx-auto
-            mb-16
-            max-w-[680px]
-            text-center
-            md:mb-32
-          "
-        >
-          <p className="text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/56">
-            The Yacht
+        <div className={config.classes.header}>
+          <p ref={labelRef} className={config.classes.label}>
+            {config.text.label}
           </p>
 
-          <h2
-            className="
-              mt-6
-              font-[Gambarino]
-              text-[42px]
-              leading-[0.96]
-              tracking-[-0.03em]
-              text-[#2D3C68]
-              md:text-[66px]
-            "
-          >
-            Designed for the way
+          <h2 ref={headlineRef} className={config.classes.headline}>
+            {config.text.headlineLine1}
             <br />
-            people live at sea
+            {config.text.headlineLine2}
           </h2>
 
-          <p
-            className="
-              mx-auto
-              mt-5
-              max-w-[500px]
-              text-[15px]
-              leading-[1.9]
-              text-[#2D3C68]/68
-            "
-          >
-            Open decks, quiet cabins, shared spaces,
-            and enough room for twelve people to move
-            through the day without ever feeling
-            crowded.
+          <p ref={descRef} className={config.classes.description}>
+            {config.text.description}
           </p>
         </div>
 
-        {/* ========================================= */}
-        {/* MOBILE */}
-        {/* ========================================= */}
+        {/* MOBILE — VESSEL BRIEFING */}
+        <div className={config.classes.mobileStack}>
+          {/* TOP-DOWN YACHT RENDER */}
+          <div ref={mobileYachtRef} className={config.classes.mobileYachtPanel}>
+            <div className={config.classes.mobileYachtGlow} />
 
-        <div className="space-y-8 md:hidden">
-          {/* CARD A */}
+            <div className={config.classes.mobileYachtFrame}>
+              <div className={config.classes.mobileYachtShadow} />
+              <div className={config.classes.mobileYachtHaze} />
 
-          <div
-            ref={cardARef}
-            className="ml-auto w-[86%]"
-          >
-            <CardBlock
-              image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp"
-              title="Upper Deck"
-              desc="Sunbeds, open sky, and the full width of the sea on every side."
-              large
-            />
-          </div>
-
-          {/* MICRO */}
-
-          <div
-            ref={microRef}
-            className="mr-auto w-[54%]"
-          >
-            <div
-              className="
-                relative
-                overflow-hidden
-                border
-                border-[#2D3C68]/[0.06]
-                bg-white/[0.72]
-                px-5
-                py-5
-                shadow-[0_28px_70px_rgba(20,30,50,0.05)]
-                backdrop-blur-md
-              "
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_54%)]" />
-
-              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent" />
-
-              <p className="relative text-[9px] uppercase tracking-[0.24em] text-[#2D3C68]/42">
-                Vessel
-              </p>
-
-              <p className="relative mt-2 font-[Gambarino] text-[34px] leading-none text-[#2D3C68]">
-                40.75m
-              </p>
-
-              <p className="relative mt-2 text-[11px] leading-[1.75] text-[#2D3C68]/68">
-                Handcrafted phinisi, built 2025 in
-                South Sulawesi.
-              </p>
+              <div className={config.classes.mobileYachtImageWrap}>
+                <Image
+                  src={config.images.yacht}
+                  alt="Top down Serenity phinisi yacht"
+                  fill
+                  priority
+                  sizes="122px"
+                  className={config.classes.mobileYachtImage}
+                />
+              </div>
             </div>
           </div>
 
-          {/* CARD B */}
+          {/* VESSEL SPEC */}
+          <div ref={mobileSpecRef} className={config.classes.mobileSpecCard}>
+            <div className={config.classes.mobileSpecWarm} />
+            <div className={config.classes.mobileSpecShine} />
 
-          <div
-            ref={cardBRef}
-            className="ml-auto w-[70%]"
-          >
-            <CardBlock
-              image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp"
-              title="Four Cabins"
-              desc="Private rooms designed for rest after long days in the sun and sea."
+            <p className={config.classes.mobileSpecLabel}>
+              {config.text.microLabel}
+            </p>
+
+            <p className={config.classes.mobileSpecNumber}>
+              {config.text.microNumber}
+            </p>
+
+            <p className={config.classes.mobileSpecDesc}>
+              {config.text.microMobileDesc}
+            </p>
+          </div>
+
+          {/* FEATURE ROWS */}
+          <div className={config.classes.mobileFeatureList}>
+            <MobileFeatureRow
+              refProp={mobileFeatureARef}
+              image={config.images.upperDeck}
+              title={config.text.upperDeckTitle}
+              desc={config.text.upperDeckDesc}
+              sizes="96px"
+              config={config}
+            />
+
+            <MobileFeatureRow
+              refProp={mobileFeatureBRef}
+              image={config.images.cabins}
+              title={config.text.cabinsTitle}
+              desc={config.text.cabinsDesc}
+              sizes="96px"
+              config={config}
+            />
+
+            <MobileFeatureRow
+              refProp={mobileFeatureCRef}
+              image={config.images.crew}
+              title={config.text.crewTitle}
+              desc={config.text.crewDesc}
+              sizes="96px"
+              config={config}
             />
           </div>
 
-          {/* CARD C */}
+          {/* CTA CLUSTER */}
+          <div ref={mobileCtaRef} className={config.classes.ctaWrapMobile}>
+            <div className={config.classes.ctaDivider} />
 
-          <div
-            ref={cardCRef}
-            className="mr-auto w-[78%]"
-          >
-            <CardBlock
-              image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp"
-              title="Crew"
-              desc="Ten crew who know every current by name."
-            />
-          </div>
-
-          {/* CTA */}
-
-          <div
-            ref={ctaRef}
-            className="flex flex-col items-center gap-5 pt-8"
-          >
-            <div className="h-px w-[120px] bg-gradient-to-r from-transparent via-[#B08D57]/40 to-transparent" />
-
-            <a
-              href="/yacht"
-              className="
-                group
-                inline-flex
-                items-center
-                gap-3
-                rounded-full
-                border
-                border-[#2D3C68]/18
-                px-7
-                py-3
-                text-[12px]
-                uppercase
-                tracking-[0.22em]
-                text-[#2D3C68]
-                transition-all
-                duration-500
-                hover:border-[#2D3C68]
-                hover:bg-[#2D3C68]
-                hover:text-white
-              "
+            <Link
+              href={config.routes.yacht}
+              className={config.classes.primaryCta}
             >
-              Explore The Yacht
+              {config.text.primaryCta}
 
-              <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
-                →
-              </span>
-            </a>
+              <span className={config.classes.primaryArrow}>→</span>
+            </Link>
 
-            <div className="flex flex-col items-center gap-3 pt-2">
-              <a
-                href="/deck-plan"
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-[0.18em]
-                  text-[#2D3C68]/48
-                  transition-all
-                  duration-300
-                  hover:text-[#2D3C68]
-                "
+            <div className={config.classes.utilityMobile}>
+              <Link
+                href={config.routes.deckPlan}
+                className={config.classes.utilityLink}
               >
-                View Deck Plan
-              </a>
+                {config.text.utilityDeckPlan}
+              </Link>
 
               <a
-                href="/brochure.pdf"
+                href={config.routes.brochure}
                 download
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-[0.18em]
-                  text-[#2D3C68]/48
-                  transition-all
-                  duration-300
-                  hover:text-[#2D3C68]
-                "
+                className={config.classes.utilityLink}
               >
-                Download Brochure
+                {config.text.utilityBrochure}
               </a>
 
-              <a
-                href="/specifications"
-                className="
-                  text-[11px]
-                  uppercase
-                  tracking-[0.18em]
-                  text-[#2D3C68]/48
-                  transition-all
-                  duration-300
-                  hover:text-[#2D3C68]
-                "
+              <Link
+                href={config.routes.specifications}
+                className={config.classes.utilityLink}
               >
-                View Specifications
-              </a>
+                {config.text.utilitySpecs}
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* ========================================= */}
         {/* DESKTOP */}
-        {/* ========================================= */}
+        <div className={config.classes.desktop}>
+          <div className={config.classes.desktopStage}>
+            {/* YACHT GLOW — STATIC / ENTRANCE ONLY */}
+            <div ref={yachtGlowRef} className={config.classes.yachtGlow} />
 
-        <div className="hidden md:block">
-          <div className="relative h-[clamp(1180px,92vw,1320px)]">
-            {/* ========================================= */}
-            {/* YACHT GLOW */}
-            {/* ========================================= */}
-
-            <div
-              ref={yachtGlowRef}
-              className="
-                pointer-events-none
-                absolute
-                left-1/2
-                top-[18%]
-                z-10
-                h-[560px]
-                w-[240px]
-                -translate-x-1/2
-                rounded-full
-                bg-[#D7C3A0]/15
-                blur-[92px]
-              "
-            />
-
-            {/* ========================================= */}
             {/* CONNECTOR LINES */}
-            {/* ========================================= */}
-
             <svg
               ref={svgRef}
-              className="
-                pointer-events-none
-                absolute
-                inset-0
-                z-20
-                h-full
-                w-full
-              "
+              className={config.classes.svg}
               viewBox="0 0 1440 1320"
               preserveAspectRatio="none"
               aria-hidden="true"
@@ -2673,248 +2485,134 @@ function Yacht() {
               />
             </svg>
 
-            {/* ========================================= */}
             {/* CENTER YACHT */}
-            {/* ========================================= */}
-
             <div
               ref={yachtParallaxRef}
-              className="
-                pointer-events-none
-                absolute
-                left-1/2
-                top-[-3%]
-                z-20
-                -translate-x-1/2
-              "
+              className={config.classes.yachtParallax}
             >
               <div ref={yachtFloatRef}>
-                <div className="relative h-[clamp(900px,72vw,1020px)] w-[clamp(224px,17.5vw,252px)]">
-                  {/* SHADOW */}
+                <div className={config.classes.yachtSize}>
+                  <div className={config.classes.yachtShadow} />
+                  <div className={config.classes.yachtHaze} />
 
-                  <div className="absolute inset-0 translate-y-[22px] scale-[0.94] rounded-full bg-black/[0.07] blur-[36px]" />
-
-                  {/* AMBIENT HAZE */}
-
-                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_58%)]" />
-
-                  {/* IMAGE */}
-
-                  <div className="relative h-full w-full opacity-[0.985] saturate-[0.95]">
+                  <div className={config.classes.yachtImageWrap}>
                     <Image
-                      src="https://res.cloudinary.com/dombq6plz/image/upload/v1777394633/e75ce606-c6fd-4eae-8739-12516236bfec_1_ohoghl.png"
+                      src={config.images.yacht}
                       alt="Top down Serenity phinisi yacht"
                       fill
-                      className="object-contain drop-shadow-[0_34px_56px_rgba(18,28,48,0.10)]"
                       priority
+                      sizes="(min-width: 768px) 252px, 0px"
+                      className={config.classes.yachtImage}
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* ========================================= */}
             {/* CARD A */}
-            {/* ========================================= */}
-
             <div
-              ref={cardARef}
-              className="
-                absolute
-                left-[6.25%]
-                top-[12.9%]
-                z-30
-                w-[clamp(300px,25vw,360px)]
-              "
+              ref={desktopCardARef}
+              className={config.classes.desktopCardA}
             >
               <CardBlock
-                image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp"
-                title="Upper Deck"
-                desc="Sunbeds, open sky, and the full width of the sea on every side."
+                image={config.images.upperDeck}
+                title={config.text.upperDeckTitle}
+                desc={config.text.upperDeckDesc}
+                sizes="360px"
                 large
               />
             </div>
 
-            {/* ========================================= */}
             {/* CARD B */}
-            {/* ========================================= */}
-
             <div
-              ref={cardBRef}
-              className="
-                absolute
-                right-[8.33%]
-                top-[25%]
-                z-30
-                w-[clamp(248px,20.1vw,290px)]
-              "
+              ref={desktopCardBRef}
+              className={config.classes.desktopCardB}
             >
               <CardBlock
-                image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp"
-                title="Four Cabins"
-                desc="Private rooms designed for calm, rest, and time entirely your own."
+                image={config.images.cabins}
+                title={config.text.cabinsTitle}
+                desc={config.text.cabinsDesc}
+                sizes="290px"
               />
             </div>
 
-            {/* ========================================= */}
             {/* CARD C */}
-            {/* ========================================= */}
-
             <div
-              ref={cardCRef}
-              className="
-                absolute
-                left-[8.33%]
-                top-[62.9%]
-                z-30
-                w-[clamp(265px,21.5vw,310px)]
-              "
+              ref={desktopCardCRef}
+              className={config.classes.desktopCardC}
             >
               <CardBlock
-                image="https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp"
-                title="Crew"
-                desc="Ten crew who know every current by name."
+                image={config.images.crew}
+                title={config.text.crewTitle}
+                desc={config.text.crewDesc}
+                sizes="310px"
               />
             </div>
 
-            {/* ========================================= */}
             {/* MICRO CARD */}
-            {/* ========================================= */}
-
             <div
-              ref={microRef}
-              className="
-                absolute
-                right-[10.42%]
-                top-[70.5%]
-                z-30
-                w-[clamp(220px,17.3vw,250px)]
-              "
+              ref={desktopMicroRef}
+              className={config.classes.desktopMicro}
             >
-              <div
-                className="
-                  relative
-                  overflow-hidden
-                  border
-                  border-[#2D3C68]/[0.06]
-                  bg-white/[0.72]
-                  px-7
-                  py-7
-                  shadow-[0_30px_80px_rgba(20,30,50,0.05)]
-                  backdrop-blur-md
-                "
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.08),transparent_58%)]" />
+              <div className={config.classes.microCard}>
+                <div className={config.classes.microWarm} />
+                <div className={config.classes.microShine} />
 
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent" />
-
-                <p className="relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/42">
-                  Vessel
+                <p className={config.classes.microLabel}>
+                  {config.text.microLabel}
                 </p>
 
-                <p className="relative mt-3 font-[Gambarino] text-[44px] leading-none text-[#2D3C68]">
-                  40.75m
+                <p className={config.classes.microNumber}>
+                  {config.text.microNumber}
                 </p>
 
-                <p className="relative mt-3 text-[13px] leading-[1.8] text-[#2D3C68]/68">
-                  Handcrafted phinisi, built 2025 in
-                  Tanah Beru, South Sulawesi.
+                <p className={config.classes.microDesc}>
+                  {config.text.microDesktopDesc}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* ========================================= */}
           {/* CTA CLUSTER */}
-          {/* ========================================= */}
+          <div ref={desktopCtaRef} className={config.classes.ctaWrapDesktop}>
+            <div className={config.classes.ctaInner}>
+              <div className={config.classes.ctaDivider} />
 
-          <div
-            ref={ctaRef}
-            className="mt-10 flex justify-center"
-          >
-            <div className="flex flex-col items-center gap-6">
-              <div className="h-px w-[150px] bg-gradient-to-r from-transparent via-[#B08D57]/40 to-transparent" />
-
-              <a
-                href="/yacht"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  gap-3
-                  rounded-full
-                  border
-                  border-[#2D3C68]/18
-                  px-7
-                  py-3
-                  text-[12px]
-                  uppercase
-                  tracking-[0.22em]
-                  text-[#2D3C68]
-                  transition-all
-                  duration-500
-                  hover:border-[#2D3C68]
-                  hover:bg-[#2D3C68]
-                  hover:text-white
-                "
+              <Link
+                href={config.routes.yacht}
+                className={config.classes.primaryCta}
               >
-                Explore The Yacht
+                {config.text.primaryCta}
 
-                <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
-                  →
-                </span>
-              </a>
+                <span className={config.classes.primaryArrow}>→</span>
+              </Link>
 
-              <div className="flex items-center gap-7">
-                <a
-                  href="/deck-plan"
-                  className="
-                    text-[11px]
-                    uppercase
-                    tracking-[0.18em]
-                    text-[#2D3C68]/46
-                    transition-all
-                    duration-300
-                    hover:text-[#2D3C68]
-                  "
+              <div className={config.classes.utilityDesktop}>
+                <Link
+                  href={config.routes.deckPlan}
+                  className={config.classes.utilityLink}
                 >
-                  View Deck Plan
-                </a>
+                  {config.text.utilityDeckPlan}
+                </Link>
 
-                <span className="h-3 w-px bg-[#2D3C68]/14" />
+                <span className={config.classes.utilityDivider} />
 
                 <a
-                  href="/brochure.pdf"
+                  href={config.routes.brochure}
                   download
-                  className="
-                    text-[11px]
-                    uppercase
-                    tracking-[0.18em]
-                    text-[#2D3C68]/46
-                    transition-all
-                    duration-300
-                    hover:text-[#2D3C68]
-                  "
+                  className={config.classes.utilityLink}
                 >
-                  Download Brochure
+                  {config.text.utilityBrochure}
                 </a>
 
-                <span className="h-3 w-px bg-[#2D3C68]/14" />
+                <span className={config.classes.utilityDivider} />
 
-                <a
-                  href="/specifications"
-                  className="
-                    text-[11px]
-                    uppercase
-                    tracking-[0.18em]
-                    text-[#2D3C68]/46
-                    transition-all
-                    duration-300
-                    hover:text-[#2D3C68]
-                  "
+                <Link
+                  href={config.routes.specifications}
+                  className={config.classes.utilityLink}
                 >
-                  View Specifications
-                </a>
+                  {config.text.utilitySpecs}
+                </Link>
               </div>
             </div>
           </div>
@@ -2924,167 +2622,2927 @@ function Yacht() {
   );
 }
 
-function CardBlock({
-  image,
-  title,
-  desc,
-  large = false,
-}) {
+function MobileFeatureRow({ refProp, image, title, desc, sizes, config }) {
   return (
-    <div className="group relative">
-      {/* ========================================= */}
-      {/* IMAGE */}
-      {/* ========================================= */}
+    <article ref={refProp} className={config.classes.mobileFeatureRow}>
+      <div className={config.classes.mobileFeatureThumb}>
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes={sizes}
+          className={config.classes.mobileFeatureImage}
+        />
 
+        <div className={config.classes.mobileFeatureOverlay} />
+      </div>
+
+      <div>
+        <h3 className={config.classes.mobileFeatureTitle}>{title}</h3>
+
+        <p className={config.classes.mobileFeatureDesc}>{desc}</p>
+      </div>
+    </article>
+  );
+}
+
+function CardBlock({ image, title, desc, sizes = "100vw", large = false }) {
+  return (
+    <article className="group">
       <div
         className={`
           relative
           overflow-hidden
-          bg-[#D9DDD6]
-          ${
-            large
-              ? "aspect-[4/5]"
-              : "aspect-[3.2/4]"
-          }
+          shadow-[0_24px_60px_rgba(45,60,104,0.08)]
+          ${large ? "aspect-[4/5]" : "aspect-[4/5]"}
         `}
       >
-        {/* IMAGE */}
-        <div className="absolute inset-0">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="
-              object-cover
-              scale-[1.015]
-              transition-transform
-              duration-[2400ms]
-              ease-[cubic-bezier(0.22,1,0.36,1)]
-              group-hover:scale-[1.045]
-              group-hover:translate-y-[-4px]
-            "
-          />
-        </div>
-
-        {/* ATMOSPHERIC DEPTH */}
-        <div
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes={sizes}
           className="
-            pointer-events-none
-            absolute
-            inset-0
-            bg-gradient-to-t
-            from-black/18
-            via-black/[0.02]
-            to-black/[0.04]
-          "
-        />
-
-        {/* WARMTH */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            bg-[radial-gradient(circle_at_50%_18%,rgba(255,255,255,0.08),transparent_42%)]
-            opacity-70
-            transition-opacity
+            object-cover
+            transition-transform
             duration-[1800ms]
-            group-hover:opacity-100
+            ease-[cubic-bezier(0.22,1,0.36,1)]
+            group-hover:scale-[1.03]
           "
         />
 
-        {/* DEPTH EDGE */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            ring-1
-            ring-black/[0.04]
-            ring-inset
-          "
-        />
-
-        {/* SLOW ATMOSPHERIC SHIFT */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            bg-[#2D3C68]/[0.035]
-            opacity-0
-            transition-opacity
-            duration-[1800ms]
-            group-hover:opacity-100
-          "
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent" />
       </div>
 
-      {/* ========================================= */}
-      {/* CONTENT */}
-      {/* ========================================= */}
-
-      <div
-        className={`
-          relative
-          ${
-            large
-              ? "mt-5"
-              : "mt-4"
-          }
-        `}
-      >
-        {/* MICRO LABEL */}
-        <p
+      <div className="mt-5 md:mt-6">
+        <h3
           className="
-            text-[10px]
-            uppercase
-            tracking-[0.24em]
-            text-[#2D3C68]/44
+            font-[Gambarino]
+            text-[27px]
+            leading-[1.08]
+            tracking-[-0.02em]
+            text-[#2D3C68]
+            md:text-[28px]
           "
         >
           {title}
-        </p>
+        </h3>
 
-        {/* BODY */}
         <p
-          className={`
-            mt-2
-            max-w-[32ch]
-            leading-[1.82]
-            text-[#2D3C68]/72
-            transition-colors
-            duration-700
-            group-hover:text-[#2D3C68]/82
-            ${
-              large
-                ? "text-[15px]"
-                : "text-[14px]"
-            }
-          `}
+          className="
+            mt-3
+            max-w-[430px]
+            text-[14px]
+            leading-[1.78]
+            text-[#2D3C68]/68
+          "
         >
           {desc}
         </p>
+      </div>
+    </article>
+  );
+}
 
-        {/* ATMOSPHERIC LINE */}
+function OnboardCare() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      images: {
+        human:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1777271186/ChatGPT_Image_Apr_27_2026_01_24_38_PM_iuf3mw.png",
+      },
+
+      text: {
+        label: "Onboard Care",
+
+        headlineLine1: "Ten crew around",
+
+        headlineLine2: "twelve guests",
+
+        description:
+          "From meals and cabins to tender rides, anchorages, and the small timing of each day, the crew keeps the voyage moving without making it feel managed.",
+
+        detailLabel: "Galley to Table",
+
+        detailText:
+          "Breakfast can follow the first swim. Dinner can wait until the anchorage settles and the light begins to fade.",
+      },
+
+      animation: {
+        ease: "power3.out",
+
+        label: {
+          from: {
+            opacity: 0,
+            y: 10,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+          },
+        },
+
+        headline: {
+          from: {
+            opacity: 0,
+            y: 24,
+            filter: "blur(7px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.38,
+            stagger: 0.14,
+          },
+        },
+
+        description: {
+          from: {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.28,
+          },
+        },
+
+        rule: {
+          from: {
+            opacity: 0,
+            scaleX: 0,
+          },
+
+          to: {
+            opacity: 1,
+            scaleX: 1,
+            duration: 1.1,
+          },
+        },
+
+        detail: {
+          from: {
+            opacity: 0,
+            y: 14,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+          },
+        },
+
+        image: {
+          from: {
+            opacity: 0,
+            y: 30,
+            scale: 1.018,
+            filter: "blur(7px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 1.45,
+          },
+        },
+      },
+
+      classes: {
+        section:
+          "relative w-full overflow-hidden bg-[#2D3C68] px-6 py-22 text-[#F4F5F2] md:px-10 md:py-28 lg:py-32",
+
+        topBridge:
+          "pointer-events-none absolute inset-x-0 top-0 z-[5] h-[150px] bg-gradient-to-b from-[#F4F5F2]/[0.105] via-[#F4F5F2]/[0.03] to-transparent md:h-[190px]",
+
+        bottomBridge:
+          "pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[145px] bg-gradient-to-b from-transparent via-[#1A2844]/[0.055] to-[#1A2844]/[0.16] md:h-[160px] md:via-[#1A2844]/[0.06] md:to-[#1A2844]/[0.18]",
+
+        rightDepthSlab:
+          "pointer-events-none absolute bottom-0 right-0 top-0 hidden w-[44%] bg-gradient-to-b from-[#172641]/88 via-[#1A2844]/66 to-[#142139]/90 md:block",
+
+        rightDepthEdge:
+          "pointer-events-none absolute bottom-0 right-[44%] top-0 hidden w-[22vw] bg-gradient-to-l from-[#172641]/42 via-[#172641]/14 to-transparent md:block",
+
+        rightDepthLight:
+          "pointer-events-none absolute right-0 top-0 hidden h-full w-[50%] bg-[radial-gradient(circle_at_58%_24%,rgba(176,141,87,0.13)_0%,rgba(176,141,87,0.04)_34%,transparent_64%)] md:block",
+
+        depthAtmosphere:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_90%,rgba(11,19,34,0.32)_0%,transparent_50%)]",
+
+        surfaceLight:
+          "pointer-events-none absolute inset-0 bg-gradient-to-b from-[#F4F5F2]/[0.026] via-transparent to-[#0B1322]/[0.07]",
+
+        container:
+          "relative z-10 mx-auto max-w-[1240px]",
+
+        layout:
+          "grid items-center gap-10 md:grid-cols-12 md:gap-x-10 lg:gap-x-14",
+
+        content:
+          "order-1 md:col-span-5",
+
+        label:
+          "text-[10px] uppercase tracking-[0.34em] text-[#F4F5F2]/58 md:text-[11px]",
+
+        headline:
+          "mt-5 font-[Gambarino] text-[40px] leading-[1] tracking-[-0.035em] text-[#F4F5F2] sm:text-[48px] md:text-[clamp(48px,5vw,66px)] lg:text-[68px]",
+
+        description:
+          "mt-6 max-w-[470px] text-[15px] leading-[1.82] text-[#F4F5F2]/74 md:text-[16px] md:leading-[1.86]",
+
+        rule:
+          "mt-8 h-px w-full max-w-[340px] origin-left bg-gradient-to-r from-[#B08D57]/56 via-[#B08D57]/20 to-transparent md:mt-9 md:max-w-[520px]",
+
+        desktopDetailBlock:
+          "mt-8 hidden border-l border-[#B08D57]/40 pl-5 md:block",
+
+        mobileDetailBlock:
+          "order-3 mt-8 border-l border-[#B08D57]/40 pl-5 md:hidden",
+
+        detailLabel:
+          "text-[10px] uppercase tracking-[0.28em] text-[#F4F5F2]/54",
+
+        detailText:
+          "mt-2 max-w-[390px] text-[14px] leading-[1.76] text-[#F4F5F2]/69",
+
+        imageWrap:
+          "order-2 mx-auto w-[86%] max-w-[340px] md:relative md:col-span-6 md:col-start-7 md:mx-0 md:w-full md:max-w-none",
+
+        imageBackplate:
+          "pointer-events-none absolute -bottom-6 -right-6 -top-6 left-8 hidden bg-[#0B1322]/16 shadow-[0_36px_100px_rgba(5,10,20,0.18)] md:block",
+
+        imageFrame:
+          "relative aspect-[4/5] overflow-hidden shadow-[0_24px_64px_rgba(5,10,20,0.22)] md:aspect-auto md:h-[clamp(540px,66vh,720px)] md:shadow-[0_40px_104px_rgba(5,10,20,0.32)]",
+
+        image:
+          "object-cover object-center transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.025]",
+
+        imageOverlay:
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B1322]/38 via-transparent to-[#0B1322]/[0.05]",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
+  const sectionRef = useRef(null);
+
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const descRef = useRef(null);
+  const ruleRef = useRef(null);
+  const desktopDetailRef = useRef(null);
+  const mobileDetailRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        const headlineLines =
+          headlineRef.current?.querySelectorAll(".line") ?? [];
+
+        const activeDetail = mobile
+          ? mobileDetailRef.current
+          : desktopDetailRef.current;
+
+        const allNodes = [
+          labelRef.current,
+          ...headlineLines,
+          descRef.current,
+          ruleRef.current,
+          activeDetail,
+          imageRef.current,
+        ].filter(Boolean);
+
+        if (reduce) {
+          gsap.set(allNodes, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            scaleX: 1,
+            filter: "blur(0px)",
+          });
+
+          return;
+        }
+
+        const ctx = gsap.context(() => {
+          const ease = config.animation.ease;
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: mobile ? "top 84%" : "top 72%",
+              once: true,
+            },
+          });
+
+          if (labelRef.current) {
+            tl.fromTo(
+              labelRef.current,
+              config.animation.label.from,
+              {
+                ...config.animation.label.to,
+                ease,
+              },
+              0
+            );
+          }
+
+          if (headlineLines.length > 0) {
+            tl.fromTo(
+              headlineLines,
+              config.animation.headline.from,
+              {
+                ...config.animation.headline.to,
+                ease,
+              },
+              0.08
+            );
+          }
+
+          if (descRef.current) {
+            tl.fromTo(
+              descRef.current,
+              config.animation.description.from,
+              {
+                ...config.animation.description.to,
+                ease,
+              },
+              0.28
+            );
+          }
+
+          if (ruleRef.current) {
+            tl.fromTo(
+              ruleRef.current,
+              config.animation.rule.from,
+              {
+                ...config.animation.rule.to,
+                ease,
+              },
+              0.44
+            );
+          }
+
+          if (imageRef.current) {
+            tl.fromTo(
+              imageRef.current,
+              config.animation.image.from,
+              {
+                ...config.animation.image.to,
+                ease,
+              },
+              mobile ? 0.58 : 0.12
+            );
+          }
+
+          if (activeDetail) {
+            tl.fromTo(
+              activeDetail,
+              config.animation.detail.from,
+              {
+                ...config.animation.detail.to,
+                ease,
+              },
+              mobile ? 0.78 : 0.58
+            );
+          }
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, [config]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className={config.classes.section}
+      style={{
+        backgroundColor: "#2D3C68",
+      }}
+    >
+      {/* DESKTOP DEPTH ARCHITECTURE */}
+      <div className={config.classes.rightDepthSlab} />
+      <div className={config.classes.rightDepthEdge} />
+      <div className={config.classes.rightDepthLight} />
+
+      {/* ATMOSPHERIC BRIDGES */}
+      <div className={config.classes.topBridge} />
+      <div className={config.classes.bottomBridge} />
+
+      {/* GLOBAL ATMOSPHERE */}
+      <div className={config.classes.depthAtmosphere} />
+      <div className={config.classes.surfaceLight} />
+
+      <div className={config.classes.container}>
+        <div className={config.classes.layout}>
+          {/* TEXT */}
+          <div className={config.classes.content}>
+            <p ref={labelRef} className={config.classes.label}>
+              {config.text.label}
+            </p>
+
+            <h2 ref={headlineRef} className={config.classes.headline}>
+              <span className="line block">
+                {config.text.headlineLine1}
+              </span>
+
+              <span className="line block">
+                {config.text.headlineLine2}
+              </span>
+            </h2>
+
+            <p ref={descRef} className={config.classes.description}>
+              {config.text.description}
+            </p>
+
+            <div ref={ruleRef} className={config.classes.rule} />
+
+            {/* DESKTOP DETAIL */}
+            <div
+              ref={desktopDetailRef}
+              className={config.classes.desktopDetailBlock}
+            >
+              <p className={config.classes.detailLabel}>
+                {config.text.detailLabel}
+              </p>
+
+              <p className={config.classes.detailText}>
+                {config.text.detailText}
+              </p>
+            </div>
+          </div>
+
+          {/* HUMAN ANCHOR IMAGE */}
+          <figure ref={imageRef} className={config.classes.imageWrap}>
+            <div className={config.classes.imageBackplate} />
+
+            <div className={config.classes.imageFrame}>
+              <Image
+                src={config.images.human}
+                alt="Crew member preparing food aboard Serenity"
+                fill
+                sizes="(max-width: 767px) 340px, (max-width: 1240px) 50vw, 600px"
+                className={config.classes.image}
+              />
+
+              <div className={config.classes.imageOverlay} />
+            </div>
+          </figure>
+
+          {/* MOBILE DETAIL */}
+          <div
+            ref={mobileDetailRef}
+            className={config.classes.mobileDetailBlock}
+          >
+            <p className={config.classes.detailLabel}>
+              {config.text.detailLabel}
+            </p>
+
+            <p className={config.classes.detailText}>
+              {config.text.detailText}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+  
+function RatesSnapshot() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      text: {
+        label: "Rates & Schedule",
+        headline: "Your voyage awaits.",
+        intro: "Private charter. Per vessel.",
+        minimumLabel: "Minimum",
+        minimum: "5 nights",
+        includedLabel: "Included",
+        cta: "View Rates & Schedule",
+      },
+
+      routes: {
+        rates: "/rates-and-schedule",
+      },
+
+      destinations: [
+        {
+          name: "Labuan Bajo",
+          season: "May – Sep",
+          rate: "$9,500",
+          unit: "per night",
+        },
+        {
+          name: "Raja Ampat",
+          season: "Nov – Apr",
+          rate: "$10,500",
+          unit: "per night",
+        },
+      ],
+
+      included: [
+        "Full crew",
+        "All meals",
+        "Watersports equipment",
+        "Fuel",
+        "Park fees",
+      ],
+    };
+  }
+
+  const config = configRef.current;
+
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const ratesRef = useRef(null);
+  const termsRef = useRef(null);
+  const ctaRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const mm = gsap.matchMedia();
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        const ratePanels =
+          ratesRef.current?.querySelectorAll(".rate-panel") ?? [];
+
+        const allNodes = [
+          headerRef.current,
+          ...ratePanels,
+          termsRef.current,
+          ctaRef.current,
+        ].filter(Boolean);
+
+        if (reduce) {
+          gsap.set(allNodes, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+          });
+
+          return;
+        }
+
+        const ctx = gsap.context(() => {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: mobile ? "top 84%" : "top 76%",
+              once: true,
+            },
+          });
+
+          if (headerRef.current) {
+            tl.fromTo(
+              headerRef.current,
+              {
+                opacity: 0,
+                y: mobile ? 14 : 18,
+                filter: "blur(5px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 1,
+                ease: serenityEase,
+              },
+              0
+            );
+          }
+
+          if (ratePanels.length > 0) {
+            tl.fromTo(
+              ratePanels,
+              {
+                opacity: 0,
+                y: mobile ? 18 : 22,
+                filter: "blur(6px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 1.08,
+                stagger: mobile ? 0.08 : 0.1,
+                ease: serenityEase,
+              },
+              mobile ? 0.16 : 0.14
+            );
+          }
+
+          if (termsRef.current) {
+            tl.fromTo(
+              termsRef.current,
+              {
+                opacity: 0,
+                y: 14,
+                filter: "blur(4px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.95,
+                ease: serenityEase,
+              },
+              mobile ? 0.34 : 0.28
+            );
+          }
+
+          if (ctaRef.current) {
+            tl.fromTo(
+              ctaRef.current,
+              {
+                opacity: 0,
+                y: 10,
+              },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.88,
+                ease: serenityEase,
+              },
+              mobile ? 0.48 : 0.42
+            );
+          }
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="
+        relative
+        w-full
+        overflow-hidden
+        bg-[#F4F5F2]
+        px-6
+        pb-[58px]
+        pt-[78px]
+        text-[#2D3C68]
+        md:px-10
+        md:pb-[72px]
+        md:pt-[104px]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
+    >
+      {/* SOFT BRIDGE FROM ONBOARD CARE */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          h-[160px]
+          bg-gradient-to-b
+          from-[#1A2844]/[0.105]
+          via-[#2D3C68]/[0.034]
+          to-transparent
+          md:h-[180px]
+        "
+      />
+
+      {/* RESTRAINED ATMOSPHERE */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          bg-[radial-gradient(circle_at_12%_18%,rgba(45,60,104,0.03),transparent_48%)]
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          bg-[radial-gradient(circle_at_84%_70%,rgba(176,141,87,0.032),transparent_48%)]
+        "
+      />
+
+      <div className="relative mx-auto max-w-[1240px]">
         <div
           className="
-            mt-5
-            h-px
-            w-0
-            bg-gradient-to-r
-            from-[#B08D57]/40
-            to-transparent
-            transition-all
-            duration-[1400ms]
-            ease-[cubic-bezier(0.22,1,0.36,1)]
-            group-hover:w-[72px]
+            grid
+            items-start
+            gap-10
+            md:grid-cols-12
+            md:grid-rows-[auto_auto_auto]
+            md:gap-x-10
+            md:gap-y-0
+            lg:gap-x-14
+          "
+        >
+          {/* HEADER / INTRO */}
+          <div
+            ref={headerRef}
+            className="
+              md:col-span-5
+              md:row-start-1
+              md:pt-2
+            "
+          >
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#2D3C68]/48
+                md:text-[11px]
+              "
+            >
+              {config.text.label}
+            </p>
+
+            <h2
+              className="
+                mt-5
+                max-w-[470px]
+                font-[Gambarino]
+                text-[40px]
+                leading-[1]
+                tracking-[-0.035em]
+                text-[#2D3C68]
+                min-[390px]:text-[42px]
+                sm:text-[50px]
+                md:text-[clamp(54px,5vw,68px)]
+              "
+            >
+              {config.text.headline}
+            </h2>
+
+            <p
+              className="
+                mt-5
+                max-w-[340px]
+                text-[11px]
+                uppercase
+                leading-[1.85]
+                tracking-[0.17em]
+                text-[#2D3C68]/46
+                sm:text-[12px]
+                sm:tracking-[0.18em]
+              "
+            >
+              {config.text.intro}
+            </p>
+          </div>
+
+          {/* RATE PROOF — MOBILE COMES BEFORE TERMS / CTA */}
+          <div
+            ref={ratesRef}
+            className="
+              md:col-span-6
+              md:col-start-7
+              md:row-start-1
+              md:row-span-3
+              md:self-start
+            "
+          >
+            <div
+              className="
+                ml-auto
+                w-full
+                max-w-[660px]
+                overflow-hidden
+                border-y
+                border-[#2D3C68]/12
+                bg-white/[0.18]
+              "
+            >
+              {config.destinations.map((destination) => (
+                <article
+                  key={destination.name}
+                  className="
+                    rate-panel
+                    relative
+                    grid
+                    gap-5
+                    border-t
+                    border-[#2D3C68]/10
+                    px-0
+                    py-7
+                    first:border-t-0
+                    sm:px-2
+                    md:grid-cols-[minmax(150px,0.62fr)_auto]
+                    md:items-end
+                    md:gap-8
+                    md:px-7
+                    md:py-8
+                  "
+                >
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-x-0
+                      top-0
+                      h-px
+                      bg-gradient-to-r
+                      from-transparent
+                      via-[#B08D57]/22
+                      to-transparent
+                      opacity-70
+                    "
+                  />
+
+                  <div>
+                    <p
+                      className="
+                        text-[10px]
+                        uppercase
+                        tracking-[0.24em]
+                        text-[#2D3C68]/62
+                        md:text-[11px]
+                        md:tracking-[0.26em]
+                      "
+                    >
+                      {destination.name}
+                    </p>
+
+                    <p
+                      className="
+                        mt-2
+                        text-[13px]
+                        leading-[1.65]
+                        text-[#8B6A4F]/82
+                      "
+                    >
+                      {destination.season}
+                    </p>
+                  </div>
+
+                  <div
+                    className="
+                      flex
+                      flex-wrap
+                      items-end
+                      gap-x-2
+                      gap-y-1
+                      md:justify-end
+                      md:gap-x-2.5
+                    "
+                  >
+                    <p
+                      className="
+                        font-[Gambarino]
+                        text-[50px]
+                        leading-none
+                        tracking-[-0.045em]
+                        text-[#2D3C68]
+                        min-[390px]:text-[54px]
+                        sm:text-[60px]
+                        md:text-[clamp(58px,5.2vw,72px)]
+                      "
+                    >
+                      {destination.rate}
+                    </p>
+
+                    <p
+                      className="
+                        mb-1
+                        text-[10px]
+                        uppercase
+                        tracking-[0.14em]
+                        text-[#2D3C68]/44
+                        sm:text-[11px]
+                        sm:tracking-[0.16em]
+                        md:mb-2
+                      "
+                    >
+                      {destination.unit}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          {/* TERMS — DESKTOP LEFT COLUMN, MOBILE AFTER RATES */}
+          <div
+            ref={termsRef}
+            className="
+              md:col-span-5
+              md:row-start-2
+              md:mt-10
+            "
+          >
+            <div
+              className="
+                border-t
+                border-[#2D3C68]/10
+                pt-7
+              "
+            >
+              <div
+                className="
+                  grid
+                  gap-6
+                  sm:grid-cols-[0.42fr_1fr]
+                  md:grid-cols-1
+                "
+              >
+                <div>
+                  <p
+                    className="
+                      text-[10px]
+                      uppercase
+                      tracking-[0.28em]
+                      text-[#B08D57]/78
+                    "
+                  >
+                    {config.text.minimumLabel}
+                  </p>
+
+                  <p
+                    className="
+                      mt-2
+                      font-[Gambarino]
+                      text-[24px]
+                      leading-none
+                      tracking-[-0.02em]
+                      text-[#2D3C68]
+                      sm:text-[25px]
+                    "
+                  >
+                    {config.text.minimum}
+                  </p>
+                </div>
+
+                <div>
+                  <p
+                    className="
+                      text-[10px]
+                      uppercase
+                      tracking-[0.28em]
+                      text-[#B08D57]/78
+                    "
+                  >
+                    {config.text.includedLabel}
+                  </p>
+
+                  <p
+                    className="
+                      mt-2
+                      max-w-[480px]
+                      text-[13px]
+                      leading-[1.82]
+                      text-[#2D3C68]/62
+                      md:text-[14px]
+                      md:leading-[1.85]
+                    "
+                  >
+                    {config.included.map((item, index) => (
+                      <span key={item}>
+                        {item}
+                        {index < config.included.length - 1 && (
+                          <span className="mx-1.5 text-[#B08D57]/58 sm:mx-2">
+                            ·
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA — DESKTOP LEFT COLUMN, MOBILE LAST */}
+          <div
+            ref={ctaRef}
+            className="
+              md:col-span-5
+              md:row-start-3
+              md:mt-8
+            "
+          >
+            <div
+              className="
+                mb-8
+                h-px
+                w-full
+                max-w-[420px]
+                bg-gradient-to-r
+                from-[#B08D57]/34
+                to-transparent
+              "
+            />
+
+            <Link
+              href={config.routes.rates}
+              className="
+                group
+                inline-flex
+                min-h-[46px]
+                w-full
+                items-center
+                justify-center
+                gap-3
+                rounded-full
+                border
+                border-[#2D3C68]/18
+                px-5
+                py-3
+                text-[11px]
+                uppercase
+                tracking-[0.16em]
+                text-[#2D3C68]
+                transition-all
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#2D3C68]
+                hover:bg-[#2D3C68]
+                hover:text-[#F4F5F2]
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+                sm:w-fit
+                sm:px-7
+                sm:text-[12px]
+                sm:tracking-[0.22em]
+              "
+            >
+              {config.text.cta}
+
+              <span
+                className="
+                  transition-transform
+                  duration-500
+                  group-hover:translate-x-[3px]
+                "
+              >
+                →
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FramesAtSea() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      images: [
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
+          alt: "Quiet onboard dining detail aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
+          alt: "Calm Indonesian water and islands during a Serenity voyage",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778424753/ChatGPT_Image_May_10_2026_09_51_01_PM_xfhbnv.png",
+          alt: "Human service moment aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png",
+          alt: "Warm evening atmosphere aboard Serenity",
+        },
+      ],
+
+      animation: {
+        from: {
+          opacity: 0,
+          y: 14,
+          filter: "blur(5px)",
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.95,
+          stagger: 0.055,
+        },
+      },
+
+      classes: {
+        section:
+          "relative w-full overflow-hidden bg-[#F4F5F2] px-6 pb-[76px] pt-0 text-[#2D3C68] md:px-10 md:pb-[96px]",
+
+        container:
+          "relative mx-auto max-w-[1240px]",
+
+        grid:
+          "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-5",
+
+        frame:
+          "silent-frame group relative overflow-hidden bg-[#2D3C68]/[0.035]",
+
+        imageBox:
+          "relative aspect-[4/5] overflow-hidden",
+
+        image:
+          "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.018]",
+
+        imageOverlay:
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B1322]/12 via-transparent to-transparent",
+
+        imageRing:
+          "pointer-events-none absolute inset-0 ring-1 ring-inset ring-[#2D3C68]/[0.055]",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
+  const sectionRef = useRef(null);
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const frames = gridRef.current?.querySelectorAll(".silent-frame") ?? [];
+
+    if (reduce) {
+      gsap.set(frames, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        frames,
+        config.animation.from,
+        {
+          ...config.animation.to,
+          ease: serenityEase,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 84%",
+            once: true,
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [config]);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-label="Visual moments aboard Serenity"
+      className={config.classes.section}
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
+    >
+      <div className={config.classes.container}>
+        <div ref={gridRef} className={config.classes.grid}>
+          {config.images.map((image, index) => (
+            <article
+              key={`${image.src}-${index}`}
+              className={config.classes.frame}
+            >
+              <div className={config.classes.imageBox}>
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="
+                    (max-width: 767px) 50vw,
+                    (max-width: 1279px) 25vw,
+                    300px
+                  "
+                  className={config.classes.image}
+                />
+
+                <div className={config.classes.imageOverlay} />
+              </div>
+
+              <div className={config.classes.imageRing} />
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      image: {
+        src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png",
+      },
+
+      text: {
+        label: "Private Charter Inquiry",
+        headlineLine1: "Your voyage begins",
+        headlineLine2: "with a conversation",
+        body:
+          "Share your preferred route, dates, and guest count. Serenity’s team will prepare the next step.",
+        cta: "Begin Your Voyage",
+      },
+
+      routes: {
+        contact: "/contact",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
+  const sectionRef = useRef(null);
+  const imageRef = useRef(null);
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const bodyRef = useRef(null);
+  const ctaRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const headlineLines =
+      headlineRef.current?.querySelectorAll(".line") ?? [];
+
+    const allNodes = [
+      imageRef.current,
+      labelRef.current,
+      ...headlineLines,
+      bodyRef.current,
+      ctaRef.current,
+    ].filter(Boolean);
+
+    if (reduce) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 78%",
+          once: true,
+        },
+      });
+
+      tl.fromTo(
+        imageRef.current,
+        {
+          opacity: 0,
+          scale: 1.03,
+          filter: "blur(5px)",
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 1.32,
+          ease: serenityEase,
+        },
+        0
+      );
+
+      tl.fromTo(
+        labelRef.current,
+        {
+          opacity: 0,
+          y: 10,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.88,
+          ease: serenityEase,
+        },
+        0.12
+      );
+
+      if (headlineLines.length > 0) {
+        tl.fromTo(
+          headlineLines,
+          {
+            opacity: 0,
+            y: 22,
+            filter: "blur(6px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.16,
+            stagger: 0.1,
+            ease: serenityEase,
+          },
+          0.22
+        );
+      }
+
+      tl.fromTo(
+        bodyRef.current,
+        {
+          opacity: 0,
+          y: 16,
+          filter: "blur(4px)",
+        },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1,
+          ease: serenityEase,
+        },
+        0.44
+      );
+
+      tl.fromTo(
+        ctaRef.current,
+        {
+          opacity: 0,
+          y: 12,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.88,
+          ease: serenityEase,
+        },
+        0.6
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="
+        relative
+        flex
+        min-h-[68svh]
+        w-full
+        items-center
+        justify-center
+        overflow-hidden
+        bg-[#0B1322]
+        px-6
+        py-24
+        text-[#F4F5F2]
+        md:min-h-[74svh]
+        md:px-10
+        md:py-32
+      "
+      style={{
+        backgroundColor: "#0B1322",
+        colorScheme: "dark",
+      }}
+    >
+      {/* BACKGROUND IMAGE — DECORATIVE */}
+      <div
+        ref={imageRef}
+        aria-hidden="true"
+        className="absolute inset-0 z-0"
+      >
+        <Image
+          src={config.image.src}
+          alt=""
+          fill
+          priority={false}
+          sizes="100vw"
+          className="
+            object-cover
+            object-center
           "
         />
       </div>
-    </div>
+
+      {/* SOFT LIGHT-TO-DARK BRIDGE FROM FRAMES */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[4]
+          h-[170px]
+          md:h-[200px]
+        "
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(244,245,242,0.62) 0%, rgba(244,245,242,0.44) 16%, rgba(244,245,242,0.23) 38%, rgba(244,245,242,0.09) 66%, rgba(244,245,242,0) 100%)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.82) 42%, rgba(0,0,0,0.36) 78%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.82) 42%, rgba(0,0,0,0.36) 78%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[3]
+          h-[220px]
+          md:h-[260px]
+        "
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(244,245,242,0.16) 0%, rgba(244,245,242,0.075) 38%, rgba(244,245,242,0) 72%)",
+          filter: "blur(14px)",
+          transform: "translateY(-42px)",
+        }}
+      />
+
+      {/* READABILITY FIELD */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+          bg-[#0B1322]/50
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+          bg-gradient-to-b
+          from-[#0B1322]/34
+          via-[#0B1322]/28
+          to-[#0B1322]/80
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+          bg-[radial-gradient(circle_at_50%_43%,rgba(176,141,87,0.078)_0%,rgba(176,141,87,0.022)_34%,transparent_62%)]
+        "
+      />
+
+      {/* FOOTER DEPTH BRIDGE */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          z-[3]
+          h-[130px]
+          bg-gradient-to-b
+          from-transparent
+          via-[#07101D]/34
+          to-[#07101D]
+          md:h-[140px]
+        "
+      />
+
+      {/* CONTENT */}
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          max-w-[860px]
+          flex-col
+          items-center
+          text-center
+        "
+      >
+        <p
+          ref={labelRef}
+          className="
+            text-[10px]
+            uppercase
+            tracking-[0.34em]
+            text-[#F4F5F2]/58
+            md:text-[11px]
+          "
+        >
+          {config.text.label}
+        </p>
+
+        <h2
+          ref={headlineRef}
+          className="
+            mt-6
+            font-[Gambarino]
+            text-[42px]
+            leading-[0.99]
+            tracking-[-0.04em]
+            text-[#F4F5F2]
+            sm:text-[50px]
+            md:text-[clamp(60px,6vw,78px)]
+          "
+        >
+          <span className="line block">
+            {config.text.headlineLine1}
+          </span>
+
+          <span className="line block">
+            {config.text.headlineLine2}
+          </span>
+        </h2>
+
+        <p
+          ref={bodyRef}
+          className="
+            mt-7
+            max-w-[540px]
+            text-[15px]
+            leading-[1.78]
+            text-[#F4F5F2]/74
+            md:text-[16px]
+            md:leading-[1.82]
+          "
+        >
+          {config.text.body}
+        </p>
+
+        <div ref={ctaRef} className="mt-10">
+          <Link
+            href={config.routes.contact}
+            className="
+              group
+              inline-flex
+              min-h-[46px]
+              items-center
+              justify-center
+              gap-3
+              rounded-full
+              border
+              border-[#F4F5F2]/22
+              px-7
+              py-3.5
+              text-[11px]
+              uppercase
+              tracking-[0.18em]
+              text-[#F4F5F2]
+              transition-all
+              duration-500
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              hover:border-[#F4F5F2]
+              hover:bg-[#F4F5F2]
+              hover:text-[#0B1322]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-[#B08D57]
+              sm:px-8
+              sm:text-[12px]
+              sm:tracking-[0.22em]
+            "
+          >
+            {config.text.cta}
+
+            <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
+              →
+            </span>
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
+
+function ClosingSuite() {
+  const configRef = useRef(null);
+
+  if (!configRef.current) {
+    configRef.current = {
+      pattern: {
+        ikat:
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png",
+      },
+
+      logo: {
+        src: "https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_1_ahyyak.png",
+        alt: "Serenity Yacht",
+      },
+
+      text: {
+        label: "Private Charter Inquiry",
+        headlineLine1: "Your voyage begins",
+        headlineLine2: "with a conversation",
+        body:
+          "Share your preferred route, dates, and guest count. Serenity’s team will prepare the next step.",
+        cta: "Begin Your Voyage",
+      },
+
+      routes: {
+        contact: "/contact",
+      },
+
+      railImages: [
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp",
+          alt: "Quiet sea view aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
+          alt: "Calm Indonesian water and islands during a Serenity voyage",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
+          alt: "Quiet onboard dining detail aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
+          alt: "Interior space aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png",
+          alt: "Warm evening atmosphere aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
+          alt: "Life aboard Serenity at sea",
+        },
+      ],
+
+      contact: {
+        whatsappLabel: "WhatsApp",
+        whatsappText: "+62 000 0000 0000",
+        whatsappHref: "https://wa.me/620000000000",
+
+        locationLabel: "Komodo · Raja Ampat",
+
+        emailLabel: "Email",
+        emailText: "hello@serenityyacht.com",
+        emailHref: "mailto:hello@serenityyacht.com",
+      },
+
+      nav: [
+        { label: "The Yacht", href: "/yacht" },
+        { label: "Destinations", href: "/destinations" },
+        { label: "Experiences", href: "/experiences" },
+        { label: "Rates & Schedule", href: "/rates-and-schedule" },
+        { label: "About", href: "/about" },
+      ],
+
+      stats: ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"],
+
+      legal: [
+        { label: "Privacy Policy", href: "/privacy-policy" },
+        { label: "Terms & Conditions", href: "/terms-and-conditions" },
+      ],
+
+      social: {
+        instagram: "https://instagram.com",
+        whatsapp: "https://wa.me/620000000000",
+      },
+    };
+  }
+
+  const config = configRef.current;
+
+  const sectionRef = useRef(null);
+  const ctaRef = useRef(null);
+  const railRef = useRef(null);
+  const contactRef = useRef(null);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const headlineLines =
+      ctaRef.current?.querySelectorAll(".headline-line") ?? [];
+
+    const ctaNodes = [
+      ctaRef.current?.querySelector(".cta-label"),
+      ...headlineLines,
+      ctaRef.current?.querySelector(".cta-body"),
+      ctaRef.current?.querySelector(".cta-button"),
+    ].filter(Boolean);
+
+    const railItems =
+      railRef.current?.querySelectorAll(".rail-frame") ?? [];
+
+    const contactItems =
+      contactRef.current?.querySelectorAll(".contact-reveal") ?? [];
+
+    const bottomItems =
+      bottomRef.current?.querySelectorAll(".bottom-reveal") ?? [];
+
+    const allNodes = [
+      ...ctaNodes,
+      ...railItems,
+      ...contactItems,
+      ...bottomItems,
+    ].filter(Boolean);
+
+    if (reduce) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 78%",
+          once: true,
+        },
+      });
+
+      tl.fromTo(
+        ctaRef.current?.querySelector(".cta-label"),
+        {
+          opacity: 0,
+          y: 10,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: serenityEase,
+        },
+        0
+      );
+
+      if (headlineLines.length > 0) {
+        tl.fromTo(
+          headlineLines,
+          {
+            opacity: 0,
+            y: 24,
+            filter: "blur(7px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.18,
+            stagger: 0.1,
+            ease: serenityEase,
+          },
+          0.12
+        );
+      }
+
+      tl.fromTo(
+        ctaRef.current?.querySelector(".cta-body"),
+        {
+          opacity: 0,
+          y: 16,
+          filter: "blur(4px)",
+        },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1,
+          ease: serenityEase,
+        },
+        0.34
+      );
+
+      tl.fromTo(
+        ctaRef.current?.querySelector(".cta-button"),
+        {
+          opacity: 0,
+          y: 12,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: serenityEase,
+        },
+        0.5
+      );
+
+      if (railItems.length > 0) {
+        gsap.fromTo(
+          railItems,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.95,
+            stagger: 0.055,
+            ease: serenityEase,
+            scrollTrigger: {
+              trigger: railRef.current,
+              start: "top 88%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (contactItems.length > 0) {
+        gsap.fromTo(
+          contactItems,
+          {
+            opacity: 0,
+            y: 14,
+            filter: "blur(4px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.95,
+            stagger: 0.06,
+            ease: serenityEase,
+            scrollTrigger: {
+              trigger: contactRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (bottomItems.length > 0) {
+        gsap.fromTo(
+          bottomItems,
+          {
+            opacity: 0,
+            y: 10,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.85,
+            stagger: 0.05,
+            ease: serenityEase,
+            scrollTrigger: {
+              trigger: bottomRef.current,
+              start: "top 94%",
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-label="Private charter inquiry and Serenity closing information"
+      className="
+        relative
+        w-full
+        overflow-hidden
+        bg-[#07101D]
+        text-[#F4F5F2]
+      "
+      style={{
+        backgroundColor: "#07101D",
+        colorScheme: "dark",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-0
+          bg-[#07101D]
+        "
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[6]
+          h-[150px]
+          md:h-[180px]
+        "
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(244,245,242,0.34) 0%, rgba(244,245,242,0.17) 28%, rgba(244,245,242,0.055) 62%, rgba(244,245,242,0) 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          left-[-24%]
+          top-[3%]
+          z-[1]
+          hidden
+          h-[520px]
+          w-[min(760px,64vw)]
+          rotate-[-3deg]
+          opacity-[0.052]
+          mix-blend-soft-light
+          md:block
+        "
+        style={{
+          backgroundImage: `url(${config.pattern.ikat})`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "540px auto",
+          backgroundPosition: "center",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,0) 78%)",
+          maskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.44) 52%, rgba(0,0,0,0) 78%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          bottom-[13%]
+          right-[-18%]
+          z-[1]
+          hidden
+          h-[440px]
+          w-[min(700px,58vw)]
+          rotate-[4deg]
+          opacity-[0.038]
+          mix-blend-soft-light
+          md:block
+        "
+        style={{
+          backgroundImage: `url(${config.pattern.ikat})`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "560px auto",
+          backgroundPosition: "center",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 54%, rgba(0,0,0,0) 80%)",
+          maskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 54%, rgba(0,0,0,0) 80%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[1]
+          h-[42%]
+          opacity-[0.03]
+          mix-blend-soft-light
+          md:hidden
+        "
+        style={{
+          backgroundImage: `url(${config.pattern.ikat})`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "420px auto",
+          backgroundPosition: "center top",
+          WebkitMaskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0.28) 62%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0.28) 62%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 50% 8%, rgba(45,60,104,0.34) 0%, rgba(45,60,104,0.16) 32%, rgba(7,16,29,0) 64%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          z-[2]
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 50% 31%, rgba(176,141,87,0.066) 0%, rgba(176,141,87,0.02) 32%, rgba(176,141,87,0) 62%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          z-[2]
+          h-[44%]
+        "
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(7,16,29,0) 0%, rgba(7,16,29,0.66) 42%, rgba(7,16,29,1) 100%)",
+        }}
+      />
+
+      <div
+        ref={ctaRef}
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          max-w-[980px]
+          flex-col
+          items-center
+          px-6
+          pb-[86px]
+          pt-[132px]
+          text-center
+          sm:px-8
+          sm:pb-[96px]
+          sm:pt-[144px]
+          md:px-10
+          md:pb-[112px]
+          md:pt-[164px]
+          lg:pb-[122px]
+          lg:pt-[172px]
+        "
+      >
+        <p
+          className="
+            cta-label
+            text-[10px]
+            uppercase
+            tracking-[0.34em]
+            text-[#F4F5F2]/62
+            md:text-[11px]
+          "
+        >
+          {config.text.label}
+        </p>
+
+        <h2
+          className="
+            mt-6
+            font-[Gambarino]
+            text-[42px]
+            leading-[0.99]
+            tracking-[-0.045em]
+            text-[#F4F5F2]
+            sm:text-[52px]
+            md:text-[clamp(62px,6.6vw,84px)]
+          "
+        >
+          <span className="headline-line block">
+            {config.text.headlineLine1}
+          </span>
+
+          <span className="headline-line block">
+            {config.text.headlineLine2}
+          </span>
+        </h2>
+
+        <p
+          className="
+            cta-body
+            mt-7
+            max-w-[570px]
+            text-[15px]
+            leading-[1.78]
+            text-[#F4F5F2]/78
+            md:text-[16px]
+            md:leading-[1.82]
+          "
+        >
+          {config.text.body}
+        </p>
+
+        <div className="cta-button mt-10">
+          <Link
+            href={config.routes.contact}
+            className="
+              group
+              inline-flex
+              min-h-[48px]
+              items-center
+              justify-center
+              gap-3
+              rounded-full
+              border
+              border-[#F4F5F2]
+              bg-[#F4F5F2]
+              px-7
+              py-3.5
+              text-[11px]
+              uppercase
+              tracking-[0.18em]
+              text-[#07101D]
+              shadow-[0_18px_54px_rgba(0,0,0,0.18)]
+              transition-all
+              duration-500
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              hover:bg-transparent
+              hover:text-[#F4F5F2]
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-[#B08D57]
+              sm:px-8
+              sm:text-[12px]
+              sm:tracking-[0.22em]
+            "
+          >
+            {config.text.cta}
+
+            <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
+              →
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      <div
+        ref={railRef}
+        aria-label="Serenity voyage moments"
+        className="
+          relative
+          z-10
+          w-full
+          overflow-hidden
+          pb-[58px]
+          md:pb-[76px]
+        "
+      >
+        <div
+          className="
+            flex
+            gap-4
+            overflow-x-auto
+            px-6
+            [scrollbar-width:none]
+            sm:px-8
+            md:gap-5
+            md:px-10
+            lg:px-14
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {config.railImages.map((image, index) => (
+            <article
+              key={`${image.src}-${index}`}
+              className="
+                rail-frame
+                group
+                relative
+                h-[166px]
+                w-[78vw]
+                max-w-[380px]
+                shrink-0
+                overflow-hidden
+                rounded-[7px]
+                bg-[#F4F5F2]/[0.035]
+                sm:h-[188px]
+                sm:w-[58vw]
+                md:h-[218px]
+                md:w-[34vw]
+                lg:h-[236px]
+                lg:w-[29vw]
+                xl:w-[26vw]
+              "
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="
+                  (max-width: 639px) 78vw,
+                  (max-width: 767px) 58vw,
+                  (max-width: 1023px) 34vw,
+                  (max-width: 1279px) 29vw,
+                  26vw
+                "
+                className="
+                  object-cover
+                  object-center
+                  transition-transform
+                  duration-[1800ms]
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+                  group-hover:scale-[1.025]
+                "
+              />
+
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-0
+                  bg-gradient-to-t
+                  from-[#07101D]/22
+                  via-transparent
+                  to-transparent
+                "
+              />
+
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-0
+                  ring-1
+                  ring-inset
+                  ring-[#F4F5F2]/[0.08]
+                "
+              />
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div
+        ref={contactRef}
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-[1280px]
+          px-6
+          pb-[54px]
+          pt-[22px]
+          sm:px-8
+          md:px-10
+          md:pb-[64px]
+          lg:px-14
+        "
+      >
+        <div
+          className="
+            grid
+            gap-10
+            border-y
+            border-[#F4F5F2]/[0.075]
+            py-9
+            text-center
+            md:grid-cols-[1fr_1.1fr_1fr]
+            md:items-center
+            md:gap-10
+            md:py-10
+          "
+        >
+          <div className="contact-reveal md:text-left">
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.3em]
+                text-[#F4F5F2]/38
+              "
+            >
+              {config.contact.whatsappLabel}
+            </p>
+
+            <a
+              href={config.contact.whatsappHref}
+              className="
+                mt-4
+                block
+                font-[Gambarino]
+                text-[25px]
+                leading-none
+                tracking-[-0.02em]
+                text-[#F4F5F2]
+                transition-colors
+                duration-300
+                hover:text-[#F4F5F2]/72
+                md:text-[28px]
+              "
+            >
+              {config.contact.whatsappText}
+            </a>
+          </div>
+
+          <div
+            className="
+              contact-reveal
+              flex
+              flex-col
+              items-center
+              justify-center
+              text-center
+            "
+          >
+            <img
+              src={config.logo.src}
+              alt={config.logo.alt}
+              className="
+                h-14
+                w-auto
+                object-contain
+                opacity-90
+                sm:h-16
+                md:h-[72px]
+              "
+              style={{
+                filter: "invert(1) brightness(1.92) contrast(0.86)",
+              }}
+            />
+
+            <div className="mt-5 flex w-[88px] items-center gap-[6px]">
+              <span
+                className="h-px flex-1"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent, rgba(176,141,87,0.56))",
+                }}
+              />
+
+              <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#B08D57]/75" />
+
+              <span
+                className="h-px flex-1"
+                style={{
+                  background:
+                    "linear-gradient(to left, transparent, rgba(176,141,87,0.56))",
+                }}
+              />
+            </div>
+
+            <p
+              className="
+                mt-4
+                text-[11px]
+                uppercase
+                tracking-[0.22em]
+                text-[#F4F5F2]/46
+              "
+            >
+              {config.contact.locationLabel}
+            </p>
+          </div>
+
+          <div className="contact-reveal md:text-right">
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.3em]
+                text-[#F4F5F2]/38
+              "
+            >
+              {config.contact.emailLabel}
+            </p>
+
+            <a
+              href={config.contact.emailHref}
+              className="
+                mt-4
+                block
+                break-words
+                font-[Gambarino]
+                text-[24px]
+                leading-none
+                tracking-[-0.02em]
+                text-[#F4F5F2]
+                transition-colors
+                duration-300
+                hover:text-[#F4F5F2]/72
+                md:text-[27px]
+              "
+            >
+              {config.contact.emailText}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div
+        ref={bottomRef}
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-[1280px]
+          px-6
+          pb-8
+          sm:px-8
+          md:px-10
+          lg:px-14
+        "
+      >
+        <div
+          className="
+            bottom-reveal
+            flex
+            flex-wrap
+            items-center
+            justify-center
+            gap-x-6
+            gap-y-2
+            pb-5
+          "
+        >
+          {config.stats.map((item, index) => (
+            <div key={item} className="flex items-center gap-6">
+              <span
+                className="
+                  text-[9px]
+                  uppercase
+                  tracking-[0.28em]
+                  text-[#F4F5F2]/46
+                "
+              >
+                {item}
+              </span>
+
+              {index !== config.stats.length - 1 && (
+                <span className="hidden h-[3px] w-[3px] rounded-full bg-[#B08D57]/58 sm:block" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div
+          className="
+            bottom-reveal
+            h-px
+            w-full
+          "
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(244,245,242,0) 0%, rgba(244,245,242,0.075) 50%, rgba(244,245,242,0) 100%)",
+          }}
+        />
+
+        <div
+          className="
+            bottom-reveal
+            grid
+            gap-5
+            py-7
+            text-center
+            text-[11px]
+            text-[#F4F5F2]/42
+            sm:text-xs
+            lg:grid-cols-[1fr_auto_1fr]
+            lg:items-center
+            lg:text-left
+          "
+        >
+          <p>© 2026 Serenity Yacht</p>
+
+          <nav
+            className="
+              flex
+              flex-wrap
+              items-center
+              justify-center
+              gap-x-5
+              gap-y-2
+            "
+          >
+            {config.nav.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="
+                  transition-colors
+                  duration-300
+                  hover:text-[#F4F5F2]/76
+                "
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div
+            className="
+              flex
+              items-center
+              justify-center
+              gap-4
+              lg:justify-end
+            "
+          >
+            {config.legal.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="
+                  hidden
+                  transition-colors
+                  duration-300
+                  hover:text-[#F4F5F2]/76
+                  sm:inline
+                "
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <a
+              href={config.social.instagram}
+              aria-label="Instagram"
+              className="
+                inline-flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#F4F5F2]/10
+                text-[#F4F5F2]/48
+                transition-all
+                duration-300
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#F4F5F2]/26
+                hover:text-[#F4F5F2]/82
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+              "
+            >
+              <FaInstagram className="h-[17px] w-[17px]" strokeWidth={1.65} />
+            </a>
+
+            <a
+              href={config.social.whatsapp}
+              aria-label="WhatsApp"
+              className="
+                inline-flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-[#F4F5F2]/10
+                text-[#F4F5F2]/48
+                transition-all
+                duration-300
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#F4F5F2]/26
+                hover:text-[#F4F5F2]/82
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+              "
+            >
+              <FaMessage
+                className="h-[17px] w-[17px]"
+                strokeWidth={1.75}
+              />
+            </a>
+          </div>
+        </div>
+
+        <div
+          className="
+            bottom-reveal
+            flex
+            justify-center
+            gap-4
+            pb-2
+            text-[11px]
+            text-[#F4F5F2]/36
+            sm:hidden
+          "
+        >
+          {config.legal.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="transition-colors duration-300 hover:text-[#F4F5F2]/72"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+
 
 
 function Crew() {
@@ -6347,11 +8805,15 @@ function Expedition() {
 
 function Destinations() {
   const sectionRef = useRef(null);
+
   const leftClipRef = useRef(null);
   const rightClipRef = useRef(null);
+
   const leftImgRef = useRef(null);
   const rightImgRef = useRef(null);
+
   const seamRef = useRef(null);
+
   const eyebrowRef = useRef(null);
   const leftContentRef = useRef(null);
   const rightContentRef = useRef(null);
@@ -6373,18 +8835,9 @@ function Destinations() {
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-
-    /*
-      ========================================
-      GSAP MATCHMEDIA — single source of truth
-      for all responsive values
-      ========================================
-    */
 
     const mm = gsap.matchMedia();
 
@@ -6396,239 +8849,271 @@ function Destinations() {
       (context) => {
         const { mobile } = context.conditions;
 
-        /*
-          ========================================
-          SPLIT SYSTEM
-          ========================================
-        */
-
-        const SEAM_TOP = mobile ? 70 : 53.5;
-        const SEAM_BOTTOM = mobile ? 57 : 49.5;
+        const SEAM_TOP = mobile ? 63 : 53.5;
+        const SEAM_BOTTOM = mobile ? 49 : 49.5;
 
         const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
+
         const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
 
-        /*
-          ========================================
-          REDUCED MOTION
-          ========================================
-        */
+        const setSeamCoordinates = () => {
+          if (!seamRef.current) return;
+
+          seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
+          seamRef.current.setAttribute("y1", "0%");
+          seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
+          seamRef.current.setAttribute("y2", "100%");
+        };
+
+        setSeamCoordinates();
 
         if (reduceMotion) {
-          gsap.set(leftClipRef.current, { clipPath: LEFT_CLIP });
-          gsap.set(rightClipRef.current, { clipPath: RIGHT_CLIP });
-          gsap.set([leftImgRef.current, rightImgRef.current], { scale: 1, y: 0 });
-          gsap.set(seamRef.current, { opacity: mobile ? 0.1 : 0.08, scaleY: 1 });
+          gsap.set(leftClipRef.current, {
+            clipPath: LEFT_CLIP,
+          });
+
+          gsap.set(rightClipRef.current, {
+            clipPath: RIGHT_CLIP,
+          });
+
+          gsap.set([leftImgRef.current, rightImgRef.current], {
+            scale: 1,
+            y: 0,
+          });
+
+          gsap.set(seamRef.current, {
+            opacity: mobile ? 0.08 : 0.065,
+            scaleY: 1,
+            transformOrigin: "center center",
+          });
+
           gsap.set(
-            [eyebrowRef.current, leftContentRef.current, rightContentRef.current, ctaRef.current],
-            { opacity: 1, x: 0, y: 0 }
+            [
+              eyebrowRef.current,
+              leftContentRef.current,
+              rightContentRef.current,
+              ctaRef.current,
+            ].filter(Boolean),
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+            }
           );
+
           return;
         }
 
-        /*
-          ========================================
-          INITIAL STATE
-          ========================================
-        */
+        const ctx = gsap.context(() => {
+          gsap.set(leftClipRef.current, {
+            clipPath:
+              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+          });
 
-        gsap.set(leftClipRef.current, {
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-        });
+          gsap.set(rightClipRef.current, {
+            clipPath:
+              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+          });
 
-        gsap.set(rightClipRef.current, {
-          clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
-        });
+          gsap.set([leftImgRef.current, rightImgRef.current], {
+            scale: mobile ? 1.12 : 1.085,
+            y: 0,
+            force3D: true,
+          });
 
-        gsap.set([leftImgRef.current, rightImgRef.current], {
-          scale: mobile ? 1.12 : 1.085,
-          y: 0,
-          force3D: true,
-        });
+          gsap.set(seamRef.current, {
+            opacity: 0,
+            scaleY: 0,
+            transformOrigin: "center center",
+          });
 
-        gsap.set(seamRef.current, {
-          opacity: 0,
-          scaleY: 0,
-          transformOrigin: "center center",
-        });
+          gsap.set(eyebrowRef.current, {
+            opacity: 0,
+            y: 10,
+          });
 
-        gsap.set(eyebrowRef.current, { opacity: 0, y: 10 });
+          gsap.set(leftContentRef.current, {
+            opacity: 0,
+            x: mobile ? -18 : -28,
+            y: mobile ? 10 : 0,
+          });
 
-        gsap.set(leftContentRef.current, {
-          opacity: 0,
-          x: mobile ? -18 : -28,
-          y: mobile ? 10 : 0,
-        });
+          gsap.set(rightContentRef.current, {
+            opacity: 0,
+            x: mobile ? 18 : 28,
+            y: mobile ? 14 : 0,
+          });
 
-        gsap.set(rightContentRef.current, {
-          opacity: 0,
-          x: mobile ? 18 : 28,
-          y: mobile ? 16 : 0,
-        });
+          gsap.set(ctaRef.current, {
+            opacity: 0,
+            y: 12,
+          });
 
-        gsap.set(ctaRef.current, { opacity: 0, y: 12 });
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: mobile ? "+=125%" : "+=155%",
+              scrub: mobile ? 0.85 : 1.1,
+              pin: true,
+              pinSpacing: true,
+            },
+          });
 
-        /*
-          ========================================
-          MAIN TIMELINE
-          ========================================
-        */
+          /*
+            PHASE 1 — SPLIT REVEAL
+          */
 
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top top",
-            end: mobile ? "+=110%" : "+=155%",
-            scrub: mobile ? 0.85 : 1.1,
-            pin: true,
-            pinSpacing: true,
-          },
-        });
+          tl.to(
+            leftClipRef.current,
+            {
+              clipPath: LEFT_CLIP,
+              duration: 1,
+              ease: "power2.out",
+            },
+            0
+          );
 
-        /*
-          ========================================
-          PHASE 1 — WORLD EMERGES
-          landscape reveal — expo inertia
-          ========================================
-        */
+          tl.to(
+            rightClipRef.current,
+            {
+              clipPath: RIGHT_CLIP,
+              duration: 1,
+              ease: "power2.out",
+            },
+            mobile ? 0.16 : 0.025
+          );
 
-        tl.to(
-          leftClipRef.current,
-          { clipPath: LEFT_CLIP, duration: 1, ease: "power2.out" },
-          0
-        );
+          tl.to(
+            leftImgRef.current,
+            {
+              scale: mobile ? 1.035 : 1.012,
+              duration: 1.15,
+              ease: "power1.out",
+            },
+            0
+          );
 
-        tl.to(
-          rightClipRef.current,
-          { clipPath: RIGHT_CLIP, duration: 1, ease: "power2.out" },
-          mobile ? 0.18 : 0.025
-        );
+          tl.to(
+            rightImgRef.current,
+            {
+              scale: mobile ? 1.04 : 1.02,
+              duration: 1.18,
+              ease: "power1.out",
+            },
+            mobile ? 0.08 : 0
+          );
 
-        tl.to(
-          leftImgRef.current,
-          { scale: mobile ? 1.03 : 1.012, duration: 1.15, ease: "power1.out" },
-          0
-        );
+          /*
+            PHASE 2 — SEAM + EYEBROW
+          */
 
-        tl.to(
-          rightImgRef.current,
-          { scale: mobile ? 1.04 : 1.02, duration: 1.18, ease: "power1.out" },
-          mobile ? 0.08 : 0
-        );
+          tl.to(
+            seamRef.current,
+            {
+              opacity: mobile ? 0.1 : 0.085,
+              scaleY: 1,
+              duration: 0.72,
+              ease: "sine.inOut",
+            },
+            mobile ? 0.4 : 0.44
+          );
 
-        /*
-          ========================================
-          PHASE 2 — SPLIT CONSCIOUSNESS
-          seam emergence — organic sine
-          ========================================
-        */
+          tl.to(
+            eyebrowRef.current,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power2.out",
+            },
+            0.52
+          );
 
-        tl.to(
-          seamRef.current,
-          {
-            opacity: mobile ? 0.13 : 0.11,
-            scaleY: 1,
-            duration: 0.7,
-            ease: "sine.inOut",
-          },
-          mobile ? 0.42 : 0.44
-        );
+          /*
+            PHASE 3 — DESTINATION CONTENT
+          */
 
-        tl.to(
-          eyebrowRef.current,
-          { opacity: 1, y: 0, duration: 0.65, ease: "power2.out" },
-          0.52
-        );
+          tl.to(
+            leftContentRef.current,
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 0.9,
+              ease: "power3.out",
+            },
+            mobile ? 0.58 : 0.76
+          );
 
-        /*
-          ========================================
-          PHASE 3 — DESTINATION REVEAL
-          typography settling — decisive power3
-          ========================================
-        */
+          tl.to(
+            rightContentRef.current,
+            {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              duration: 0.9,
+              ease: "power3.out",
+            },
+            mobile ? 0.72 : 0.81
+          );
 
-        tl.to(
-          leftContentRef.current,
-          { opacity: 1, x: 0, y: 0, duration: 0.9, ease: "power3.out" },
-          mobile ? 0.58 : 0.76
-        );
+          /*
+            PHASE 4 — CTA
+          */
 
-        tl.to(
-          rightContentRef.current,
-          { opacity: 1, x: 0, y: 0, duration: 0.9, ease: "power3.out" },
-          mobile ? 0.72 : 0.81
-        );
+          tl.to(
+            ctaRef.current,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power3.out",
+            },
+            mobile ? 0.9 : 1.12
+          );
 
-        /*
-          ========================================
-          PHASE 4 — STILLNESS
-          intentionally empty — composition breathes
-          ========================================
-        */
+          /*
+            PHASE 5 — ENVIRONMENTAL DRIFT
+            integrated into the pinned timeline
+          */
 
-        /*
-          ========================================
-          PHASE 5 — CTA
-          UI interaction — system ease
-          ========================================
-        */
+          tl.to(
+            leftImgRef.current,
+            {
+              y: mobile ? -18 : -26,
+              duration: 0.95,
+              ease: "none",
+            },
+            mobile ? 0.98 : 1.12
+          );
 
-        tl.to(
-          ctaRef.current,
-          { opacity: 1, y: 0, duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-          mobile ? 0.88 : 1.12
-        );
+          tl.to(
+            rightImgRef.current,
+            {
+              y: mobile ? -24 : -38,
+              duration: 0.95,
+              ease: "none",
+            },
+            mobile ? 1.02 : 1.12
+          );
 
-        /*
-          ========================================
-          PHASE 6 — RELEASE
-          seam fades — atmospheric sine
-          ========================================
-        */
+          /*
+            PHASE 6 — SEAM RELEASE
+          */
 
-        tl.to(
-          seamRef.current,
-          {
-            opacity: mobile ? 0.06 : 0.045,
-            duration: 0.8,
-            ease: "sine.out",
-          },
-          mobile ? 1.0 : 1.18
-        );
+          tl.to(
+            seamRef.current,
+            {
+              opacity: mobile ? 0.055 : 0.04,
+              duration: 0.75,
+              ease: "sine.out",
+            },
+            mobile ? 1.08 : 1.2
+          );
+        }, sectionRef);
 
-        /*
-          ========================================
-          ENVIRONMENTAL PARALLAX
-          atmospheric drift — pure linear
-          delayed, starts after reveal settles
-          ========================================
-        */
-
-        gsap.to(leftImgRef.current, {
-          y: mobile ? -18 : -26,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "55% top",
-            end: "bottom top",
-            scrub: mobile ? 1.1 : 1.5,
-          },
-        });
-
-        gsap.to(rightImgRef.current, {
-          y: mobile ? -24 : -38,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "55% top",
-            end: "bottom top",
-            scrub: mobile ? 1.2 : 1.8,
-          },
-        });
-
-        return () => {
-          tl.kill();
-        };
+        return () => ctx.revert();
       }
     );
 
@@ -6638,39 +9123,133 @@ function Destinations() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden bg-[#161616]"
+      className="
+        relative
+        w-full
+        overflow-hidden
+        bg-[#0B1322]
+      "
     >
-      <div className="relative h-screen overflow-hidden">
-
+      <div
+        className="
+          relative
+          h-[100svh]
+          min-h-[620px]
+          overflow-hidden
+          md:h-screen
+          md:min-h-[720px]
+        "
+      >
         {/* GLOBAL ATMOSPHERE */}
-        <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-t from-black/48 via-black/[0.05] to-black/10 md:from-black/42 md:via-transparent md:to-black/12" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-[220px] bg-gradient-to-b from-[#F4F5F2]/10 via-[#F4F5F2]/[0.025] to-transparent" />
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[3]
+            bg-gradient-to-t
+            from-[#0B1322]/54
+            via-[#0B1322]/[0.06]
+            to-[#0B1322]/14
+            md:from-[#0B1322]/46
+            md:via-transparent
+            md:to-[#0B1322]/16
+          "
+        />
+
+        {/* ATMOSPHERIC BRIDGE — IN */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            top-0
+            z-[4]
+            h-[220px]
+            bg-gradient-to-b
+            from-[#F4F5F2]/10
+            via-[#F4F5F2]/[0.025]
+            to-transparent
+          "
+        />
+
+        {/* ATMOSPHERIC BRIDGE — OUT */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            bottom-0
+            z-[4]
+            h-[180px]
+            bg-gradient-to-b
+            from-transparent
+            via-[#F4F5F2]/[0.035]
+            to-[#F4F5F2]/10
+          "
+        />
 
         {/* MOBILE RADIAL DEPTH */}
-        <div className="pointer-events-none absolute inset-0 z-[4] md:hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_72%,rgba(0,0,0,0.34),transparent_42%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_36%,rgba(0,0,0,0.22),transparent_34%)]" />
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[5]
+            md:hidden
+          "
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
         </div>
 
         {/* LEFT CLIP */}
         <div
           ref={leftClipRef}
           className="absolute inset-0 overflow-hidden"
-          style={{ willChange: "clip-path" }}
+          style={{
+            clipPath:
+              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            willChange: "clip-path",
+          }}
         >
           <div
             ref={leftImgRef}
             className="absolute inset-0"
-            style={{ willChange: "transform", backfaceVisibility: "hidden" }}
+            style={{
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
           >
-            <img
-              src={DESTINATIONS[0].img}
-              alt={DESTINATIONS[0].name.join(" ")}
-              draggable="false"
-              className="absolute inset-x-0 -top-[10%] h-[120%] w-full select-none object-cover"
-            />
+            <div className="absolute inset-x-0 -top-[10%] h-[120%]">
+              <Image
+                src={DESTINATIONS[0].img}
+                alt={DESTINATIONS[0].name.join(" ")}
+                fill
+                sizes="100vw"
+                draggable={false}
+                className="
+                  select-none
+                  object-cover
+                  object-center
+                "
+              />
+            </div>
+
             <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/[0.03] to-transparent md:from-black/12 md:via-transparent" />
+
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-r
+                from-[#0B1322]/22
+                via-[#0B1322]/[0.035]
+                to-transparent
+                md:from-[#0B1322]/14
+                md:via-transparent
+              "
+            />
           </div>
         </div>
 
@@ -6678,67 +9257,173 @@ function Destinations() {
         <div
           ref={rightClipRef}
           className="absolute inset-0 overflow-hidden"
-          style={{ willChange: "clip-path" }}
+          style={{
+            clipPath:
+              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+            willChange: "clip-path",
+          }}
         >
           <div
             ref={rightImgRef}
             className="absolute inset-0"
-            style={{ willChange: "transform", backfaceVisibility: "hidden" }}
+            style={{
+              willChange: "transform",
+              backfaceVisibility: "hidden",
+            }}
           >
-            <img
-              src={DESTINATIONS[1].img}
-              alt={DESTINATIONS[1].name.join(" ")}
-              draggable="false"
-              className="absolute inset-x-0 -top-[14%] h-[126%] w-full select-none object-cover md:-top-[12%] md:h-[124%]"
+            <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
+              <Image
+                src={DESTINATIONS[1].img}
+                alt={DESTINATIONS[1].name.join(" ")}
+                fill
+                sizes="100vw"
+                draggable={false}
+                className="
+                  select-none
+                  object-cover
+                  object-center
+                "
+              />
+            </div>
+
+            <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
+
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-l
+                from-[#0B1322]/24
+                via-[#0B1322]/[0.04]
+                to-transparent
+                md:from-[#0B1322]/16
+                md:via-transparent
+              "
             />
-            <div className="absolute inset-0 bg-[#1F2533]/20 mix-blend-multiply md:bg-[#1F2533]/18" />
-            <div className="absolute inset-0 bg-gradient-to-l from-black/24 via-black/[0.04] to-transparent md:from-black/16 md:via-transparent" />
           </div>
         </div>
 
-        {/* SEAM */}
-        <div
-          ref={seamRef}
-          className="absolute inset-y-0 z-20 w-[1.5px] md:w-px"
-          style={{
-            left: "51.5%",
-            background:
-              "linear-gradient(to bottom, rgba(255,255,255,0.01), rgba(255,255,255,0.22), rgba(255,255,255,0.015))",
-            transform: "translateX(-50%) skewX(-1.4deg)",
-            filter: "blur(0.1px)",
-            willChange: "transform, opacity",
-          }}
-        />
+        {/* SEAM — SVG LINE MATCHES CLIP PATH */}
+        <svg
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-20
+            h-full
+            w-full
+          "
+          aria-hidden="true"
+          preserveAspectRatio="none"
+        >
+          <line
+            ref={seamRef}
+            x1="53.5%"
+            y1="0%"
+            x2="49.5%"
+            y2="100%"
+            stroke="rgba(244,245,242,0.24)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            style={{
+              opacity: 0,
+              filter: "blur(0.1px)",
+              transformOrigin: "center center",
+              willChange: "transform, opacity",
+            }}
+          />
+        </svg>
 
         {/* CONTENT */}
-        <div className="absolute inset-0 z-30 flex flex-col justify-end px-6 pb-10 md:px-10 md:pb-16"
-          style={{ paddingBottom: "max(40px, env(safe-area-inset-bottom))" }}
+        <div
+          className="
+            absolute
+            inset-0
+            z-30
+            flex
+            flex-col
+            justify-end
+            px-6
+            pb-[max(36px,env(safe-area-inset-bottom))]
+            md:px-10
+            md:pb-16
+          "
         >
-
           {/* EYEBROW */}
           <div
             ref={eyebrowRef}
-            className="pointer-events-none absolute inset-x-0 top-[14%] flex justify-center md:top-[15%]"
+            className="
+              pointer-events-none
+              absolute
+              inset-x-0
+              top-[13.5%]
+              flex
+              justify-center
+              md:top-[15%]
+            "
           >
-            <span className="whitespace-nowrap text-[10px] uppercase tracking-[0.34em] text-white/[0.18]">
+            <span
+              className="
+                whitespace-nowrap
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#F4F5F2]/26
+              "
+            >
               Indonesian Archipelago
             </span>
           </div>
 
           {/* DESTINATIONS ROW */}
-          <div className="flex items-end justify-between gap-4">
-
+          <div
+            className="
+              flex
+              items-end
+              justify-between
+              gap-3
+              md:gap-4
+            "
+          >
             {/* LEFT */}
             <div
               ref={leftContentRef}
-              className="relative z-10 max-w-[220px] md:max-w-[420px]"
+              className="
+                relative
+                z-10
+                max-w-[190px]
+                md:max-w-[420px]
+              "
             >
-              <h2 className="font-[Gambarino] text-[44px] leading-[0.88] tracking-[-0.055em] text-[#F4F5F2] md:text-[76px]">
+              <h2
+                className="
+                  font-[Gambarino]
+                  text-[42px]
+                  leading-[0.88]
+                  tracking-[-0.055em]
+                  text-[#F4F5F2]
+                  md:text-[76px]
+                "
+              >
                 {DESTINATIONS[0].name[0]}
                 <br />
                 {DESTINATIONS[0].name[1]}
               </h2>
-              <p className="mt-4 max-w-[200px] text-[11px] leading-[1.88] tracking-[0.045em] text-white/50 md:max-w-[300px] md:text-[12px]">
+
+              <p
+                className="
+                  mt-4
+                  max-w-[185px]
+                  text-[11px]
+                  leading-[1.82]
+                  tracking-[0.04em]
+                  text-[#F4F5F2]/52
+                  md:max-w-[300px]
+                  md:text-[12px]
+                  md:leading-[1.88]
+                  md:tracking-[0.045em]
+                "
+              >
                 {DESTINATIONS[0].sub}
               </p>
             </div>
@@ -6746,14 +9431,45 @@ function Destinations() {
             {/* RIGHT */}
             <div
               ref={rightContentRef}
-              className="relative z-10 max-w-[160px] text-right md:mb-[-2vh] md:mr-[5vw] md:max-w-[390px]"
+              className="
+                relative
+                z-10
+                max-w-[180px]
+                text-right
+                md:mb-[-2vh]
+                md:mr-[5vw]
+                md:max-w-[390px]
+              "
             >
-              <h2 className="font-[Gambarino] text-[32px] leading-[0.88] tracking-[-0.055em] text-[#F4F5F2] md:text-[64px]">
+              <h2
+                className="
+                  font-[Gambarino]
+                  text-[38px]
+                  leading-[0.88]
+                  tracking-[-0.055em]
+                  text-[#F4F5F2]
+                  md:text-[64px]
+                "
+              >
                 {DESTINATIONS[1].name[0]}
                 <br />
                 {DESTINATIONS[1].name[1]}
               </h2>
-              <p className="mt-3 ml-auto max-w-[150px] text-[10px] leading-[1.85] tracking-[0.04em] text-white/46 md:max-w-[270px] md:text-[12px]">
+
+              <p
+                className="
+                  ml-auto
+                  mt-3
+                  max-w-[170px]
+                  text-[11px]
+                  leading-[1.82]
+                  tracking-[0.04em]
+                  text-[#F4F5F2]/50
+                  md:max-w-[270px]
+                  md:text-[12px]
+                  md:leading-[1.85]
+                "
+              >
                 {DESTINATIONS[1].sub}
               </p>
             </div>
@@ -6762,23 +9478,51 @@ function Destinations() {
           {/* CTA */}
           <div
             ref={ctaRef}
-            className="mt-8 flex justify-start md:absolute md:inset-x-0 md:bottom-12 md:justify-center"
+            className="
+              mt-8
+              flex
+              justify-center
+              md:absolute
+              md:inset-x-0
+              md:bottom-12
+            "
           >
-            <a
+            <Link
               href="/destinations"
-              className="group inline-flex items-center gap-4 border-b border-[#F4F5F2]/28 pb-[10px] text-[11px] uppercase tracking-[0.24em] text-[#F4F5F2]/80 transition-all duration-500 hover:border-[#F4F5F2]/72 hover:text-[#F4F5F2]"
+              className="
+                group
+                inline-flex
+                items-center
+                gap-4
+                border-b
+                border-[#F4F5F2]/28
+                pb-[10px]
+                text-[11px]
+                uppercase
+                tracking-[0.24em]
+                text-[#F4F5F2]/80
+                transition-colors
+                duration-500
+                ease-[cubic-bezier(0.22,1,0.36,1)]
+                hover:border-[#F4F5F2]/72
+                hover:text-[#F4F5F2]
+                focus-visible:outline
+                focus-visible:outline-2
+                focus-visible:outline-offset-4
+                focus-visible:outline-[#B08D57]
+              "
             >
               Explore the Routes
               <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
                 →
               </span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
     </section>
   );
-}
+} 
  
 
 function YachtDua() {
