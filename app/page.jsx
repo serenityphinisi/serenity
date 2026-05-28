@@ -60,11 +60,13 @@ function Hero() {
   const sectionRef = useRef(null);
   const bgRef = useRef(null);
   const contentRef = useRef(null);
+  const videoRef = useRef(null);
 
   const shouldReduceMotion = useReducedMotion();
   const reduceMotion = Boolean(shouldReduceMotion);
 
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [hasVideoError, setHasVideoError] = useState(false);
 
   const heroMedia = {
     type: "video",
@@ -72,13 +74,92 @@ function Hero() {
     /*
       IMAGE:
       https://res.cloudinary.com/dombq6plz/image/upload/v1777307172/ChatGPT_Image_Apr_27_2026_10_24_29_PM_1_ou4x2n.png
+
+      VIDEO SOURCE:
+      https://www.pexels.com/download/video/29525835/
     */
 
-      // https://www.pexels.com/download/video/29525835/
-    src: "https://www.pexels.com/download/video/29525835/",
+    src: "https://res.cloudinary.com/dombq6plz/video/upload/v1779878587/taaser_jyqk2t.mp4",
   };
 
   const ease = [0.22, 1, 0.36, 1];
+
+  // =========================================================
+  // VIDEO SAFETY LAYER
+  // =========================================================
+
+  useEffect(() => {
+    if (heroMedia.type !== "video") return;
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isMounted = true;
+
+    const markVideoReady = () => {
+      if (!isMounted) return;
+      setIsVideoLoaded(true);
+      setHasVideoError(false);
+    };
+
+    const markVideoError = () => {
+      if (!isMounted) return;
+      setHasVideoError(true);
+      setIsVideoLoaded(false);
+    };
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    if (video.readyState >= 2) {
+      markVideoReady();
+    }
+
+    const playVideo = async () => {
+      try {
+        await video.play();
+
+        if (video.readyState >= 2) {
+          markVideoReady();
+        }
+      } catch {
+        /*
+          Autoplay can still be blocked by browser policy in rare cases.
+          Because video is muted + playsInline, this usually passes.
+          We do not hard-fail the hero here.
+        */
+      }
+    };
+
+    video.addEventListener("loadedmetadata", markVideoReady);
+    video.addEventListener("loadeddata", markVideoReady);
+    video.addEventListener("canplay", markVideoReady);
+    video.addEventListener("playing", markVideoReady);
+    video.addEventListener("error", markVideoError);
+
+    playVideo();
+
+    const fallbackReveal = window.setTimeout(() => {
+      if (!isMounted) return;
+
+      if (video.readyState >= 2) {
+        markVideoReady();
+      }
+    }, 900);
+
+    return () => {
+      isMounted = false;
+
+      window.clearTimeout(fallbackReveal);
+
+      video.removeEventListener("loadedmetadata", markVideoReady);
+      video.removeEventListener("loadeddata", markVideoReady);
+      video.removeEventListener("canplay", markVideoReady);
+      video.removeEventListener("playing", markVideoReady);
+      video.removeEventListener("error", markVideoError);
+    };
+  }, [heroMedia.type]);
 
   // =========================================================
   // GSAP
@@ -103,7 +184,6 @@ function Hero() {
         return;
       }
 
-      // BG PARALLAX
       gsap.to(bgRef.current, {
         y: "18%",
         scale: 1.08,
@@ -116,7 +196,6 @@ function Hero() {
         },
       });
 
-      // CONTENT DRIFT
       gsap.to(contentRef.current, {
         y: "6%",
         opacity: 0,
@@ -186,24 +265,41 @@ function Hero() {
 
         {heroMedia.type === "video" && (
           <div
-            className={`
+            className="
               absolute
               inset-0
               overflow-hidden
               bg-[#0B1322]
-              transition-opacity
-              duration-[1200ms]
-              ease-[cubic-bezier(0.22,1,0.36,1)]
-              ${isVideoLoaded ? "opacity-100" : "opacity-0"}
-            `}
+            "
           >
             <video
+              ref={videoRef}
               autoPlay
               muted
               loop
               playsInline
               preload="auto"
-              onLoadedData={() => setIsVideoLoaded(true)}
+              disablePictureInPicture
+              onLoadedMetadata={() => {
+                setIsVideoLoaded(true);
+                setHasVideoError(false);
+              }}
+              onLoadedData={() => {
+                setIsVideoLoaded(true);
+                setHasVideoError(false);
+              }}
+              onCanPlay={() => {
+                setIsVideoLoaded(true);
+                setHasVideoError(false);
+              }}
+              onPlaying={() => {
+                setIsVideoLoaded(true);
+                setHasVideoError(false);
+              }}
+              onError={() => {
+                setHasVideoError(true);
+                setIsVideoLoaded(false);
+              }}
               className="
                 absolute
                 inset-0
@@ -219,6 +315,7 @@ function Hero() {
             {/* CINEMATIC VIGNETTE */}
             <div
               className="
+                pointer-events-none
                 absolute
                 inset-0
                 bg-[radial-gradient(circle_at_center,transparent_32%,rgba(7,10,18,0.42)_100%)]
@@ -228,32 +325,47 @@ function Hero() {
         )}
 
         {/* PRELOAD ATMOSPHERE — NO IMAGE, NO POSTER */}
-        <div
-          className={`
-            absolute
-            inset-0
-            bg-[#0B1322]
-            transition-opacity
-            duration-[1200ms]
-            ease-[cubic-bezier(0.22,1,0.36,1)]
-            ${isVideoLoaded ? "opacity-0" : "opacity-100"}
-          `}
-        />
+        {heroMedia.type === "video" && !hasVideoError && (
+          <div
+            className={`
+              pointer-events-none
+              absolute
+              inset-0
+              bg-[#0B1322]
+              transition-opacity
+              duration-[1200ms]
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              ${isVideoLoaded ? "opacity-0" : "opacity-100"}
+            `}
+          />
+        )}
+
+        {/* VIDEO ERROR FALLBACK — DARK ATMOSPHERE ONLY */}
+        {heroMedia.type === "video" && hasVideoError && (
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              bg-[#0B1322]
+            "
+          />
+        )}
 
         {/* BASE MARITIME TINT */}
-        <div className="absolute inset-0 bg-[#2D3C68]/14" />
+        <div className="pointer-events-none absolute inset-0 bg-[#2D3C68]/14" />
 
         {/* BOTTOM DEPTH */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/52 via-[#2D3C68]/14 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/52 via-[#2D3C68]/14 to-transparent" />
 
         {/* TOP WARMTH */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#8B6A4F]/10 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#8B6A4F]/10 via-transparent to-transparent" />
 
         {/* RIGHT EDGE DEPTH */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#2D3C68]/10" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#2D3C68]/10" />
 
         {/* ATMOSPHERIC LIGHT */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)] opacity-[0.04] mix-blend-soft-light" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,white_0%,transparent_62%)] opacity-[0.04] mix-blend-soft-light" />
       </div>
 
       {/* ========================================================= */}
@@ -413,9 +525,8 @@ function Hero() {
               md:leading-[1.8]
             "
           >
-            Sail through Raja Ampat and Komodo with twelve guests
-            aboard a handcrafted phinisi built for intimate ocean
-            adventures
+            Sail through Raja Ampat and Komodo with twelve guests aboard a
+            handcrafted phinisi built for intimate ocean adventures
           </motion.p>
 
           {/* CTA */}
