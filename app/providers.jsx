@@ -1,8 +1,9 @@
 "use client";
-import { useEffect } from "react";
+
 import useLenis from "../hooks/useLenis";
+import { PageTransitionProvider } from "../components/PageTransitionProvider";
 
 export default function Providers({ children }) {
   useLenis();
-  return children;
+  return <PageTransitionProvider>{children}</PageTransitionProvider>;
 }

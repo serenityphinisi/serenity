@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 import { gsap, ScrollTrigger } from "../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform , useInView} from "framer-motion";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { FaInstagram, FaMessage, FaWhatsapp } from "react-icons/fa6";
+import { usePageTransition } from "@/components/PageTransitionProvider";
 
 import Footer from '../components/Footer'
  
@@ -64,6 +65,20 @@ function Hero() {
 
   const shouldReduceMotion = useReducedMotion();
   const reduceMotion = Boolean(shouldReduceMotion);
+  const { stage } = usePageTransition();
+  const hasPlayedEntranceRef = useRef(false);
+  const [heroEntranceReady, setHeroEntranceReady] = useState(stage !== "covering");
+
+  useEffect(() => {
+    if (hasPlayedEntranceRef.current) return;
+    if (stage === "covering") {
+      setHeroEntranceReady(false);
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
+    setHeroEntranceReady(true);
+  }, [stage]);
 
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [hasVideoError, setHasVideoError] = useState(false);
@@ -404,9 +419,9 @@ function Hero() {
                   }
             }
             animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
+              opacity: heroEntranceReady ? 1 : 0,
+              y: heroEntranceReady ? 0 : 24,
+              filter: heroEntranceReady ? "blur(0px)" : "blur(8px)",
             }}
             transition={{
               duration: 1.2,
@@ -451,9 +466,9 @@ function Hero() {
                     }
               }
               animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
+                opacity: heroEntranceReady ? 1 : 0,
+                y: heroEntranceReady ? 0 : 56,
+                filter: heroEntranceReady ? "blur(0px)" : "blur(10px)",
               }}
               transition={{
                 duration: 1.45,
@@ -476,9 +491,9 @@ function Hero() {
                     }
               }
               animate={{
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
+                opacity: heroEntranceReady ? 1 : 0,
+                y: heroEntranceReady ? 0 : 56,
+                filter: heroEntranceReady ? "blur(0px)" : "blur(10px)",
               }}
               transition={{
                 duration: 1.45,
@@ -503,9 +518,9 @@ function Hero() {
                   }
             }
             animate={{
-              opacity: 1,
-              y: 0,
-              filter: "blur(0px)",
+              opacity: heroEntranceReady ? 1 : 0,
+              y: heroEntranceReady ? 0 : 30,
+              filter: heroEntranceReady ? "blur(0px)" : "blur(8px)",
             }}
             transition={{
               duration: 1.3,
@@ -540,8 +555,8 @@ function Hero() {
                   }
             }
             animate={{
-              opacity: 1,
-              y: 0,
+              opacity: heroEntranceReady ? 1 : 0,
+              y: heroEntranceReady ? 0 : 18,
             }}
             transition={{
               duration: 1.15,
@@ -557,7 +572,7 @@ function Hero() {
               sm:mt-10
             "
           >
-            <Link
+            <TransitionLink
               href="/contact"
               className="
                 inline-flex
@@ -587,7 +602,7 @@ function Hero() {
               "
             >
               Begin Your Voyage →
-            </Link>
+            </TransitionLink>
           </motion.div>
         </div>
       </div>
@@ -596,15 +611,13 @@ function Hero() {
 }
 
 function Introduction() {
-  const configRef = useRef(null);
-
-  if (!configRef.current) {
-    configRef.current = {
+  const config = useMemo(
+    () => ({
       images: {
         left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png",
 
         center:
-          "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
+          "https://celestiayacht.com/api/media/file/3efc261c8065751c0365a79b3dcc54be.webp",
 
         right:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png",
@@ -655,7 +668,7 @@ function Introduction() {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.38,
+            duration: 1.28,
             stagger: 0.14,
           },
 
@@ -673,7 +686,7 @@ function Introduction() {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.28,
+            duration: 1.18,
             delay: 0.1,
           },
 
@@ -683,7 +696,7 @@ function Introduction() {
         mobileImage: {
           from: {
             opacity: 0,
-            scale: 1.035,
+            scale: 1.025,
             y: 24,
           },
 
@@ -691,7 +704,7 @@ function Introduction() {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 1.45,
+            duration: 1.35,
           },
 
           start: "top 90%",
@@ -706,7 +719,7 @@ function Introduction() {
           to: {
             opacity: 1,
             y: 0,
-            duration: 1.32,
+            duration: 1.22,
             stagger: 0.12,
           },
 
@@ -724,6 +737,9 @@ function Introduction() {
         radialTexture:
           "pointer-events-none absolute inset-0 z-[1] opacity-[0.025] mix-blend-multiply bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_62%)]",
 
+        warmAtmosphere:
+          "pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_68%_22%,rgba(176,141,87,0.055),transparent_50%)]",
+
         ikatMask:
           "pointer-events-none absolute inset-0 z-[1] hidden overflow-hidden md:block",
 
@@ -733,48 +749,59 @@ function Introduction() {
         textWrapper: "relative z-10 mx-auto max-w-6xl text-center",
 
         label:
-          "mb-5 text-[10px] uppercase tracking-[0.38em] text-[#2D3C68]/58",
+          "mb-5 text-[10px] uppercase tracking-[0.38em] text-[#2D3C68]/[0.58]",
 
         headline:
           "mx-auto max-w-[620px] font-[Gambarino] text-[40px] leading-[1.04] tracking-[-0.03em] text-[#2D3C68] sm:text-[46px] md:text-[68px]",
 
         description:
-          "mx-auto mt-5 max-w-[560px] text-[15px] leading-[1.78] text-[#2D3C68]/78 md:mt-6 md:text-[16px] md:leading-[1.82]",
+          "mx-auto mt-5 max-w-[560px] text-[15px] leading-[1.78] text-[#2D3C68]/[0.78] md:mt-6 md:text-[16px] md:leading-[1.82]",
 
         mobileWrapper:
           "relative z-10 mx-auto mt-12 w-full max-w-[330px] md:hidden",
 
+        mobileFrame:
+          "relative bg-[#F4F5F2] p-[7px] shadow-[0_18px_40px_rgba(45,60,104,0.06)] ring-1 ring-inset ring-white/[0.36] border border-[#2D3C68]/[0.13]",
+
         mobileImage:
-          "relative aspect-[4/5] overflow-hidden shadow-[0_18px_44px_rgba(45,60,104,0.08)]",
+          "relative aspect-[4/5] overflow-hidden bg-[#ECEDE9]",
 
         desktopGrid:
           "relative z-10 mx-auto mt-20 hidden max-w-6xl md:grid md:grid-cols-[1fr_1.4fr_1fr] md:items-end md:gap-5 lg:gap-6",
 
+        sideFrame:
+          "relative bg-[#F4F5F2] p-[6px] shadow-[0_18px_40px_rgba(45,60,104,0.06)] ring-1 ring-inset ring-white/[0.35] border border-[#2D3C68]/[0.12]",
+
+        centerFrame:
+          "relative bg-[#F4F5F2] p-[8px] shadow-[0_24px_60px_rgba(22,32,55,0.08)] ring-1 ring-inset ring-[#B08D57]/[0.12] border border-[#2D3C68]/[0.14]",
+
         sideImage:
-          "relative aspect-[3/4] overflow-hidden shadow-[0_18px_40px_rgba(45,60,104,0.08)]",
+          "relative aspect-[3/4] overflow-hidden bg-[#ECEDE9]",
 
         centerImage:
-          "relative aspect-[4/5] overflow-hidden shadow-[0_24px_60px_rgba(22,32,55,0.10)]",
+          "relative aspect-[4/5] overflow-hidden bg-[#ECEDE9]",
 
         image:
           "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]",
 
         overlayLeft:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.08] to-transparent",
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.08] via-transparent to-transparent",
 
         overlayCenter:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.12] to-transparent",
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.12] via-transparent to-transparent",
 
         overlayMobile:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.10] to-transparent",
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.10] via-transparent to-transparent",
+
+        innerLight:
+          "pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.24]",
 
         bottomBridge:
           "pointer-events-none absolute bottom-0 left-0 z-[2] h-[120px] w-full bg-gradient-to-t from-[#2D3C68]/[0.06] to-transparent",
       },
-    };
-  }
-
-  const config = configRef.current;
+    }),
+    []
+  );
 
   const sectionRef = useRef(null);
   const labelRef = useRef(null);
@@ -789,13 +816,15 @@ function Introduction() {
   useEffect(() => {
     if (!sectionRef.current) return;
 
+    gsap.registerPlugin(ScrollTrigger);
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
     const lines = headlineRef.current?.querySelectorAll(".line") ?? [];
 
-    const imageColumns = [
+    const imageFrames = [
       imgLeftRef.current,
       imgCtrRef.current,
       imgRightRef.current,
@@ -806,6 +835,7 @@ function Introduction() {
         gsap.set(labelRef.current, {
           opacity: 1,
           y: 0,
+          clearProps: "transform",
         });
       }
 
@@ -814,6 +844,7 @@ function Introduction() {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
+          clearProps: "transform",
         });
       }
 
@@ -822,6 +853,7 @@ function Introduction() {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
+          clearProps: "transform",
         });
       }
 
@@ -830,13 +862,15 @@ function Introduction() {
           opacity: 1,
           scale: 1,
           y: 0,
+          clearProps: "transform",
         });
       }
 
-      if (imageColumns.length > 0) {
-        gsap.set(imageColumns, {
+      if (imageFrames.length > 0) {
+        gsap.set(imageFrames, {
           opacity: 1,
           y: 0,
+          clearProps: "transform",
         });
       }
 
@@ -848,87 +882,67 @@ function Introduction() {
       const ease = config.animation.ease;
 
       if (labelRef.current) {
-        gsap.fromTo(
-          labelRef.current,
-          config.animation.label.from,
-          {
-            ...config.animation.label.to,
-            ease,
-            scrollTrigger: {
-              trigger: labelRef.current,
-              start: config.animation.label.start,
-              once: true,
-            },
-          }
-        );
+        gsap.fromTo(labelRef.current, config.animation.label.from, {
+          ...config.animation.label.to,
+          ease,
+          scrollTrigger: {
+            trigger: labelRef.current,
+            start: config.animation.label.start,
+            once: true,
+          },
+        });
       }
 
       if (lines.length > 0) {
-        gsap.fromTo(
-          lines,
-          config.animation.headline.from,
-          {
-            ...config.animation.headline.to,
-            ease,
-            scrollTrigger: {
-              trigger: headlineRef.current,
-              start: config.animation.headline.start,
-              once: true,
-            },
-          }
-        );
+        gsap.fromTo(lines, config.animation.headline.from, {
+          ...config.animation.headline.to,
+          ease,
+          scrollTrigger: {
+            trigger: headlineRef.current,
+            start: config.animation.headline.start,
+            once: true,
+          },
+        });
       }
 
       if (descRef.current) {
-        gsap.fromTo(
-          descRef.current,
-          config.animation.description.from,
-          {
-            ...config.animation.description.to,
-            ease,
-            scrollTrigger: {
-              trigger: descRef.current,
-              start: config.animation.description.start,
-              once: true,
-            },
-          }
-        );
+        gsap.fromTo(descRef.current, config.animation.description.from, {
+          ...config.animation.description.to,
+          ease,
+          scrollTrigger: {
+            trigger: descRef.current,
+            start: config.animation.description.start,
+            once: true,
+          },
+        });
       }
 
       mm.add("(max-width: 767px)", () => {
         if (!mobileImgRef.current) return;
 
-        gsap.fromTo(
-          mobileImgRef.current,
-          config.animation.mobileImage.from,
-          {
-            ...config.animation.mobileImage.to,
-            ease,
-            scrollTrigger: {
-              trigger: mobileImgRef.current,
-              start: config.animation.mobileImage.start,
-              once: true,
-            },
-          }
-        );
+        gsap.fromTo(mobileImgRef.current, config.animation.mobileImage.from, {
+          ...config.animation.mobileImage.to,
+          ease,
+          scrollTrigger: {
+            trigger: mobileImgRef.current,
+            start: config.animation.mobileImage.start,
+            once: true,
+          },
+        });
       });
 
       mm.add("(min-width: 768px)", () => {
-        if (!gridRef.current || imageColumns.length === 0) return;
+        if (!gridRef.current || imageFrames.length === 0) return;
 
-        gsap.fromTo(
-          imageColumns,
-          config.animation.desktopGrid.from,
-          {
-            ...config.animation.desktopGrid.to,
-            ease,
-            scrollTrigger: {
-              trigger: gridRef.current,
-              start: config.animation.desktopGrid.start,
-              once: true,
-            },
-          }
-        );
+        gsap.fromTo(imageFrames, config.animation.desktopGrid.from, {
+          ...config.animation.desktopGrid.to,
+          ease,
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: config.animation.desktopGrid.start,
+            once: true,
+          },
+        });
       });
 
       return () => mm.revert();
@@ -948,6 +962,8 @@ function Introduction() {
       <div className={config.classes.topBridge} />
 
       <div className={config.classes.radialTexture} />
+
+      <div className={config.classes.warmAtmosphere} />
 
       <div
         className={config.classes.ikatMask}
@@ -983,54 +999,70 @@ function Introduction() {
       </div>
 
       <div className={config.classes.mobileWrapper}>
-        <div ref={mobileImgRef} className={config.classes.mobileImage}>
-          <Image
-            src={config.images.center}
-            alt="Life on board Serenity"
-            fill
-            sizes="(max-width: 767px) 330px, 0px"
-            className={config.classes.image}
-          />
+        <div ref={mobileImgRef} className={config.classes.mobileFrame}>
+          <div className={config.classes.mobileImage}>
+            <Image
+              src={config.images.center}
+              alt="Life on board Serenity"
+              fill
+              sizes="(max-width: 767px) 330px, 0px"
+              className={config.classes.image}
+            />
 
-          <div className={config.classes.overlayMobile} />
+            <div className={config.classes.overlayMobile} />
+
+            <div className={config.classes.innerLight} />
+          </div>
         </div>
       </div>
 
       <div ref={gridRef} className={config.classes.desktopGrid}>
-        <div ref={imgLeftRef} className={config.classes.sideImage}>
-          <Image
-            src={config.images.left}
-            alt="Open sea moment on board Serenity"
-            fill
-            sizes="(min-width: 768px) 26vw, 0px"
-            className={config.classes.image}
-          />
+        <div ref={imgLeftRef} className={config.classes.sideFrame}>
+          <div className={config.classes.sideImage}>
+            <Image
+              src={config.images.left}
+              alt="Open sea moment on board Serenity"
+              fill
+              sizes="(min-width: 768px) 26vw, 0px"
+              className={config.classes.image}
+            />
 
-          <div className={config.classes.overlayLeft} />
+            <div className={config.classes.overlayLeft} />
+
+            <div className={config.classes.innerLight} />
+          </div>
         </div>
 
-        <div ref={imgCtrRef} className={config.classes.centerImage}>
-          <Image
-            src={config.images.center}
-            alt="Life on board Serenity"
-            fill
-            sizes="(min-width: 768px) 38vw, 0px"
-            className={config.classes.image}
-          />
+        <div ref={imgCtrRef} className={config.classes.centerFrame}>
+          <div className={config.classes.centerImage}>
+            <Image
+              src={config.images.center}
+              alt="Life on board Serenity"
+              fill
+              sizes="(min-width: 768px) 38vw, 0px"
+              className={config.classes.image}
+            />
 
-          <div className={config.classes.overlayCenter} />
+            <div className={config.classes.overlayCenter} />
+
+            <div className={config.classes.innerLight} />
+          </div>
         </div>
 
-        <div ref={imgRightRef} className={config.classes.sideImage}>
-          <Image
-            src={config.images.right}
-            alt="Interior space on board Serenity"
-            fill
-            sizes="(min-width: 768px) 26vw, 0px"
-            className={config.classes.image}
-          />
+        <div ref={imgRightRef} className={config.classes.sideFrame}>
+          <div className={config.classes.sideImage}>
+            <Image
+              src={config.images.right}
+              alt="Interior space on board Serenity"
+              fill
+              sizes="(min-width: 768px) 26vw, 0px"
+              className={config.classes.image}
+            />
 
-          <div className={config.classes.overlayLeft} />
+            <div className={config.classes.overlayLeft} />
+
+            <div className={config.classes.innerLight} />
+          </div>
         </div>
       </div>
 
@@ -1039,8 +1071,10 @@ function Introduction() {
   );
 }
 
+
 function QuickContext() {
   const sectionRef = useRef(null);
+  const shimmerRef = useRef(null);
   const statRefs = useRef([]);
 
   const config = {
@@ -1077,6 +1111,22 @@ function QuickContext() {
 
         start: "top 86%",
       },
+
+      shimmer: {
+        from: {
+          "--shine": "20%",
+          opacity: 0.18,
+        },
+
+        to: {
+          "--shine": "72%",
+          opacity: 1,
+        },
+
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1.65,
+      },
     },
 
     classes: {
@@ -1093,6 +1143,12 @@ function QuickContext() {
 
       motifImage:
         "absolute -left-[360px] -top-[300px] w-[1050px] max-w-none rotate-[-10deg] opacity-[0.03] blur-[0.35px] select-none md:-left-[420px] md:-top-[360px] md:w-[1500px]",
+
+      motifShimmer:
+        "absolute inset-0 opacity-0 will-change-[opacity,mask-image,-webkit-mask-image]",
+
+      motifShimmerImage:
+        "absolute -left-[360px] -top-[300px] w-[1050px] max-w-none rotate-[-10deg] opacity-[0.105] brightness-[3.2] contrast-[1.16] saturate-[0.85] blur-[0.2px] select-none md:-left-[420px] md:-top-[360px] md:w-[1500px]",
 
       depth:
         "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.035] via-transparent to-[#1A1A1A]/[0.025]",
@@ -1127,6 +1183,8 @@ function QuickContext() {
   useEffect(() => {
     if (!sectionRef.current) return;
 
+    gsap.registerPlugin(ScrollTrigger);
+
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -1138,6 +1196,13 @@ function QuickContext() {
         gsap.set(statItems, {
           opacity: 1,
           y: 0,
+        });
+      }
+
+      if (shimmerRef.current) {
+        gsap.set(shimmerRef.current, {
+          opacity: 0,
+          "--shine": "48%",
         });
       }
 
@@ -1154,6 +1219,20 @@ function QuickContext() {
             trigger: sectionRef.current,
             start: config.animation.stat.start,
             once: true,
+          },
+        });
+      }
+
+      if (shimmerRef.current) {
+        gsap.fromTo(shimmerRef.current, config.animation.shimmer.from, {
+          ...config.animation.shimmer.to,
+          ease: "none",
+
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: config.animation.shimmer.start,
+            end: config.animation.shimmer.end,
+            scrub: config.animation.shimmer.scrub,
           },
         });
       }
@@ -1184,6 +1263,28 @@ function QuickContext() {
             className={config.classes.motifImage}
             draggable="false"
           />
+
+          {/* IKAT-ONLY SHINE — DUPLICATE MOTIF, NO BACKGROUND GLOW */}
+          <div
+            ref={shimmerRef}
+            className={config.classes.motifShimmer}
+            style={{
+              "--shine": "20%",
+
+              maskImage:
+                "linear-gradient(115deg, transparent 0%, transparent calc(var(--shine) - 8%), rgba(0,0,0,0.14) calc(var(--shine) - 5%), rgba(0,0,0,0.58) calc(var(--shine) - 2%), black var(--shine), rgba(0,0,0,0.58) calc(var(--shine) + 2%), rgba(0,0,0,0.14) calc(var(--shine) + 5%), transparent calc(var(--shine) + 8%), transparent 100%)",
+
+              WebkitMaskImage:
+                "linear-gradient(115deg, transparent 0%, transparent calc(var(--shine) - 8%), rgba(0,0,0,0.14) calc(var(--shine) - 5%), rgba(0,0,0,0.58) calc(var(--shine) - 2%), black var(--shine), rgba(0,0,0,0.58) calc(var(--shine) + 2%), rgba(0,0,0,0.14) calc(var(--shine) + 5%), transparent calc(var(--shine) + 8%), transparent 100%)",
+            }}
+          >
+            <img
+              src={config.motif.src}
+              alt=""
+              className={config.classes.motifShimmerImage}
+              draggable="false"
+            />
+          </div>
         </div>
       </div>
 
@@ -1229,12 +1330,10 @@ function QuickContext() {
 }
  
 function Experiences() {
-  const configRef = useRef(null);
-
-  if (!configRef.current) {
-    configRef.current = {
+  const config = useMemo(
+    () => ({
       images: {
-        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778424753/ChatGPT_Image_May_10_2026_09_51_01_PM_xfhbnv.png",
+        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
 
         right:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
@@ -1354,7 +1453,7 @@ function Experiences() {
           "relative overflow-hidden bg-[#F4F5F2] px-6 pb-24 pt-24 text-[#2D3C68] md:px-10 md:pb-32 md:pt-32",
 
         topBridge:
-          "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/06 via-[#2D3C68]/[0.025] to-transparent",
+          "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.06] via-[#2D3C68]/[0.025] to-transparent",
 
         coolTexture:
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)] opacity-[0.025] mix-blend-multiply",
@@ -1363,7 +1462,7 @@ function Experiences() {
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(176,141,87,0.06)_0%,transparent_48%)]",
 
         bottomBridge:
-          "pointer-events-none absolute bottom-0 left-0 h-[170px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.025] to-[#2D3C68]/08",
+          "pointer-events-none absolute bottom-0 left-0 h-[170px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.025] to-[#2D3C68]/[0.08]",
 
         inner: "relative mx-auto max-w-[1240px]",
 
@@ -1371,13 +1470,13 @@ function Experiences() {
           "mx-auto mb-16 max-w-[760px] text-center md:mb-24",
 
         label:
-          "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/58",
+          "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/[0.58]",
 
         headline:
           "mx-auto mt-5 max-w-[760px] font-[Gambarino] text-[42px] leading-[1.02] tracking-[-0.03em] text-[#2D3C68] sm:text-[54px] md:text-[68px]",
 
         description:
-          "mx-auto mt-6 max-w-[620px] text-[15px] leading-[1.8] text-[#2D3C68]/72 md:text-[16px]",
+          "mx-auto mt-6 max-w-[620px] text-[15px] leading-[1.8] text-[#2D3C68]/[0.72] md:text-[16px]",
 
         grid:
           "grid items-start gap-14 md:grid-cols-2 md:gap-12 xl:gap-16",
@@ -1389,16 +1488,31 @@ function Experiences() {
           "mx-auto w-full max-w-[480px] md:pt-14",
 
         imageFrame:
-          "relative aspect-[4/5] overflow-hidden shadow-[0_24px_60px_rgba(45,60,104,0.08)]",
+          "relative aspect-[4/5] overflow-visible",
+
+        imageAura:
+          "pointer-events-none absolute -inset-6 z-0 bg-[radial-gradient(circle_at_50%_46%,rgba(176,141,87,0.20)_0%,rgba(176,141,87,0.10)_32%,rgba(45,60,104,0.045)_52%,transparent_72%)] blur-[3px]",
+
+        imageAuraRight:
+          "pointer-events-none absolute -inset-6 z-0 bg-[radial-gradient(circle_at_50%_48%,rgba(45,60,104,0.13)_0%,rgba(176,141,87,0.095)_36%,rgba(45,60,104,0.045)_54%,transparent_74%)] blur-[3px]",
+
+        imageSurface:
+          "relative z-10 h-full w-full overflow-hidden bg-[#ECEDE9] shadow-[0_34px_86px_rgba(45,60,104,0.12)]",
 
         image:
           "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]",
 
         overlayLeft:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent",
+          "pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(45,60,104,0.17),transparent_48%),radial-gradient(circle_at_50%_36%,transparent_0%,rgba(45,60,104,0.08)_100%)]",
 
         overlayRight:
-          "absolute inset-0 bg-gradient-to-t from-[#2D3C68]/14 via-transparent to-transparent",
+          "pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(45,60,104,0.18),transparent_48%),radial-gradient(circle_at_50%_38%,transparent_0%,rgba(45,60,104,0.09)_100%)]",
+
+        imageFocusLine:
+          "pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-gradient-to-t from-[#2D3C68]/[0.10] to-transparent",
+
+        imageEdgeLight:
+          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,transparent_54%,rgba(244,245,242,0.12)_100%)] mix-blend-screen",
 
         cardText: "mt-8",
 
@@ -1406,20 +1520,19 @@ function Experiences() {
           "font-[Gambarino] text-[30px] leading-[1.08] tracking-[-0.02em] text-[#2D3C68]",
 
         cardBody:
-          "mt-3 max-w-[460px] text-[15px] leading-[1.82] text-[#2D3C68]/68",
+          "mt-3 max-w-[460px] text-[15px] leading-[1.82] text-[#2D3C68]/[0.68]",
 
         cardBodyRight:
-          "mt-3 max-w-[450px] text-[15px] leading-[1.82] text-[#2D3C68]/68",
+          "mt-3 max-w-[450px] text-[15px] leading-[1.82] text-[#2D3C68]/[0.68]",
 
         ctaWrap: "mt-16 flex justify-center md:mt-20",
 
         cta:
-          "inline-flex items-center justify-center rounded-full border border-[#2D3C68]/24 px-7 py-3 text-[12px] uppercase tracking-[0.14em] text-[#2D3C68]/72 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:text-[#2D3C68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
+          "inline-flex items-center justify-center rounded-full border border-[#2D3C68]/[0.24] px-7 py-3 text-[12px] uppercase tracking-[0.14em] text-[#2D3C68]/[0.72] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:text-[#2D3C68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
       },
-    };
-  }
-
-  const config = configRef.current;
+    }),
+    []
+  );
 
   const sectionRef = useRef(null);
   const labelRef = useRef(null);
@@ -1431,6 +1544,8 @@ function Experiences() {
 
   useEffect(() => {
     if (!sectionRef.current) return;
+
+    gsap.registerPlugin(ScrollTrigger);
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -1527,20 +1642,15 @@ function Experiences() {
 
   return (
     <section ref={sectionRef} className={config.classes.section}>
-      {/* ATMOSPHERIC BRIDGE — IN */}
       <div className={config.classes.topBridge} />
 
-      {/* COOL MEMORY */}
       <div className={config.classes.coolTexture} />
 
-      {/* WARM ONBOARD ATMOSPHERE */}
       <div className={config.classes.warmAtmosphere} />
 
-      {/* ATMOSPHERIC BRIDGE — OUT */}
       <div className={config.classes.bottomBridge} />
 
       <div className={config.classes.inner}>
-        {/* HEADER */}
         <div className={config.classes.header}>
           <p ref={labelRef} className={config.classes.label}>
             {config.text.label}
@@ -1555,20 +1665,26 @@ function Experiences() {
           </p>
         </div>
 
-        {/* GRID */}
         <div className={config.classes.grid}>
-          {/* LEFT */}
           <div ref={leftRef} className={config.classes.card}>
             <div className={config.classes.imageFrame}>
-              <Image
-                src={config.images.left}
-                alt="Gathering on the deck of Serenity"
-                fill
-                sizes="(max-width: 767px) 100vw, 40vw"
-                className={config.classes.image}
-              />
+              <div className={config.classes.imageAura} />
 
-              <div className={config.classes.overlayLeft} />
+              <div className={config.classes.imageSurface}>
+                <Image
+                  src={config.images.left}
+                  alt="Gathering on the deck of Serenity"
+                  fill
+                  sizes="(max-width: 767px) 100vw, 40vw"
+                  className={config.classes.image}
+                />
+
+                <div className={config.classes.overlayLeft} />
+
+                <div className={config.classes.imageFocusLine} />
+
+                <div className={config.classes.imageEdgeLight} />
+              </div>
             </div>
 
             <div className={config.classes.cardText}>
@@ -1582,18 +1698,25 @@ function Experiences() {
             </div>
           </div>
 
-          {/* RIGHT */}
           <div ref={rightRef} className={config.classes.rightCard}>
             <div className={config.classes.imageFrame}>
-              <Image
-                src={config.images.right}
-                alt="Quiet moment on board Serenity"
-                fill
-                sizes="(max-width: 767px) 100vw, 40vw"
-                className={config.classes.image}
-              />
+              <div className={config.classes.imageAuraRight} />
 
-              <div className={config.classes.overlayRight} />
+              <div className={config.classes.imageSurface}>
+                <Image
+                  src={config.images.right}
+                  alt="Quiet moment on board Serenity"
+                  fill
+                  sizes="(max-width: 767px) 100vw, 40vw"
+                  className={config.classes.image}
+                />
+
+                <div className={config.classes.overlayRight} />
+
+                <div className={config.classes.imageFocusLine} />
+
+                <div className={config.classes.imageEdgeLight} />
+              </div>
             </div>
 
             <div className={config.classes.cardText}>
@@ -1608,16 +1731,15 @@ function Experiences() {
           </div>
         </div>
 
-        {/* CTA */}
         <div ref={ctaRef} className={config.classes.ctaWrap}>
-          <Link href="/yacht" className={config.classes.cta}>
+          <TransitionLink href="/yacht" className={config.classes.cta}>
             {config.text.cta}
-          </Link>
+          </TransitionLink>
         </div>
       </div>
     </section>
   );
-} 
+}
 
 function Destinations() {
   const sectionRef = useRef(null);
@@ -2303,7 +2425,7 @@ function Destinations() {
               md:bottom-12
             "
           >
-            <Link
+            <TransitionLink
               href="/destinations"
               className="
                 group
@@ -2332,7 +2454,7 @@ function Destinations() {
               <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
                 →
               </span>
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>
@@ -3116,22 +3238,22 @@ function Yacht() {
           <div ref={mobileCtaRef} className={config.classes.ctaWrapMobile}>
             <div className={config.classes.ctaDivider} />
 
-            <Link
+            <TransitionLink
               href={config.routes.yacht}
               className={config.classes.primaryCta}
             >
               {config.text.primaryCta}
 
               <span className={config.classes.primaryArrow}>→</span>
-            </Link>
+            </TransitionLink>
 
             <div className={config.classes.utilityMobile}>
-              <Link
+              <TransitionLink
                 href={config.routes.deckPlan}
                 className={config.classes.utilityLink}
               >
                 {config.text.utilityDeckPlan}
-              </Link>
+              </TransitionLink>
 
               <a
                 href={config.routes.brochure}
@@ -3141,12 +3263,12 @@ function Yacht() {
                 {config.text.utilityBrochure}
               </a>
 
-              <Link
+              <TransitionLink
                 href={config.routes.specifications}
                 className={config.classes.utilityLink}
               >
                 {config.text.utilitySpecs}
-              </Link>
+              </TransitionLink>
             </div>
           </div>
         </div>
@@ -3291,22 +3413,22 @@ function Yacht() {
             <div className={config.classes.ctaInner}>
               <div className={config.classes.ctaDivider} />
 
-              <Link
+              <TransitionLink
                 href={config.routes.yacht}
                 className={config.classes.primaryCta}
               >
                 {config.text.primaryCta}
 
                 <span className={config.classes.primaryArrow}>→</span>
-              </Link>
+              </TransitionLink>
 
               <div className={config.classes.utilityDesktop}>
-                <Link
+                <TransitionLink
                   href={config.routes.deckPlan}
                   className={config.classes.utilityLink}
                 >
                   {config.text.utilityDeckPlan}
-                </Link>
+                </TransitionLink>
 
                 <span className={config.classes.utilityDivider} />
 
@@ -3320,12 +3442,12 @@ function Yacht() {
 
                 <span className={config.classes.utilityDivider} />
 
-                <Link
+                <TransitionLink
                   href={config.routes.specifications}
                   className={config.classes.utilityLink}
                 >
                   {config.text.utilitySpecs}
-                </Link>
+                </TransitionLink>
               </div>
             </div>
           </div>
@@ -3365,26 +3487,33 @@ function CardBlock({ image, title, desc, sizes = "100vw", large = false }) {
       <div
         className={`
           relative
-          overflow-hidden
-          shadow-[0_24px_60px_rgba(45,60,104,0.08)]
+          bg-[#F4F5F2]
+          p-[4px]
+          shadow-[0_22px_54px_rgba(45,60,104,0.075)]
+          ring-1
+          ring-[#2D3C68]/[0.16]
           ${large ? "aspect-[4/5]" : "aspect-[4/5]"}
         `}
       >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes={sizes}
-          className="
-            object-cover
-            transition-transform
-            duration-[1800ms]
-            ease-[cubic-bezier(0.22,1,0.36,1)]
-            group-hover:scale-[1.03]
-          "
-        />
+        <div className="relative h-full w-full overflow-hidden bg-[#ECEDE9] ring-1 ring-inset ring-[#2D3C68]/[0.10]">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes={sizes}
+            className="
+              object-cover
+              transition-transform
+              duration-[1800ms]
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              group-hover:scale-[1.025]
+            "
+          />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.12] via-transparent to-transparent" />
+
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.24]" />
+        </div>
       </div>
 
       <div className="mt-5 md:mt-6">
@@ -3407,7 +3536,7 @@ function CardBlock({ image, title, desc, sizes = "100vw", large = false }) {
             max-w-[430px]
             text-[14px]
             leading-[1.78]
-            text-[#2D3C68]/68
+            text-[#2D3C68]/[0.68]
           "
         >
           {desc}
@@ -4451,7 +4580,7 @@ function RatesSnapshot() {
               "
             />
 
-            <Link
+            <TransitionLink
               href={config.routes.rates}
               className="
                 group
@@ -4497,7 +4626,7 @@ function RatesSnapshot() {
               >
                 →
               </span>
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>
@@ -5135,7 +5264,7 @@ function FinalCTA() {
         </p>
 
         <div ref={ctaRef} className="mt-10">
-          <Link
+          <TransitionLink
             href={config.routes.contact}
             className="
               group
@@ -5173,7 +5302,7 @@ function FinalCTA() {
             <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
               →
             </span>
-          </Link>
+          </TransitionLink>
         </div>
       </div>
     </section>
@@ -5547,7 +5676,7 @@ function Crew() {
             ref={ctaRef}
             className="mt-11"
           >
-            <a
+            <TransitionLink
               href="/about"
               className="
                 group
@@ -5578,7 +5707,7 @@ function Crew() {
               >
                 →
               </span>
-            </a>
+            </TransitionLink>
           </div>
         </div>
 
@@ -5830,13 +5959,13 @@ function Rates() {
             Pricing available on inquiry.
           </p>
 
-          <a
+          <TransitionLink
             href="/contact"
             className="group inline-flex items-center gap-3 rounded-full border border-white/24 bg-white/08 px-9 py-4 text-[13px] uppercase tracking-[0.22em] text-white backdrop-blur-md transition-all duration-500 hover:border-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#2D3C68]"
           >
             Begin Your Voyage
             <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
-          </a>
+          </TransitionLink>
 
           <p className="text-[11px] uppercase tracking-[0.24em] text-white/32">
             hello@serenityphinisi.com
@@ -6213,13 +6342,13 @@ function LifeOnBoard() {
           ref={ctaRef}
           className="mt-14 flex justify-center md:mt-20"
         >
-          <a
+          <TransitionLink
             href="/experiences"
             className="inline-flex items-center gap-3 rounded-full border border-[#2D3C68]/14 px-7 py-3 text-[12px] uppercase tracking-[0.22em] text-[#2D3C68] transition duration-300 hover:border-[#2D3C68] hover:bg-[#2D3C68] hover:text-white"
           >
             Explore The Experience
             <span>→</span>
-          </a>
+          </TransitionLink>
         </div>
       </div>
     </section>
@@ -6550,13 +6679,13 @@ function Yacht2() {
               </p>
 
               <div className="mt-7">
-                <a
+                <TransitionLink
                   href="/yacht"
                   className="inline-flex items-center gap-3 rounded-full border border-white/22 bg-white/10 px-6 py-3 text-[11px] uppercase tracking-[0.24em] text-white backdrop-blur-md transition duration-300 hover:bg-white hover:text-[#152541]"
                 >
                   Explore The Yacht
                   <span>→</span>
-                </a>
+                </TransitionLink>
               </div>
             </div>
           </div>
@@ -7768,7 +7897,7 @@ function Closing() {
           >
             {/* PRIMARY */}
 
-            <a
+            <TransitionLink
               href="/rates-and-schedule"
               className="
                 group
@@ -7802,11 +7931,11 @@ function Closing() {
               >
                 →
               </span>
-            </a>
+            </TransitionLink>
 
             {/* SECONDARY */}
 
-            <a
+            <TransitionLink
               href="/destinations"
               className="
                 group
@@ -7844,7 +7973,7 @@ function Closing() {
               >
                 →
               </span>
-            </a>
+            </TransitionLink>
           </div>
         </div>
       </div>

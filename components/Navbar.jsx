@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
+import TransitionLink from "@/components/TransitionLink";
 import Image from "next/image";
 import {
   ArrowUpRight,
@@ -24,7 +25,7 @@ const NAV_ITEMS = [
     label: "Home",
     href: "/",
     image:
-      "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png",
     // REPLACE → vessel exterior, wide ocean shot
   },
 
@@ -32,7 +33,7 @@ const NAV_ITEMS = [
     label: "The Yacht",
     href: "/yacht",
     image:
-      "https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
     // REPLACE → deck render or interior — Upper Deck / Living Room
   },
 
@@ -40,7 +41,7 @@ const NAV_ITEMS = [
     label: "Experiences",
     href: "/experiences",
     image:
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png",
     // REPLACE → candid ocean activity, natural light
   },
 
@@ -56,7 +57,7 @@ const NAV_ITEMS = [
     label: "Rates & Schedule",
     href: "/rates-and-schedule",
     image:
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
     // REPLACE → aerial vessel shot, route context
   },
 
@@ -64,7 +65,7 @@ const NAV_ITEMS = [
     label: "About",
     href: "/about",
     image:
-      "https://images.unsplash.com/photo-1503220317375-aaad61436b1b?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png",
     // REPLACE → crew candid, golden hour on deck
   },
 
@@ -72,7 +73,7 @@ const NAV_ITEMS = [
     label: "Contact",
     href: "/contact",
     image:
-      "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
     // REPLACE → horizon, late light, open ocean
   },
 ];
@@ -99,8 +100,34 @@ export default function Navbar() {
   const [show, setShow]         = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered]   = useState(null); // item.label | null
+  const pathname = usePathname();
 
   const lastScroll = useRef(0);
+  const menuRouteRef = useRef(pathname);
+
+  const closeMenu = () => {
+    setOpen(false);
+    setHovered(null);
+  };
+
+  const getPathnameFromHref = (href) => {
+    if (!href || typeof href !== "string") return "";
+
+    try {
+      const url = new URL(href, window.location.origin);
+      return url.pathname;
+    } catch {
+      return href;
+    }
+  };
+
+  const handleFullscreenMenuLinkClick = (href) => {
+    const targetPathname = getPathnameFromHref(href);
+
+    if (targetPathname === pathname) {
+      closeMenu();
+    }
+  };
 
   /*
     ──────────────────────────────────────────────────────────
@@ -179,6 +206,20 @@ export default function Navbar() {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  useEffect(() => {
+    if (menuRouteRef.current === pathname) return;
+
+    menuRouteRef.current = pathname;
+
+    if (!open) return;
+
+    const id = setTimeout(() => {
+      closeMenu();
+    }, 0);
+
+    return () => clearTimeout(id);
+  }, [pathname, open]);
 
   /* ========================================================= */
   /* RENDER                                                     */
@@ -268,8 +309,10 @@ export default function Navbar() {
 
             {/* CENTER — wordmark, light + dark versions */}
             <div className="flex justify-center">
-              <Link
+              <TransitionLink
                 href="/"
+                transitionImage={NAV_ITEMS.find((item) => item.href === "/")?.image}
+                transitionLabel="Home"
                 className="relative block h-[28px] w-[122px] md:h-[40px] md:w-[180px]"
               >
                 <Image
@@ -292,14 +335,16 @@ export default function Navbar() {
                     ${scrolled ? "opacity-[0.9]" : "opacity-0"}
                   `}
                 />
-              </Link>
+              </TransitionLink>
             </div>
 
             {/* RIGHT — reserve CTA */}
             <div className="flex justify-end">
               {/* mobile */}
-              <Link
+              <TransitionLink
                 href="/contact"
+                transitionImage={NAV_ITEMS.find((item) => item.href === "/contact")?.image}
+                transitionLabel="Contact"
                 className={`
                   group inline-flex items-center gap-1.5
                   text-[10px] uppercase tracking-[0.28em]
@@ -309,11 +354,13 @@ export default function Navbar() {
               >
                 <span>Enquire</span>
                 <ArrowUpRight strokeWidth={1.5} className="h-[11px] w-[11px]" />
-              </Link>
+              </TransitionLink>
 
               {/* desktop */}
-              <Link
+              <TransitionLink
                 href="/contact"
+                transitionImage={NAV_ITEMS.find((item) => item.href === "/contact")?.image}
+                transitionLabel="Contact"
                 className={`
                   group hidden items-center gap-2 rounded-full border
                   px-5 py-2 text-[12px] uppercase tracking-[0.28em]
@@ -326,7 +373,7 @@ export default function Navbar() {
               >
                 <span>Reserve</span>
                 <ArrowUpRight strokeWidth={1.5} className="h-[13px] w-[13px]" />
-              </Link>
+              </TransitionLink>
             </div>
           </div>
         </div>
@@ -433,9 +480,11 @@ export default function Navbar() {
                         }}
                         className="border-b border-white/[0.08]"
                       >
-                        <Link
+                        <TransitionLink
                           href={item.href}
-                          onClick={() => setOpen(false)}
+                          transitionImage={item.image}
+                          transitionLabel={item.label}
+                          onClick={() => handleFullscreenMenuLinkClick(item.href)}
                           className="group flex items-center justify-between py-5"
                         >
                           <span className="font-[Gambarino] text-[34px] leading-none tracking-[-0.04em]">
@@ -445,7 +494,7 @@ export default function Navbar() {
                             strokeWidth={1.4}
                             className="h-[15px] w-[15px] text-white/28 transition-opacity duration-300 group-hover:text-white/72"
                           />
-                        </Link>
+                        </TransitionLink>
                       </motion.div>
                     ))}
                   </div>
@@ -551,9 +600,11 @@ export default function Navbar() {
                             }}
                             transition={{ duration: 0.4, ease }}
                           >
-                            <Link
+                            <TransitionLink
                               href={item.href}
-                              onClick={() => setOpen(false)}
+                              transitionImage={item.image}
+                              transitionLabel={item.label}
+                              onClick={() => handleFullscreenMenuLinkClick(item.href)}
                               onMouseEnter={() => setHovered(item.label)}
                               className="group flex items-center border-b border-white/[0.05] py-[18px]"
                             >
@@ -580,7 +631,7 @@ export default function Navbar() {
                               >
                                 {item.label}
                               </span>
-                            </Link>
+                            </TransitionLink>
                           </motion.div>
                         </motion.div>
                       ))}

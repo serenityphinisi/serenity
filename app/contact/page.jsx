@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { gsap, ScrollTrigger } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence,useInView, useReducedMotion } from "framer-motion";
-import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { usePageTransition } from "@/components/PageTransitionProvider";
 
 
 import Footer from '../../components/Footer'
@@ -25,24 +25,48 @@ function ContactHero() {
   const lineRef     = useRef(null);
   const headlineRef = useRef(null);
   const supportRef  = useRef(null);
+  const { stage } = usePageTransition();
+  const hasPlayedEntranceRef = useRef(false);
+  const entranceTlRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+    };
+  }, []);
  
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (hasPlayedEntranceRef.current) return;
+
+    if (stage === "covering") {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      gsap.set(lineRef.current, { scaleX: 0, transformOrigin: 'left center' });
+      gsap.set(headlineRef.current, { opacity: 0, y: 24, filter: 'blur(8px)' });
+      gsap.set(supportRef.current, { opacity: 0, y: 20, filter: 'blur(6px)' });
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
  
     if (reduce) {
       gsap.set([lineRef.current, headlineRef.current, supportRef.current], {
-        opacity: 1, y: 0, scaleX: 1,
+        opacity: 1, y: 0, scaleX: 1, filter: 'blur(0px)',
       });
       return;
     }
  
     gsap.set(lineRef.current,     { scaleX: 0, transformOrigin: 'left center' });
-    gsap.set(headlineRef.current, { opacity: 0, y: 28 });
-    gsap.set(supportRef.current,  { opacity: 0, y: 20 });
+    gsap.set(headlineRef.current, { opacity: 0, y: 28, filter: 'blur(8px)' });
+    gsap.set(supportRef.current,  { opacity: 0, y: 20, filter: 'blur(6px)' });
  
-    const tl = gsap.timeline({ delay: 0.3 });
+    entranceTlRef.current?.kill();
+    entranceTlRef.current = gsap.timeline({ delay: 0.3 });
  
-    tl.to(lineRef.current, {
+    entranceTlRef.current.to(lineRef.current, {
       scaleX:   1,
       duration: 0.5,
       ease:     'power2.out',
@@ -50,16 +74,18 @@ function ContactHero() {
     .to(headlineRef.current, {
       opacity:  1,
       y:        0,
+      filter:   'blur(0px)',
       duration: 1.05,
       ease:     [0.22, 1, 0.36, 1],
     }, '-=0.15')
     .to(supportRef.current, {
       opacity:  1,
       y:        0,
+      filter:   'blur(0px)',
       duration: 0.9,
       ease:     [0.22, 1, 0.36, 1],
     }, '-=0.65');
-  }, []);
+  }, [stage]);
  
   return (
     <section

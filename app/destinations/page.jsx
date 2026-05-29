@@ -5,6 +5,8 @@ import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePageTransition } from "@/components/PageTransitionProvider";
+import TransitionLink from "@/components/TransitionLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,17 +34,35 @@ export default function Page() {
 
 function Hero() {
   const pathRefD = useRef(null);
+  const { stage } = usePageTransition();
+  const hasPlayedEntranceRef = useRef(false);
  
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
  
     const ctx = gsap.context(() => {
  
-      if (reduce) {
-        if (pathRefD.current) {
-          const len = pathRefD.current.getTotalLength();
-          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
+      if (pathRefD.current) {
+        const len = pathRefD.current.getTotalLength();
+
+        if (stage === "covering") {
+          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: len });
+          return;
         }
+
+        if (hasPlayedEntranceRef.current) {
+          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
+          return;
+        }
+
+        if (reduce) {
+          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
+          hasPlayedEntranceRef.current = true;
+          return;
+        }
+      }
+
+      if (reduce) {
         return;
       }
  
@@ -59,12 +79,13 @@ function Hero() {
           duration: 10.4,
           ease: 'none',
         });
+        hasPlayedEntranceRef.current = true;
       });
  
     });
  
     return () => ctx.revert();
-  }, []);
+  }, [stage]);
  
   return (
     <section className="relative h-screen bg-[#2D3C68] overflow-hidden">
@@ -1818,23 +1839,23 @@ function ClosingCTA() {
           <div className="flex flex-col items-stretch gap-6 sm:flex-row sm:items-center sm:gap-10 md:translate-y-[4px] w-full sm:w-auto">
  
             {/* Primary */}
-            <a
+            <TransitionLink
               ref={primaryRef}
               href="/contact"
               className="w-full rounded-full bg-[#F4F5F2] px-10 py-4 text-center text-[11px] uppercase tracking-[0.2em] text-[#1A1A1A] transition-all duration-500 hover:-translate-y-[2px] hover:opacity-95 hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)] sm:w-auto"
             >
               Start a Conversation
-            </a>
+            </TransitionLink>
  
             {/* Secondary */}
-            <a
+            <TransitionLink
               ref={secondaryRef}
-              href="/rates"
+              href="/rates-and-schedule"
               className="group flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-white/60 transition-colors duration-300 hover:text-white/82"
             >
               See Pricing
               <span className="block h-px w-[24px] bg-current transition-all duration-500 group-hover:w-[40px]" />
-            </a>
+            </TransitionLink>
  
           </div>
         </div>

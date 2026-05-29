@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 
 import useEmblaCarousel from "embla-carousel-react";
 
@@ -3451,12 +3451,12 @@ function RatesBridge() {
 
         {/* CTA */}
         <div className="mt-[50px]">
-          <a
-            href="/rates-and-schedules"
+          <TransitionLink
+            href="/rates-and-schedule"
             className="inline-block text-[12px] tracking-[0.35em] uppercase text-[#2D3C68] border-b border-[#2D3C68] pb-2 hover:opacity-60 transition"
           >
             View Rates & Schedules
-          </a>
+          </TransitionLink>
         </div>
 
       </div>
@@ -4243,12 +4243,12 @@ function RateAnchor() {
 
             {/* CTA */}
             <div className="mt-10">
-              <a
-                href="/rates-and-schedules"
+              <TransitionLink
+                href="/rates-and-schedule"
                 className="text-[13px] tracking-[0.18em] uppercase text-[#2D3C68] border-b border-[#2D3C68]/30 hover:border-[#2D3C68] transition"
               >
                 View full rates →
-              </a>
+              </TransitionLink>
             </div>
 
           </div>
@@ -4853,4 +4853,3 @@ function Culinary() {
     </section>
   );
 }
-

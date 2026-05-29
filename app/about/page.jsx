@@ -6,6 +6,8 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { usePageTransition } from "@/components/PageTransitionProvider";
+import TransitionLink from "@/components/TransitionLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -48,41 +50,55 @@ function Hero() {
   const imageWrapRef = useRef(null);
   const imageRef = useRef(null);
   const contentRef = useRef(null);
+  const { stage } = usePageTransition();
+  const hasPlayedEntranceRef = useRef(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       /* ===================================================== */
       /* ENTRY */
       /* ===================================================== */
-      gsap.fromTo(
-        imageWrapRef.current,
-        {
+      if (stage === "covering") {
+        gsap.set(imageWrapRef.current, {
           scale: 1.01,
           opacity: 0,
-        },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 1.8,
-          ease: "power2.out",
-        }
-      );
-
-      gsap.fromTo(
-        contentRef.current.children,
-        {
+        });
+        gsap.set(contentRef.current.children, {
           y: 8,
           opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.08,
-          duration: 1,
-          ease: "power2.out",
-          delay: 0.2,
-        }
-      );
+        });
+      } else if (!hasPlayedEntranceRef.current) {
+        hasPlayedEntranceRef.current = true;
+        gsap.fromTo(
+          imageWrapRef.current,
+          {
+            scale: 1.01,
+            opacity: 0,
+          },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 1.8,
+            ease: "power2.out",
+          }
+        );
+
+        gsap.fromTo(
+          contentRef.current.children,
+          {
+            y: 8,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            stagger: 0.08,
+            duration: 1,
+            ease: "power2.out",
+            delay: 0.2,
+          }
+        );
+      }
 
       /* ===================================================== */
       /* AMBIENT */
@@ -122,7 +138,7 @@ function Hero() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [stage]);
 
   return (
     <section
@@ -856,7 +872,7 @@ function Conversion() {
           </p>
  
           {/* CTA */}
-          <a
+          <TransitionLink
             href="/contact"
             style={{
               display: 'inline-flex',
@@ -885,7 +901,7 @@ function Conversion() {
           >
             Begin Your Voyage
             <span style={{ fontSize: '16px', lineHeight: 1 }}>↗</span>
-          </a>
+          </TransitionLink>
  
           {/* Email — secondary */}
           <p
@@ -3274,12 +3290,12 @@ function PlanYourJourney() {
 
         {/* one CTA */}
         <div className="mt-10">
-          <a
+          <TransitionLink
             href="/contact"
             className="inline-flex items-center justify-center rounded-full bg-[#2D3C68] px-8 py-4 text-[12px] font-medium uppercase tracking-[0.24em] text-white transition duration-300 hover:bg-[#223054]"
           >
             Enquire Availability
-          </a>
+          </TransitionLink>
         </div>
 
         {/* quiet trust line */}
@@ -3546,4 +3562,3 @@ function FinalCTA() {
     </section>
   )
 }
-

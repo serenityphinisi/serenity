@@ -2,101 +2,94 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const FOOTER_CONFIG = {
+  pattern: {
+    ikat:
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png",
+  },
+
+  logo: {
+    src: "https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_1_ahyyak.png",
+    alt: "Serenity Yacht",
+  },
+
+  text: {
+    label: "Private Charter Inquiry",
+    headlineLine1: "Your voyage begins",
+    headlineLine2: "with a conversation",
+    cta: "Begin Your Voyage",
+  },
+
+  routes: {
+    contact: "/contact",
+  },
+
+  railImages: [
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp",
+      alt: "Quiet sea view aboard Serenity",
+    },
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
+      alt: "Calm Indonesian water and islands during a Serenity voyage",
+    },
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
+      alt: "Quiet onboard dining detail aboard Serenity",
+    },
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
+      alt: "Interior space aboard Serenity",
+    },
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png",
+      alt: "Warm evening atmosphere aboard Serenity",
+    },
+    {
+      src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
+      alt: "Life aboard Serenity at sea",
+    },
+  ],
+
+  contact: {
+    whatsappLabel: "WhatsApp",
+    whatsappText: "+62 000 0000 0000",
+    whatsappHref: "https://wa.me/620000000000",
+
+    locationText: "Komodo & Raja Ampat",
+
+    emailLabel: "Email",
+    emailText: "hello@serenityyacht.com",
+    emailHref: "mailto:hello@serenityyacht.com",
+  },
+
+  nav: [
+    { label: "The Yacht", href: "/yacht" },
+    { label: "Destinations", href: "/destinations" },
+    { label: "Experiences", href: "/experiences" },
+    { label: "Rates & Schedule", href: "/rates-and-schedule" },
+    { label: "About", href: "/about" },
+  ],
+
+  stats: ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"],
+
+  legal: ["Privacy Policy", "Terms & Conditions"],
+
+  social: {
+    instagram: "https://instagram.com",
+    whatsapp: "https://wa.me/620000000000",
+  },
+};
+
 export default function ClosingSuite() {
-  const configRef = useRef(null);
-
-  if (!configRef.current) {
-    configRef.current = {
-      pattern: {
-        ikat:
-          "https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png",
-      },
-
-      logo: {
-        src: "https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_1_ahyyak.png",
-        alt: "Serenity Yacht",
-      },
-
-      text: {
-        label: "Private Charter Inquiry",
-        headlineLine1: "Your voyage begins",
-        headlineLine2: "with a conversation",
-        cta: "Begin Your Voyage",
-      },
-
-      routes: {
-        contact: "/contact",
-      },
-
-      railImages: [
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp",
-          alt: "Quiet sea view aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
-          alt: "Calm Indonesian water and islands during a Serenity voyage",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
-          alt: "Quiet onboard dining detail aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
-          alt: "Interior space aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_27_PM_sk1t1e.png",
-          alt: "Warm evening atmosphere aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
-          alt: "Life aboard Serenity at sea",
-        },
-      ],
-
-      contact: {
-        whatsappLabel: "WhatsApp",
-        whatsappText: "+62 000 0000 0000",
-        whatsappHref: "https://wa.me/620000000000",
-
-        locationText: "Komodo & Raja Ampat",
-
-        emailLabel: "Email",
-        emailText: "hello@serenityyacht.com",
-        emailHref: "mailto:hello@serenityyacht.com",
-      },
-
-      nav: [
-        { label: "The Yacht", href: "/yacht" },
-        { label: "Destinations", href: "/destinations" },
-        { label: "Experiences", href: "/experiences" },
-        { label: "Rates & Schedule", href: "/rates-and-schedule" },
-        { label: "About", href: "/about" },
-      ],
-
-      stats: ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"],
-
-      legal: [
-        { label: "Privacy Policy", href: "/privacy-policy" },
-        { label: "Terms & Conditions", href: "/terms-and-conditions" },
-      ],
-
-      social: {
-        instagram: "https://instagram.com",
-        whatsapp: "https://wa.me/620000000000",
-      },
-    };
-  }
-
-  const config = configRef.current;
+  const config = FOOTER_CONFIG;
 
   const sectionRef = useRef(null);
   const ctaRef = useRef(null);
@@ -572,7 +565,7 @@ export default function ClosingSuite() {
         </h2>
 
         <div className="cta-button mt-9">
-          <Link
+          <TransitionLink
             href={config.routes.contact}
             className="
               group
@@ -611,7 +604,7 @@ export default function ClosingSuite() {
             <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
               →
             </span>
-          </Link>
+          </TransitionLink>
         </div>
       </div>
 
@@ -953,7 +946,7 @@ export default function ClosingSuite() {
             "
           >
             {config.nav.map((item) => (
-              <Link
+              <TransitionLink
                 key={item.label}
                 href={item.href}
                 className="
@@ -963,7 +956,7 @@ export default function ClosingSuite() {
                 "
               >
                 {item.label}
-              </Link>
+              </TransitionLink>
             ))}
           </nav>
 
@@ -979,17 +972,16 @@ export default function ClosingSuite() {
             "
           >
             {config.legal.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
+              <span
+                key={item}
                 className="
                   transition-colors
                   duration-300
                   hover:text-[#F4F5F2]/76
                 "
               >
-                {item.label}
-              </Link>
+                {item}
+              </span>
             ))}
 
             <a

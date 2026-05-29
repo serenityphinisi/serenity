@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence,useInView, useReducedMotion } from "framer-motion";
-import Link from "next/link";
+import { usePageTransition } from "@/components/PageTransitionProvider";
+import TransitionLink from "@/components/TransitionLink";
 
 
 import Footer from '../../components/Footer'
@@ -41,6 +42,16 @@ function Hero() {
   const ctaRef      = useRef(null)
   const rightRef    = useRef(null)
   const scrollRef   = useRef(null)
+  const { stage } = usePageTransition();
+  const hasPlayedEntranceRef = useRef(false);
+  const entranceTlRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+    };
+  }, []);
  
   useEffect(() => {
  
@@ -59,19 +70,42 @@ function Hero() {
       tick()
     }
  
-    setupLine(pathRefD.current, 0.0016)
-    setupLine(pathRefM.current, 0.003)
- 
+    setupLine(pathRefD.current, 0.0016);
+    setupLine(pathRefM.current, 0.003);
+
     // --- Entrance ---
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (stage === "covering") {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      const routePaths = [pathRefD.current, pathRefM.current];
+      routePaths.forEach((path) => {
+        if (!path) return;
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
+      });
+
+      gsap.set(labelRef.current, { opacity: 0, y: 16, filter: 'blur(6px)' });
+      gsap.set(headlineRef.current, { opacity: 0, y: 24, filter: 'blur(10px)' });
+      gsap.set(subcopyRef.current, { opacity: 0, y: 20, filter: 'blur(8px)' });
+      gsap.set(ctaRef.current, { opacity: 0, y: 18, filter: 'blur(6px)' });
+      gsap.set(rightRef.current, { opacity: 0, y: 18, filter: 'blur(6px)' });
+      gsap.set(scrollRef.current, { opacity: 0, y: 14, filter: 'blur(6px)' });
+      return;
+    }
+
+    if (hasPlayedEntranceRef.current) return;
+    hasPlayedEntranceRef.current = true;
  
     if (reduce) {
       gsap.set(
         [labelRef.current, headlineRef.current, subcopyRef.current,
          ctaRef.current, rightRef.current, scrollRef.current],
         { opacity: 1, y: 0, filter: 'blur(0px)' }
-      )
-      return
+      );
+      return;
     }
  
     gsap.set(
@@ -80,39 +114,65 @@ function Hero() {
       { opacity: 0, y: 20 }
     )
     gsap.set(headlineRef.current, { filter: 'blur(8px)', y: 48 })
- 
-    gsap.to(labelRef.current, {
+
+    entranceTlRef.current?.kill();
+    entranceTlRef.current = gsap.timeline();
+
+    entranceTlRef.current.to(labelRef.current, {
       opacity: 1, y: 0,
+      filter: 'blur(0px)',
       duration: 0.9, delay: 0.1,
       ease: [0.22, 1, 0.36, 1],
     })
-    gsap.to(headlineRef.current, {
+    entranceTlRef.current.to(headlineRef.current, {
       opacity: 1, y: 0, filter: 'blur(0px)',
       duration: 1.4, delay: 0.2,
       ease: [0.22, 1, 0.36, 1],
-    })
-    gsap.to(subcopyRef.current, {
+    }, 0)
+    entranceTlRef.current.to(subcopyRef.current, {
       opacity: 1, y: 0,
+      filter: 'blur(0px)',
       duration: 1.1, delay: 0.38,
       ease: [0.22, 1, 0.36, 1],
-    })
-    gsap.to(ctaRef.current, {
+    }, 0)
+    entranceTlRef.current.to(ctaRef.current, {
       opacity: 1, y: 0,
+      filter: 'blur(0px)',
       duration: 1.0, delay: 0.52,
       ease: [0.22, 1, 0.36, 1],
-    })
-    gsap.to(rightRef.current, {
+    }, 0)
+    entranceTlRef.current.to(rightRef.current, {
       opacity: 1, y: 0,
+      filter: 'blur(0px)',
       duration: 1.1, delay: 0.48,
       ease: [0.22, 1, 0.36, 1],
-    })
-    gsap.to(scrollRef.current, {
+    }, 0)
+    entranceTlRef.current.to(scrollRef.current, {
       opacity: 1, y: 0,
+      filter: 'blur(0px)',
       duration: 1.0, delay: 1.4,
       ease: [0.22, 1, 0.36, 1],
-    })
+    }, 0)
+
+    entranceTlRef.current.eventCallback("onComplete", () => {
+      gsap.set(
+        [
+          labelRef.current,
+          headlineRef.current,
+          subcopyRef.current,
+          ctaRef.current,
+          rightRef.current,
+          scrollRef.current,
+        ].filter(Boolean),
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+        }
+      );
+    });
  
-  }, [])
+  }, [stage]);
  
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#2D3C68] text-[#F4F5F2]">
@@ -1113,7 +1173,7 @@ function Rate() {
             className="flex flex-col items-start md:items-end"
             style={{ gap: '10px', flexShrink: 0 }}
           >
-            <a
+            <TransitionLink
               href="/contact"
               style={{
                 display: 'inline-flex',
@@ -1141,7 +1201,7 @@ function Rate() {
               }}
             >
               Begin Your Voyage
-            </a>
+            </TransitionLink>
             <span
               style={{
                 fontFamily: 'Switzer, sans-serif',
@@ -3020,7 +3080,7 @@ function FinalCTA() {
             }}
           >
 
-            <a
+            <TransitionLink
               href="/contact"
               style={{
                 display: 'inline-flex',
@@ -3050,7 +3110,7 @@ function FinalCTA() {
               }}
             >
               Begin Your Voyage
-            </a>
+            </TransitionLink>
 
             <span
               style={{
@@ -3507,4 +3567,3 @@ function InclusionsExclusions() {
     </section>
   );
 }
-
