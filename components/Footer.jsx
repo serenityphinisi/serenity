@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink";
+import { SITE_BRAND, SITE_CONTACT, SITE_SOCIAL } from "@/lib/siteConfig";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
@@ -60,14 +61,14 @@ const FOOTER_CONFIG = {
 
   contact: {
     whatsappLabel: "WhatsApp",
-    whatsappText: "+62 000 0000 0000",
-    whatsappHref: "https://wa.me/620000000000",
+    whatsappText: SITE_CONTACT.whatsappDisplay,
+    whatsappHref: SITE_CONTACT.whatsappHref,
 
     locationText: "Komodo & Raja Ampat",
 
     emailLabel: "Email",
-    emailText: "hello@serenityyacht.com",
-    emailHref: "mailto:hello@serenityyacht.com",
+    emailText: SITE_CONTACT.primaryEmail,
+    emailHref: SITE_CONTACT.primaryEmailHref,
   },
 
   nav: [
@@ -78,13 +79,13 @@ const FOOTER_CONFIG = {
     { label: "About", href: "/about" },
   ],
 
-  stats: ["12 Guests", "4 Cabins", "10 Crew", "Phinisi Yacht"],
+  stats: ["12 Guests", "4 Cabins", "10 Crew", SITE_BRAND.name],
 
   legal: ["Privacy Policy", "Terms & Conditions"],
 
   social: {
-    instagram: "https://instagram.com",
-    whatsapp: "https://wa.me/620000000000",
+    instagram: SITE_SOCIAL.instagramHref,
+    whatsapp: SITE_CONTACT.whatsappHref,
   },
 };
 

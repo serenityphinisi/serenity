@@ -7,6 +7,9 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ArrowUpRight } from "lucide-react";
 import TransitionLink from "@/components/TransitionLink";
+import { usePageTransition } from "@/components/PageTransitionProvider";
+import { SITE_CONTACT } from "@/lib/siteConfig";
+
 
 import useEmblaCarousel from "embla-carousel-react";
 
@@ -23,7 +26,7 @@ export default function Page() {
       <ExperienceDayOnBoard/>
       {/* <ExperienceFrame/> */}
       <ExperienceActivities/>
-      <ExperienceBreaking/>
+      {/* <ExperienceBreaking/> */}
       <ExperienceDining/>
       <ExperienceHumanMoments/>
       {/* <ExperienceMoments/>  */}
@@ -46,17 +49,26 @@ export default function Page() {
 }
 
 function Hero() {
+  const sectionRef = useRef(null);
+  const panelFieldRef = useRef(null);
+  const contentRef = useRef(null);
+  const hasPlayedEntranceRef = useRef(false);
+  const entranceTlRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+  const { stage } = usePageTransition();
+
+  const [heroEntranceReady, setHeroEntranceReady] = useState(
+    stage !== "covering"
+  );
+
   const panels = [
     {
       angle: "118deg",
       radialX: "26%",
       radialY: "42%",
-      imageOpacity: 0.76,
-      warmOpacity: 0.28,
-      brassOpacity: 0.08,
-      duration: "14s",
-      brassDuration: "15.2s",
-      delay: "0s",
+      imageOpacity: 0.82,
+      mobileVisible: true,
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png",
       alt: "Guests returning from the water onto the teak deck of Serenity",
@@ -66,12 +78,8 @@ function Hero() {
       angle: "198deg",
       radialX: "74%",
       radialY: "42%",
-      imageOpacity: 0.7,
-      warmOpacity: 0.26,
-      brassOpacity: 0.075,
-      duration: "15.5s",
-      brassDuration: "16.8s",
-      delay: "1.3s",
+      imageOpacity: 0.78,
+      mobileVisible: false,
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_14_PM_liebfi.png",
       alt: "Serenity phinisi moving through Indonesian waters",
@@ -81,12 +89,8 @@ function Hero() {
       angle: "302deg",
       radialX: "36%",
       radialY: "42%",
-      imageOpacity: 0.72,
-      warmOpacity: 0.3,
-      brassOpacity: 0.085,
-      duration: "14.8s",
-      brassDuration: "16s",
-      delay: "2.6s",
+      imageOpacity: 0.8,
+      mobileVisible: false,
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1778922405/ChatGPT_Image_May_16_2026_03_49_22_PM_cyflb6.png",
       alt: "Warm evening atmosphere aboard Serenity",
@@ -96,12 +100,8 @@ function Hero() {
       angle: "62deg",
       radialX: "70%",
       radialY: "42%",
-      imageOpacity: 0.74,
-      warmOpacity: 0.32,
-      brassOpacity: 0.09,
-      duration: "16s",
-      brassDuration: "17.4s",
-      delay: "3.9s",
+      imageOpacity: 0.8,
+      mobileVisible: true,
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1778534687/ChatGPT_Image_May_12_2026_04_07_19_AM_lu1htz.png",
       alt: "Quiet human moment aboard Serenity at sea",
@@ -109,52 +109,196 @@ function Hero() {
     },
   ];
 
+  useEffect(() => {
+    if (hasPlayedEntranceRef.current) return;
+
+    if (stage === "covering") {
+      setHeroEntranceReady(false);
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
+    setHeroEntranceReady(true);
+  }, [stage]);
+
+  useEffect(() => {
+    return () => {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sectionRef.current || !contentRef.current) return;
+
+    const enterNodes =
+      contentRef.current.querySelectorAll(".experience-hero-enter") ?? [];
+
+    if (!heroEntranceReady) {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      gsap.set(enterNodes, {
+        opacity: 0,
+        y: 22,
+        filter: "blur(7px)",
+      });
+      return;
+    }
+
+    if (shouldReduceMotion) {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      gsap.set(enterNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+      hasPlayedEntranceRef.current = true;
+      return;
+    }
+
+    if (hasPlayedEntranceRef.current) {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      gsap.set(enterNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
+    entranceTlRef.current?.kill();
+    gsap.set(enterNodes, {
+      opacity: 0,
+      y: 22,
+      filter: "blur(7px)",
+    });
+
+    entranceTlRef.current = gsap.timeline();
+    entranceTlRef.current.to(enterNodes, {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 1.18,
+      stagger: 0.11,
+      ease: "power3.out",
+    });
+  }, [heroEntranceReady, shouldReduceMotion]);
+
+  useEffect(() => {
+    if (!sectionRef.current || shouldReduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      const panelImages =
+        panelFieldRef.current?.querySelectorAll(".experience-hero-image") ?? [];
+
+      if (panelImages.length > 0) {
+        gsap.set(panelImages, {
+          yPercent: -1.5,
+          scale: 1.045,
+          transformOrigin: "center center",
+        });
+
+        gsap.to(panelImages, {
+          yPercent: 4.5,
+          scale: 1.075,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2,
+          },
+        });
+      }
+
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          y: "5.5%",
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "46% top",
+            scrub: 0.8,
+          },
+        });
+      }
+
+      if (panelFieldRef.current) {
+        gsap.to(panelFieldRef.current, {
+          y: "2%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.4,
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [shouldReduceMotion]);
+
   return (
     <section
+      ref={sectionRef}
       className="
         relative
         isolate
-        h-[92vh]
-        min-h-[720px]
+        h-[100svh]
+        min-h-[680px]
         overflow-hidden
         bg-[#2D3C68]
+        md:h-[92svh]
+        md:min-h-[760px]
       "
     >
       {/* ========================================================= */}
-      {/* PANEL FIELD — BLUE DOMINANT, STATIC IMAGES, WARM TIDE LATER */}
+      {/* PANEL FIELD — DESKTOP 4-PANEL, MOBILE 2-PANEL */}
+      {/* Mobile deliberately shows active water + quiet human moment. */}
       {/* ========================================================= */}
 
       <div
+        ref={panelFieldRef}
         className="
           absolute
           inset-0
           grid
-          grid-cols-2
+          grid-cols-1
           grid-rows-2
+          will-change-transform
           md:grid-cols-4
           md:grid-rows-1
         "
       >
-        {panels.map((panel, i) => (
+        {panels.map((panel, index) => (
           <div
-            key={i}
-            className="
+            key={panel.image}
+            className={`
               relative
               overflow-hidden
               bg-[#2D3C68]
-            "
+              ${!panel.mobileVisible ? "hidden md:block" : ""}
+            `}
           >
-            {/* IMAGE */}
             <Image
               src={panel.image}
               alt={panel.alt}
               fill
-              priority
-              sizes="(min-width: 768px) 25vw, 50vw"
+              priority={index === 0 || panel.mobileVisible}
+              sizes="(max-width: 767px) 100vw, 25vw"
               className="
+                experience-hero-image
                 h-full
                 w-full
                 object-cover
+                will-change-transform
               "
               style={{
                 objectPosition: panel.objectPosition,
@@ -162,8 +306,9 @@ function Hero() {
               }}
             />
 
-            {/* BLUE IMAGE WASH — DOMINANT LAYER */}
+            {/* BLUE IMAGE WASH */}
             <div
+              aria-hidden="true"
               className="
                 pointer-events-none
                 absolute
@@ -173,17 +318,18 @@ function Hero() {
                 background: `
                   linear-gradient(
                     ${panel.angle},
-                    rgba(31, 47, 86, 0.86) 0%,
-                    rgba(45, 60, 104, 0.76) 42%,
-                    rgba(58, 74, 117, 0.58) 72%,
-                    rgba(244, 245, 242, 0.045) 180%
+                    rgba(31, 47, 86, 0.76) 0%,
+                    rgba(45, 60, 104, 0.58) 44%,
+                    rgba(58, 74, 117, 0.34) 76%,
+                    rgba(244, 245, 242, 0.025) 140%
                   )
                 `,
               }}
             />
 
-            {/* DEEP MARITIME ANCHOR */}
+            {/* DEPTH ANCHOR */}
             <div
+              aria-hidden="true"
               className="
                 pointer-events-none
                 absolute
@@ -193,81 +339,28 @@ function Hero() {
                 background: `
                   linear-gradient(
                     to bottom,
-                    rgba(8, 13, 26, 0.18) 0%,
-                    rgba(18, 28, 52, 0.36) 48%,
-                    rgba(8, 13, 26, 0.7) 100%
+                    rgba(8, 13, 26, 0.12) 0%,
+                    rgba(18, 28, 52, 0.22) 46%,
+                    rgba(5, 8, 15, 0.62) 100%
                   )
                 `,
               }}
             />
 
-            {/* BLUE BREATH — FIRST IMPRESSION */}
+            {/* LOCAL LIGHT FIELD */}
             <div
+              aria-hidden="true"
               className="
-                serenity-blue-breath
                 pointer-events-none
                 absolute
                 inset-0
               "
               style={{
-                "--duration": panel.duration,
-                "--delay": panel.delay,
                 background: `
                   radial-gradient(
                     circle at ${panel.radialX} ${panel.radialY},
-                    rgba(244, 245, 242, 0.08),
+                    rgba(244, 245, 242, 0.07),
                     transparent 58%
-                  ),
-                  linear-gradient(
-                    ${panel.angle},
-                    rgba(45, 60, 104, 0.3),
-                    rgba(31, 47, 86, 0.14),
-                    transparent
-                  )
-                `,
-              }}
-            />
-
-            {/* WARM TIDE — ARRIVES LATER, NEVER DOMINATES */}
-            <div
-              className="
-                serenity-warm-tide
-                pointer-events-none
-                absolute
-                inset-0
-              "
-              style={{
-                "--duration": panel.duration,
-                "--delay": panel.delay,
-                "--warmOpacity": panel.warmOpacity,
-                background: `
-                  linear-gradient(
-                    ${panel.angle},
-                    rgba(105, 85, 71, 0.54) 0%,
-                    rgba(139, 106, 79, 0.5) 46%,
-                    rgba(162, 123, 90, 0.4) 100%
-                  )
-                `,
-              }}
-            />
-
-            {/* BRASS BREATH — SMALL ACCENT ONLY */}
-            <div
-              className="
-                serenity-brass-breath
-                pointer-events-none
-                absolute
-                inset-0
-              "
-              style={{
-                "--brassDuration": panel.brassDuration,
-                "--delay": panel.delay,
-                "--brassOpacity": panel.brassOpacity,
-                background: `
-                  radial-gradient(
-                    circle at ${panel.radialX} ${panel.radialY},
-                    rgba(176, 141, 87, 0.42),
-                    transparent 62%
                   )
                 `,
               }}
@@ -275,6 +368,7 @@ function Hero() {
 
             {/* BOTTOM READABILITY */}
             <div
+              aria-hidden="true"
               className="
                 pointer-events-none
                 absolute
@@ -284,109 +378,35 @@ function Hero() {
                 background: `
                   linear-gradient(
                     to top,
-                    rgba(5, 8, 15, 0.6) 0%,
-                    rgba(5, 8, 15, 0.28) 34%,
+                    rgba(5, 8, 15, 0.56) 0%,
+                    rgba(5, 8, 15, 0.24) 34%,
                     transparent 76%
                   )
                 `,
               }}
             />
 
-            {/* PANEL BLEED */}
-            <div
-              className="
-                pointer-events-none
-                absolute
-                right-[-6%]
-                top-0
-                h-full
-                w-[14%]
-                opacity-[0.055]
-              "
-              style={{
-                background: `
-                  linear-gradient(
-                    to right,
-                    rgba(255, 255, 255, 0),
-                    rgba(255, 255, 255, 0.18),
-                    rgba(255, 255, 255, 0)
-                  )
-                `,
-              }}
-            />
-
             {/* DESKTOP DIVIDER */}
-            {i !== 3 && (
+            {index !== 3 && (
               <div
+                aria-hidden="true"
                 className="
                   pointer-events-none
                   absolute
                   right-0
-                  top-[14%]
+                  top-[16%]
                   hidden
-                  h-[72%]
+                  h-[68%]
                   w-px
                   md:block
                 "
                 style={{
-                  opacity: i === 1 ? 0.055 : 0.09,
+                  opacity: index === 1 ? 0.035 : 0.052,
                   background: `
                     linear-gradient(
                       to bottom,
                       transparent,
-                      rgba(244, 245, 242, 0.92),
-                      transparent
-                    )
-                  `,
-                }}
-              />
-            )}
-
-            {/* MOBILE HORIZONTAL DIVIDER */}
-            {i < 2 && (
-              <div
-                className="
-                  pointer-events-none
-                  absolute
-                  bottom-0
-                  left-[12%]
-                  h-px
-                  w-[76%]
-                  md:hidden
-                "
-                style={{
-                  opacity: 0.075,
-                  background: `
-                    linear-gradient(
-                      to right,
-                      transparent,
-                      rgba(244, 245, 242, 0.88),
-                      transparent
-                    )
-                  `,
-                }}
-              />
-            )}
-
-            {/* MOBILE VERTICAL DIVIDER */}
-            {i % 2 === 0 && (
-              <div
-                className="
-                  pointer-events-none
-                  absolute
-                  right-0
-                  top-[12%]
-                  h-[76%]
-                  w-px
-                  md:hidden
-                "
-                style={{
-                  opacity: 0.075,
-                  background: `
-                    linear-gradient(
-                      to bottom,
-                      transparent,
-                      rgba(244, 245, 242, 0.88),
+                      rgba(244, 245, 242, 0.84),
                       transparent
                     )
                   `,
@@ -402,6 +422,7 @@ function Hero() {
       {/* ========================================================= */}
 
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
@@ -410,14 +431,38 @@ function Hero() {
         style={{
           background: `
             radial-gradient(
-              ellipse at 52% 8%,
+              ellipse at 50% 8%,
               rgba(255, 255, 255, 0.055),
-              transparent 52%
+              transparent 54%
             ),
             radial-gradient(
-              ellipse at 74% 22%,
-              rgba(45, 60, 104, 0.22),
+              ellipse at 76% 22%,
+              rgba(45, 60, 104, 0.2),
               transparent 48%
+            )
+          `,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          serenity-experience-breath
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background: `
+            radial-gradient(
+              ellipse at 52% 44%,
+              rgba(176, 141, 87, 0.11),
+              transparent 48%
+            ),
+            radial-gradient(
+              ellipse at 34% 38%,
+              rgba(244, 245, 242, 0.05),
+              transparent 46%
             )
           `,
         }}
@@ -425,6 +470,7 @@ function Hero() {
 
       {/* CENTER READABILITY VEIL */}
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
@@ -432,12 +478,13 @@ function Hero() {
         "
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(6,10,20,0.4), rgba(9,14,25,0.2) 32%, transparent 58%)",
+            "radial-gradient(ellipse at center, rgba(6,10,20,0.42), rgba(9,14,25,0.2) 32%, transparent 60%)",
         }}
       />
 
       {/* MOBILE BOTTOM READABILITY VEIL */}
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
@@ -446,34 +493,18 @@ function Hero() {
         "
         style={{
           background:
-            "linear-gradient(to top, rgba(5,8,15,0.72) 0%, rgba(5,8,15,0.36) 34%, transparent 72%)",
-        }}
-      />
-
-      {/* SUBTLE WARM IMPERFECTION — NOT DOMINANT */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          right-[16%]
-          top-[-8%]
-          h-[18vw]
-          w-[18vw]
-          opacity-[0.024]
-          blur-[80px]
-        "
-        style={{
-          background: "rgba(176, 141, 87, 0.34)",
+            "linear-gradient(to top, rgba(5,8,15,0.78) 0%, rgba(5,8,15,0.42) 36%, transparent 74%)",
         }}
       />
 
       {/* GRAIN */}
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
           inset-0
-          opacity-[0.032]
+          opacity-[0.028]
         "
         style={{
           backgroundImage:
@@ -486,14 +517,16 @@ function Hero() {
       {/* ========================================================= */}
 
       <div
+        ref={contentRef}
         className="
-          pointer-events-none
           absolute
           inset-0
+          z-20
           flex
           items-end
           justify-start
-          pb-[10vh]
+          pb-[clamp(72px,10svh,112px)]
+          will-change-transform
           md:items-center
           md:justify-center
           md:pb-0
@@ -511,53 +544,54 @@ function Hero() {
         >
           <p
             className="
+              experience-hero-enter
               mb-4
+              text-[10px]
               uppercase
+              tracking-[0.32em]
+              text-[#F4F5F2]/55
               md:mb-5
+              md:text-[11px]
             "
-            style={{
-              fontFamily: "Switzer, sans-serif",
-              fontSize: "11px",
-              letterSpacing: "0.28em",
-              color: "rgba(244,245,242,0.5)",
-              fontWeight: 400,
-            }}
           >
-            EXPERIENCES
+            Experiences
           </p>
 
           <h1
-            className="text-[#F4F5F2]"
-            style={{
-              fontFamily: "Gambarino, serif",
-              fontSize: "clamp(40px, 6.4vw, 76px)",
-              lineHeight: 1.02,
-              letterSpacing: "-0.035em",
-              fontWeight: 400,
-              textShadow: "0 18px 54px rgba(5,8,15,0.4)",
-            }}
+            className="
+              font-[Gambarino]
+              text-[42px]
+              leading-[1.02]
+              tracking-[-0.04em]
+              text-[#F4F5F2]
+              drop-shadow-[0_18px_54px_rgba(5,8,15,0.38)]
+              sm:text-[52px]
+              md:text-[clamp(62px,6.4vw,76px)]
+            "
           >
-            No schedules.
-            <br />
-            Just the sea.
+            <span className="experience-hero-enter block">
+              No schedules.
+            </span>
+
+            <span className="experience-hero-enter block">
+              Just the sea.
+            </span>
           </h1>
 
           <p
             className="
-              mt-4
-              max-w-[420px]
+              experience-hero-enter
+              mt-5
+              max-w-[430px]
+              text-[14px]
+              leading-[1.9]
+              text-[#F4F5F2]/76
+              drop-shadow-[0_12px_34px_rgba(5,8,15,0.32)]
               md:mx-auto
-              md:mt-5
+              md:mt-6
               md:max-w-[480px]
+              md:text-[15px]
             "
-            style={{
-              fontFamily: "Switzer, sans-serif",
-              fontSize: "14px",
-              lineHeight: 1.9,
-              color: "rgba(244,245,242,0.68)",
-              fontWeight: 300,
-              textShadow: "0 12px 34px rgba(5,8,15,0.32)",
-            }}
           >
             Some mornings begin in the water. Others stay slow from the start,
             with nowhere particular to be.
@@ -566,7 +600,7 @@ function Hero() {
       </div>
 
       {/* ========================================================= */}
-      {/* ATMOSPHERIC EXIT */}
+      {/* ATMOSPHERIC EXIT TO SAIL-WHITE */}
       {/* ========================================================= */}
 
       <div
@@ -577,143 +611,71 @@ function Hero() {
           bottom-0
           left-0
           right-0
-          h-[150px]
+          z-10
+          h-[170px]
+          md:h-[210px]
         "
         style={{
           background: `
             linear-gradient(
               to bottom,
-              transparent,
-              rgba(244,245,242,0.045) 58%,
-              rgba(244,245,242,0.17) 100%
+              rgba(244,245,242,0) 0%,
+              rgba(244,245,242,0.07) 42%,
+              rgba(244,245,242,0.24) 72%,
+              rgba(244,245,242,0.42) 100%
             )
           `,
         }}
       />
 
       {/* ========================================================= */}
-      {/* KEYFRAMES — BLUE FIRST, THEN WARM, LOOP BACK TO BLUE */}
+      {/* KEYFRAMES — RESTRAINED, GLOBAL ONLY */}
       {/* ========================================================= */}
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            .serenity-blue-breath {
-              opacity: 0.22;
-              animation-name: serenityBlueBreath;
-              animation-duration: var(--duration);
-              animation-delay: var(--delay);
-              animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-              animation-iteration-count: infinite;
-              animation-direction: normal;
-              will-change: opacity;
-            }
-
-            .serenity-warm-tide {
+            .experience-hero-enter {
               opacity: 0;
-              animation-name: serenityWarmTideBlueFirst;
-              animation-duration: var(--duration);
-              animation-delay: var(--delay);
+              transform: translateY(22px);
+              filter: blur(7px);
+              will-change: opacity, transform, filter;
+            }
+
+            .serenity-experience-breath {
+              opacity: 0.38;
+              animation-name: serenityExperienceBreath;
+              animation-duration: 18s;
               animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
               animation-iteration-count: infinite;
-              animation-direction: normal;
+              animation-direction: alternate;
               will-change: opacity;
             }
 
-            .serenity-brass-breath {
-              opacity: 0;
-              animation-name: serenityBrassBreathBlueFirst;
-              animation-duration: var(--brassDuration);
-              animation-delay: var(--delay);
-              animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-              animation-iteration-count: infinite;
-              animation-direction: normal;
-              will-change: opacity;
-            }
-
-            @keyframes serenityBlueBreath {
+            @keyframes serenityExperienceBreath {
               0% {
-                opacity: 0.24;
-              }
-
-              34% {
-                opacity: 0.22;
-              }
-
-              58% {
-                opacity: 0.14;
-              }
-
-              78% {
-                opacity: 0.1;
-              }
-
-              100% {
-                opacity: 0.24;
-              }
-            }
-
-            @keyframes serenityWarmTideBlueFirst {
-              0% {
-                opacity: 0;
-              }
-
-              38% {
-                opacity: 0;
-              }
-
-              60% {
-                opacity: calc(var(--warmOpacity) * 0.42);
-              }
-
-              78% {
-                opacity: var(--warmOpacity);
-              }
-
-              100% {
-                opacity: 0;
-              }
-            }
-
-            @keyframes serenityBrassBreathBlueFirst {
-              0% {
-                opacity: 0;
+                opacity: 0.28;
               }
 
               44% {
-                opacity: 0;
-              }
-
-              66% {
-                opacity: calc(var(--brassOpacity) * 0.5);
-              }
-
-              82% {
-                opacity: var(--brassOpacity);
+                opacity: 0.38;
               }
 
               100% {
-                opacity: 0;
+                opacity: 0.48;
               }
             }
 
             @media (prefers-reduced-motion: reduce) {
-              .serenity-blue-breath,
-              .serenity-warm-tide,
-              .serenity-brass-breath {
+              .experience-hero-enter {
+                opacity: 1;
+                transform: none;
+                filter: none;
+              }
+
+              .serenity-experience-breath {
                 animation: none;
-              }
-
-              .serenity-blue-breath {
-                opacity: 0.22;
-              }
-
-              .serenity-warm-tide {
-                opacity: 0.07;
-              }
-
-              .serenity-brass-breath {
-                opacity: 0.035;
+                opacity: 0.34;
               }
             }
           `,
@@ -942,387 +904,610 @@ function ExperienceFrame() {
 
 function ExperienceActivities() {
   const sectionRef = useRef(null);
-  const headerRef  = useRef(null);
-  const groupRefs  = useRef([]);
- 
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- 
-    if (reduce) {
-      headerRef.current && gsap.set(headerRef.current.querySelectorAll('.anim'), { opacity: 1, y: 0 });
-      groupRefs.current.forEach(el =>
-        el && gsap.set(el.querySelectorAll('.anim'), { opacity: 1, y: 0 })
-      );
-      return;
-    }
- 
-    const ctx = gsap.context(() => {
-      const ease = [0.22, 1, 0.36, 1];
- 
-      gsap.fromTo(
-        headerRef.current.querySelectorAll('.anim'),
-        { opacity: 0, y: 24 },
-        {
-          opacity: 1, y: 0, duration: 1.1, stagger: 0.12, ease,
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 76%' },
-        }
-      );
- 
-      groupRefs.current.forEach((el) => {
-        if (!el) return;
-        gsap.fromTo(
-          el.querySelectorAll('.anim'),
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1, y: 0, duration: 1.0, stagger: 0.10, ease,
-            scrollTrigger: { trigger: el, start: 'top 84%' },
-          }
-        );
-      });
-    }, sectionRef);
- 
-    return () => ctx.revert();
-  }, []);
- 
-  // ── Groups — four activity types ────────────────────────────────────
-  // Image aspect ratio varies per group: wide → landscape → portrait → panoramic.
-  // Group intro provides narrative context — no energy rating labels.
+  const headerRef = useRef(null);
+  const groupRefs = useRef([]);
+
+  const shouldReduceMotion = useReducedMotion();
+
   const groups = [
     {
-      energy       : 'High',
-      color        : '#C66A4A',
-      imgAspect    : '16 / 7',
-      nameSize     : 'clamp(22px, 2.2vw, 32px)',
-      nameTracking : '-0.025em',
-      layout       : 'single-wide',
-      intro        : 'For the mornings when the sea is flat and the energy is there.',
-      activities   : [
+      id: "wakeboarding",
+      number: "01",
+      intro: "For the mornings when the sea is flat and the energy is there.",
+      layout: "single-wide",
+      imageClass: "aspect-[4/3] md:aspect-[16/7]",
+      activities: [
         {
-          name : 'Wakeboarding',
-          desc : 'Glide across calm seas surrounding Serenity.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_32_29_PM_yhqlyg.png',
+          name: "Wakeboarding",
+          desc: "Glide across calm seas surrounding Serenity.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_32_29_PM_yhqlyg.png",
+          alt: "Wakeboarding across calm water during a Serenity voyage",
+          position: "50% 50%",
         },
       ],
     },
     {
-      energy       : 'Medium',
-      color        : '#B08D57',
-      imgAspect    : '4 / 3',
-      nameSize     : 'clamp(22px, 2.2vw, 32px)',
-      nameTracking : '-0.025em',
-      layout       : 'pair',
-      intro        : 'Indonesia\'s underwater world is the reason most people come. The reef here earns the trip.',
-      activities   : [
+      id: "reef",
+      number: "02",
+      intro:
+        "The reef is often the reason people come this far. Some days are built around it.",
+      layout: "pair",
+      activities: [
         {
-          name : 'Diving',
-          desc : 'Explore Indonesia\'s most extraordinary underwater worlds.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png',
+          name: "Diving",
+          desc: "Explore Indonesia's most extraordinary underwater worlds.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png",
+          alt: "Diving through clear Indonesian waters",
+          position: "50% 55%",
         },
         {
-          name : 'Snorkeling',
-          desc : 'Discover colorful reefs just beneath the surface.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922405/ChatGPT_Image_May_16_2026_03_49_22_PM_cyflb6.png',
-        },
-      ],
-    },
-    {
-      energy       : 'Low',
-      color        : '#8B6A4F',
-      imgAspect    : '3 / 4',
-      nameSize     : 'clamp(22px, 2.2vw, 32px)',
-      nameTracking : '-0.025em',
-      layout       : 'pair-portrait',
-      intro        : 'The hours that don\'t ask anything of you. A line in the water. A board on a quiet bay.',
-      activities   : [
-        {
-          name : 'Fishing',
-          desc : 'Cast a line in peaceful waters.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_14_PM_liebfi.png',
-        },
-        {
-          name : 'Paddle Boarding',
-          desc : 'Drift quietly across calm bays and hidden coves.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png',
+          name: "Snorkeling",
+          desc: "Discover colorful reefs just beneath the surface.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922405/ChatGPT_Image_May_16_2026_03_49_22_PM_cyflb6.png",
+          alt: "Snorkeling above reef during a Serenity voyage",
+          position: "50% 48%",
         },
       ],
     },
     {
-      energy       : 'Land',
-      color        : 'rgba(45,60,104,0.50)',
-      imgAspect    : '21 / 9',
-      nameSize     : 'clamp(22px, 2.2vw, 32px)',
-      nameTracking : '-0.025em',
-      layout       : 'single-wide',
-      intro        : 'Some islands are best understood on foot. The crew knows which ones are worth the walk.',
-      activities   : [
+      id: "quiet",
+      number: "03",
+      intro:
+        "The hours that don't ask anything of you. A line in the water. A board on a quiet bay.",
+      layout: "pair-portrait",
+      activities: [
         {
-          name : 'Island Exploration',
-          desc : 'Step ashore on remote islands.',
-          img  : 'https://res.cloudinary.com/dombq6plz/image/upload/v1778922406/ChatGPT_Image_May_16_2026_04_00_38_PM_zneayx.png',
+          name: "Fishing",
+          desc: "Cast a line in peaceful waters.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_14_PM_liebfi.png",
+          alt: "Quiet fishing moment near Serenity",
+          position: "50% 50%",
+        },
+        {
+          name: "Paddle Boarding",
+          desc: "Drift quietly across calm bays and hidden coves.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png",
+          alt: "Paddle boarding across calm water",
+          position: "50% 50%",
+        },
+      ],
+    },
+    {
+      id: "island",
+      number: "04",
+      intro:
+        "Some islands are best understood on foot. The crew knows which ones are worth the walk.",
+      layout: "single-wide",
+      imageClass: "aspect-[4/3] md:aspect-[21/9]",
+      activities: [
+        {
+          name: "Island Exploration",
+          desc: "Step ashore on remote islands.",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922406/ChatGPT_Image_May_16_2026_04_00_38_PM_zneayx.png",
+          alt: "Remote island exploration during a Serenity voyage",
+          position: "50% 50%",
         },
       ],
     },
   ];
- 
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const headerNodes =
+      headerRef.current?.querySelectorAll(".activity-reveal") ?? [];
+
+    const groupNodes = groupRefs.current
+      .flatMap((group) =>
+        group ? Array.from(group.querySelectorAll(".activity-reveal")) : []
+      )
+      .filter(Boolean);
+
+    const allNodes = [...headerNodes, ...groupNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const ctx = gsap.context(() => {
+          if (headerNodes.length > 0) {
+            gsap.fromTo(
+              headerNodes,
+              {
+                opacity: 0,
+                y: mobile ? 14 : 18,
+                filter: "blur(5px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.95,
+                stagger: 0.07,
+                ease: serenityEase,
+                scrollTrigger: {
+                  trigger: headerRef.current,
+                  start: mobile ? "top 86%" : "top 82%",
+                  once: true,
+                },
+              }
+            );
+          }
+
+          groupRefs.current.forEach((group) => {
+            if (!group) return;
+
+            const nodes = group.querySelectorAll(".activity-reveal");
+
+            if (nodes.length === 0) return;
+
+            gsap.fromTo(
+              nodes,
+              {
+                opacity: 0,
+                y: mobile ? 15 : 20,
+                filter: "blur(4px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.95,
+                stagger: mobile ? 0.05 : 0.07,
+                ease: serenityEase,
+                scrollTrigger: {
+                  trigger: group,
+                  start: mobile ? "top 88%" : "top 84%",
+                  once: true,
+                },
+              }
+            );
+          });
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, [shouldReduceMotion]);
+
+  const renderImage = (activity, className = "") => (
+    <div
+      className={`
+        relative
+        w-full
+        overflow-hidden
+        bg-[#2D3C68]/[0.045]
+        ${className}
+      `}
+    >
+      <img
+        src={activity.img}
+        alt={activity.alt}
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+        className="
+          absolute
+          inset-0
+          h-full
+          w-full
+          scale-[1.012]
+          object-cover
+        "
+        style={{
+          objectPosition: activity.position,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          bg-[#2D3C68]/[0.04]
+        "
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 18%, rgba(176,141,87,0.045), transparent 58%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          ring-1
+          ring-inset
+          ring-[#2D3C68]/[0.055]
+        "
+      />
+    </div>
+  );
+
+  const renderActivityCopy = (activity, compact = false) => (
+    <div>
+      <h3
+        className={`
+          font-[Gambarino]
+          leading-[1.05]
+          tracking-[-0.028em]
+          text-[#2D3C68]
+          ${
+            compact
+              ? "text-[24px] md:text-[clamp(24px,2vw,30px)]"
+              : "text-[26px] md:text-[clamp(26px,2.2vw,32px)]"
+          }
+        `}
+      >
+        {activity.name}
+      </h3>
+
+      <p
+        className={`
+          mt-2
+          max-w-[40ch]
+          text-[13px]
+          leading-[1.75]
+          text-[#2D3C68]/52
+          ${compact ? "md:text-[12px]" : ""}
+        `}
+      >
+        {activity.desc}
+      </p>
+    </div>
+  );
+
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-[#F4F5F2] overflow-hidden"
+      aria-labelledby="experience-activities-title"
+      className="
+        relative
+        w-full
+        overflow-hidden
+        bg-[#F4F5F2]
+        pb-[96px]
+        pt-[36px]
+        text-[#2D3C68]
+        md:pb-[132px]
+        md:pt-[52px]
+      "
       style={{
-        paddingTop   : 'clamp(80px, 11vh, 130px)',
-        paddingBottom: 'clamp(80px, 11vh, 130px)',
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
       }}
     >
- 
-      {/* Bridge in from DayOnBoard */}
+      {/* Compressed bridge in from ExperienceDayOnBoard */}
       <div
-        className="absolute top-0 inset-x-0 pointer-events-none"
-        style={{
-          height    : '80px',
-          background: 'linear-gradient(to bottom, rgba(45,60,104,0.05), transparent)',
-        }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          h-[36px]
+          md:h-[48px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(45,60,104,0.018) 0%, rgba(45,60,104,0.006) 52%, rgba(45,60,104,0) 100%)",
+        }}
       />
- 
+
       {/* Grain */}
       <div
-        className="absolute inset-[-10%] opacity-[0.03] mix-blend-soft-light pointer-events-none"
-        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.026]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
       />
- 
+
       {/* Warm atmosphere */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.05) 0%, transparent 52%)' }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 68% 22%, rgba(176,141,87,0.04) 0%, rgba(176,141,87,0) 52%)",
+        }}
       />
- 
-      <div className="relative w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
- 
-        {/* ── Header ───────────────────────────────────────────────────── */}
-        <div ref={headerRef} className="mb-14 md:mb-20">
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          w-full
+          max-w-[1280px]
+          px-6
+          md:px-10
+          lg:px-14
+        "
+      >
+        {/* Header */}
+        <div ref={headerRef} className="mb-10 md:mb-14">
           <p
-            className="anim"
-            style={{
-              fontFamily   : 'Switzer, sans-serif',
-              fontSize     : '11px',
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color        : 'rgba(45,60,104,0.42)',
-              fontWeight   : 400,
-              margin       : '0 0 12px 0',
-            }}
+            className="
+              activity-reveal
+              text-[10px]
+              uppercase
+              tracking-[0.34em]
+              text-[#2D3C68]/42
+              md:text-[11px]
+            "
           >
             Activities
           </p>
+
+          <div
+            className="
+              activity-reveal
+              mt-5
+              h-px
+              w-10
+              bg-[#B08D57]/62
+            "
+          />
+
           <h2
-            className="anim"
-            style={{
-              fontFamily   : 'Gambarino, Georgia, serif',
-              fontSize     : 'clamp(34px, 4vw, 58px)',
-              lineHeight   : 1.03,
-              letterSpacing: '-0.03em',
-              color        : '#2D3C68',
-              fontWeight   : 400,
-              margin       : 0,
-              maxWidth     : '16ch',
-            }}
+            id="experience-activities-title"
+            className="
+              activity-reveal
+              mt-6
+              max-w-[16ch]
+              font-[Gambarino]
+              text-[38px]
+              leading-[1.04]
+              tracking-[-0.04em]
+              text-[#2D3C68]
+              sm:text-[46px]
+              md:text-[clamp(52px,4.4vw,62px)]
+            "
           >
             Whatever the sea allows.
           </h2>
         </div>
- 
-        {/* ── Groups ───────────────────────────────────────────────────── */}
-        {groups.map((group, gi) => (
-          <div
-            key={group.energy}
-            ref={el => groupRefs.current[gi] = el}
-            className="grid grid-cols-1 md:grid-cols-12 md:gap-x-10 gap-y-5 py-10 md:py-12"
-            style={{ borderTop: '1px solid rgba(176,141,87,0.14)' }}
-          >
- 
-            {/* Section number — neutral organizer, left 2 cols */}
-            <div className="anim md:col-span-2 flex md:flex-col md:pt-1">
-              <span
-                style={{
-                  fontFamily   : 'Switzer, sans-serif',
-                  fontSize     : '10px',
-                  letterSpacing: '0.24em',
-                  color        : 'rgba(45,60,104,0.32)',
-                  fontWeight   : 400,
-                }}
+
+        {/* Groups */}
+        <div>
+          {groups.map((group, groupIndex) => (
+            <div
+              key={group.id}
+              ref={(element) => {
+                groupRefs.current[groupIndex] = element;
+              }}
+              className="
+                grid
+                grid-cols-1
+                gap-y-5
+                border-t
+                border-[#2D3C68]/8
+                py-9
+                md:grid-cols-12
+                md:gap-x-10
+                md:py-11
+              "
+            >
+              {/* Number */}
+              <div
+                className="
+                  activity-reveal
+                  flex
+                  md:col-span-2
+                  md:flex-col
+                  md:pt-1
+                "
               >
-                0{gi + 1}
-              </span>
-            </div>
- 
-            {/* Activities — right 10 cols */}
-            <div className="md:col-span-10">
- 
-              {/* Narrative intro per group — readable sentence, not a label */}
-              {group.intro && (
-                <p
-                  className="anim"
-                  style={{
-                    fontFamily: 'Switzer, sans-serif',
-                    fontSize  : '14px',
-                    lineHeight: 1.8,
-                    color     : 'rgba(45,60,104,0.58)',
-                    fontWeight: 300,
-                    maxWidth  : '52ch',
-                    margin    : '0 0 clamp(16px, 2.5vh, 28px) 0',
-                  }}
+                <span
+                  className="
+                    text-[10px]
+                    uppercase
+                    tracking-[0.24em]
+                    text-[#2D3C68]/30
+                  "
                 >
-                  {group.intro}
-                </p>
-              )}
- 
-              {/* single-wide: one image full right-column width */}
-              {group.layout === 'single-wide' && (
-                <div className="anim flex flex-col gap-4">
-                  <div
-                    className="relative w-full overflow-hidden"
-                    style={{ aspectRatio: group.imgAspect }}
+                  {group.number}
+                </span>
+              </div>
+
+              {/* Content */}
+              <div className="md:col-span-10">
+                {group.intro && (
+                  <p
+                    className="
+                      activity-reveal
+                      mb-6
+                      max-w-[54ch]
+                      text-[14px]
+                      leading-[1.85]
+                      text-[#2D3C68]/64
+                      md:mb-7
+                    "
                   >
-                    <img
-                      src={group.activities[0].img}
-                      alt="" role="presentation"
-                      className="absolute inset-0 w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
+                    {group.intro}
+                  </p>
+                )}
+
+                {group.layout === "single-wide" && (
+                  <div className="activity-reveal flex flex-col gap-4">
+                    {renderImage(group.activities[0], group.imageClass)}
+                    {renderActivityCopy(group.activities[0])}
                   </div>
-                  <div>
-                    <h3 style={{
-                      fontFamily   : 'Gambarino, Georgia, serif',
-                      fontSize     : group.nameSize,
-                      lineHeight   : 1.0,
-                      letterSpacing: group.nameTracking,
-                      color        : '#2D3C68',
-                      fontWeight   : 400,
-                      margin       : 0,
-                    }}>
-                      {group.activities[0].name}
-                    </h3>
-                    <p style={{
-                      fontFamily: 'Switzer, sans-serif',
-                      fontSize  : '13px',
-                      lineHeight: 1.75,
-                      color     : 'rgba(45,60,104,0.52)',
-                      fontWeight: 300,
-                      margin    : '8px 0 0 0',
-                    }}>
-                      {group.activities[0].desc}
-                    </p>
+                )}
+
+                {group.layout === "pair" && (
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      gap-8
+                      md:grid-cols-2
+                      md:gap-8
+                    "
+                  >
+                    {group.activities.map((activity) => (
+                      <div
+                        key={activity.name}
+                        className="
+                          activity-reveal
+                          flex
+                          flex-col
+                          gap-4
+                        "
+                      >
+                        {renderImage(activity, "aspect-[4/3]")}
+                        {renderActivityCopy(activity)}
+                      </div>
+                    ))}
                   </div>
-                </div>
-              )}
- 
-              {/* pair: two images side by side, landscape */}
-              {group.layout === 'pair' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  {group.activities.map((act) => (
-                    <div key={act.name} className="anim flex flex-col gap-4">
+                )}
+
+                {group.layout === "pair-portrait" && (
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      gap-8
+                      sm:grid-cols-2
+                      md:max-w-[68%]
+                      md:gap-10
+                    "
+                  >
+                    {group.activities.map((activity) => (
                       <div
-                        className="relative w-full overflow-hidden"
-                        style={{ aspectRatio: group.imgAspect }}
+                        key={activity.name}
+                        className="
+                          activity-reveal
+                          flex
+                          flex-col
+                          gap-3
+                        "
                       >
-                        <img
-                          src={act.img}
-                          alt="" role="presentation"
-                          className="absolute inset-0 w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
+                        {renderImage(
+                          activity,
+                          "aspect-[4/3] sm:aspect-[3/4]"
+                        )}
+
+                        {renderActivityCopy(activity, true)}
                       </div>
-                      <div>
-                        <h3 style={{
-                          fontFamily   : 'Gambarino, Georgia, serif',
-                          fontSize     : group.nameSize,
-                          lineHeight   : 1.0,
-                          letterSpacing: group.nameTracking,
-                          color        : '#2D3C68',
-                          fontWeight   : 400,
-                          margin       : 0,
-                        }}>
-                          {act.name}
-                        </h3>
-                        <p style={{
-                          fontFamily: 'Switzer, sans-serif',
-                          fontSize  : '13px',
-                          lineHeight: 1.75,
-                          color     : 'rgba(45,60,104,0.52)',
-                          fontWeight: 300,
-                          margin    : '8px 0 0 0',
-                        }}>
-                          {act.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
- 
-              {/* pair-portrait: two portrait images, constrained desktop  */}
-              {/* LOW energy — small, quiet, lots of whitespace             */}
-              {group.layout === 'pair-portrait' && (
-                <div className="grid grid-cols-2 gap-6 md:gap-10 md:max-w-[62%]">
-                  {group.activities.map((act) => (
-                    <div key={act.name} className="anim flex flex-col gap-3">
-                      <div
-                        className="relative w-full overflow-hidden"
-                        style={{ aspectRatio: group.imgAspect }}
-                      >
-                        <img
-                          src={act.img}
-                          alt="" role="presentation"
-                          className="absolute inset-0 w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.04)' }} />
-                      </div>
-                      <div>
-                        <h3 style={{
-                          fontFamily   : 'Gambarino, Georgia, serif',
-                          fontSize     : group.nameSize,
-                          lineHeight   : 1.1,
-                          letterSpacing: group.nameTracking,
-                          color        : '#2D3C68',
-                          fontWeight   : 400,
-                          margin       : 0,
-                        }}>
-                          {act.name}
-                        </h3>
-                        <p style={{
-                          fontFamily: 'Switzer, sans-serif',
-                          fontSize  : '12px',
-                          lineHeight: 1.75,
-                          color     : 'rgba(45,60,104,0.45)',
-                          fontWeight: 300,
-                          margin    : '5px 0 0 0',
-                        }}>
-                          {act.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
- 
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
- 
+          ))}
+        </div>
       </div>
- 
+
       {/* Bridge out */}
       <div
-        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04))' }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[84px]
+          md:h-[104px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(45,60,104,0.035) 74%, rgba(45,60,104,0.06) 100%)",
+        }}
       />
- 
     </section>
   );
 }
@@ -1421,291 +1606,430 @@ function ExperienceDining() {
   const sectionRef = useRef(null);
   const imgWrapRef = useRef(null);
   const contentRef = useRef(null);
- 
+
+  const shouldReduceMotion = useReducedMotion();
+
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- 
-    if (reduce) {
-      gsap.set(contentRef.current.querySelectorAll('.anim'), { opacity: 1, y: 0, filter: 'blur(0px)' });
+    if (!sectionRef.current || !contentRef.current) return;
+
+    const revealNodes =
+      contentRef.current.querySelectorAll(".dining-reveal") ?? [];
+
+    const allNodes = [imgWrapRef.current, ...revealNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        yPercent: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
       return;
     }
- 
+
     const ctx = gsap.context(() => {
-      const ease = [0.22, 1, 0.36, 1];
- 
-      // ChatGPT: yPercent + scale together, scrub 1.6 — slower, heavier, more cinematic
-      gsap.fromTo(imgWrapRef.current,
-        { yPercent: -3, scale: 1.02 },
-        {
+      if (imgWrapRef.current) {
+        gsap.set(imgWrapRef.current, {
+          yPercent: -3,
+          scale: 1.035,
+          transformOrigin: "center center",
+        });
+
+        gsap.to(imgWrapRef.current, {
           yPercent: 3,
-          scale   : 1.04,
-          ease    : 'none',
+          scale: 1.065,
+          ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start  : 'top bottom',
-            end    : 'bottom top',
-            scrub  : 1.6,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.6,
           },
-        }
-      );
- 
-      gsap.fromTo(
-        contentRef.current.querySelectorAll('.anim'),
-        { opacity: 0, y: 24, filter: 'blur(5px)' },
-        {
-          opacity : 1,
-          y       : 0,
-          filter  : 'blur(0px)',
-          duration: 1.35,
-          stagger : 0.14,
-          ease,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start  : 'top 72%',
+        });
+      }
+
+      if (revealNodes.length > 0) {
+        gsap.fromTo(
+          revealNodes,
+          {
+            opacity: 0,
+            y: 22,
+            filter: "blur(6px)",
           },
-        }
-      );
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.18,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 74%",
+              once: true,
+            },
+          }
+        );
+      }
     }, sectionRef);
- 
+
     return () => ctx.revert();
-  }, []);
- 
+  }, [shouldReduceMotion]);
+
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden"
-      style={{ backgroundColor: '#121824' }}
+      aria-labelledby="experience-dining-title"
+      className="
+        relative
+        min-h-[760px]
+        w-full
+        overflow-hidden
+        bg-[#2D3C68]
+        text-[#F4F5F2]
+        md:min-h-[820px]
+      "
+      style={{
+        backgroundColor: "#2D3C68",
+        colorScheme: "dark",
+      }}
     >
- 
-      {/* Bridge in — ChatGPT: 180px, 4 stops, very gradual */}
+      {/* FULL BLEED IMAGE FIELD */}
       <div
-        className="absolute top-0 inset-x-0 pointer-events-none"
-        style={{
-          height  : '180px',
-          zIndex  : 30,
-          background: `linear-gradient(
-            to bottom,
-            rgba(244,245,242,0.08) 0%,
-            rgba(244,245,242,0.035) 24%,
-            rgba(244,245,242,0.012) 48%,
-            transparent 100%
-          )`,
-        }}
         aria-hidden="true"
-      />
- 
-      {/* Image field */}
-      <div
-        className="absolute top-0 bottom-0 right-0 left-0 md:left-[40%] overflow-hidden"
-        aria-hidden="true"
+        className="
+          absolute
+          inset-0
+          overflow-hidden
+        "
       >
-        {/* ChatGPT: -10% inset (less than my -12% since scale is added) */}
-        <div ref={imgWrapRef} className="absolute" style={{ inset: '-10%' }}>
+        <div
+          ref={imgWrapRef}
+          className="
+            absolute
+            inset-[-8%]
+            will-change-transform
+          "
+        >
           <img
             src="https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png"
             alt=""
             role="presentation"
             loading="lazy"
-            className="w-full h-full object-cover"
-            // ChatGPT: desaturate + dim — less stock photo, more editorial
-            style={{ filter: 'brightness(0.78) saturate(0.82) contrast(1.04)' }}
+            decoding="async"
+            draggable="false"
+            className="
+              h-full
+              w-full
+              object-cover
+            "
+            style={{
+              objectPosition: "58% center",
+              filter: "brightness(0.82) saturate(0.88) contrast(1.04)",
+            }}
           />
         </div>
- 
-        {/* ChatGPT: Primary dissolve — 6 stops, more photographic */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(
-            to right,
-            #121824 0%,
-            rgba(18,24,36,0.985) 10%,
-            rgba(18,24,36,0.94) 18%,
-            rgba(18,24,36,0.82) 30%,
-            rgba(18,24,36,0.62) 44%,
-            rgba(18,24,36,0.28) 58%,
-            transparent 78%
-          )`,
-        }} />
- 
-        {/* ChatGPT: Secondary atmospheric density — left text area protection */}
-        <div className="absolute inset-0" style={{
-          background: `radial-gradient(
-            ellipse at 18% 52%,
-            rgba(10,14,22,0.72) 0%,
-            rgba(10,14,22,0.34) 34%,
-            transparent 70%
-          )`,
-        }} />
- 
-        {/* ChatGPT: Lower shadow — bottom darkening */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(
-            to top,
-            rgba(8,12,18,0.62) 0%,
-            rgba(8,12,18,0.28) 22%,
-            transparent 48%
-          )`,
-        }} />
- 
-        {/* ChatGPT: Right side falloff */}
-        <div className="absolute inset-0" style={{
-          background: `radial-gradient(
-            circle at 92% 52%,
-            transparent 0%,
-            rgba(8,12,18,0.14) 72%,
-            rgba(8,12,18,0.32) 100%
-          )`,
-        }} />
- 
-        {/* ChatGPT: Warm atmosphere on image */}
-        <div className="absolute inset-0" style={{
-          background: `radial-gradient(
-            ellipse at 64% 54%,
-            rgba(176,141,87,0.12) 0%,
-            rgba(176,141,87,0.06) 24%,
-            transparent 62%
-          )`,
-        }} />
- 
-        {/* ChatGPT: Mobile sculpting — gradient not flat overlay */}
-        <div className="absolute inset-0 md:hidden" style={{
-          background: `linear-gradient(
-            to bottom,
-            rgba(10,14,22,0.84) 0%,
-            rgba(10,14,22,0.64) 22%,
-            rgba(10,14,22,0.56) 46%,
-            rgba(10,14,22,0.76) 100%
-          )`,
-        }} />
       </div>
- 
-      {/* Sumba Ikat — titik 2 */}
-      {/* ChatGPT: soft-light + blur(0.2px) + lower opacity — more subtle on dark */}
+
+      {/* GLOBAL SERENITY NAVY DISCIPLINE */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          bg-[#2D3C68]/[0.26]
+        "
+      />
+
+      {/* SOFT NAVY VEIL COLUMN — BLUR AS ATMOSPHERE, NOT CARD */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          bottom-0
+          left-0
+          top-0
+          w-full
+          md:w-[68%]
+        "
         style={{
-          backgroundImage : 'url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png)',
-          backgroundRepeat: 'repeat',
-          backgroundSize  : '260px',
-          opacity         : 0.022,
-          mixBlendMode    : 'soft-light',
-          filter          : 'blur(0.2px)',
+          background:
+            "linear-gradient(to right, rgba(11,19,34,0.86) 0%, rgba(23,38,65,0.72) 34%, rgba(23,38,65,0.42) 58%, rgba(23,38,65,0.12) 78%, rgba(23,38,65,0) 100%)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
+          WebkitMaskImage:
+            "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.98) 48%, rgba(0,0,0,0.62) 70%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.98) 48%, rgba(0,0,0,0.62) 70%, rgba(0,0,0,0) 100%)",
         }}
-        aria-hidden="true"
       />
- 
-      {/* Grain */}
+
+      {/* INNER TEXT SHADOW FIELD */}
       <div
-        className="absolute inset-[-10%] opacity-[0.04] mix-blend-soft-light pointer-events-none"
-        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
         aria-hidden="true"
-      />
- 
-      {/* Left warmth — candlelight from left */}
-      <div
-        className="absolute inset-0 pointer-events-none"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
         style={{
-          background: `radial-gradient(
-            ellipse at 4% 58%,
-            rgba(176,141,87,0.08) 0%,
-            rgba(176,141,87,0.03) 28%,
-            transparent 52%
-          )`,
+          background:
+            "radial-gradient(ellipse at 22% 52%, rgba(5,10,20,0.46) 0%, rgba(8,12,18,0.28) 34%, rgba(8,12,18,0.08) 58%, rgba(8,12,18,0) 76%)",
         }}
-        aria-hidden="true"
       />
- 
-      {/* Content */}
-      {/* ChatGPT: more generous padding */}
+
+      {/* TOP BRIDGE FROM ACTIVITIES */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[5]
+          h-[132px]
+          bg-gradient-to-b
+          from-[#F4F5F2]/[0.07]
+          via-[#F4F5F2]/[0.022]
+          to-transparent
+          md:h-[166px]
+        "
+      />
+
+      {/* BOTTOM DEPTH */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "linear-gradient(to top, rgba(8,12,18,0.74) 0%, rgba(8,12,18,0.36) 28%, rgba(8,12,18,0.08) 58%, rgba(8,12,18,0) 100%)",
+        }}
+      />
+
+      {/* WARM DINING ATMOSPHERE */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(ellipse at 70% 48%, rgba(176,141,87,0.16) 0%, rgba(176,141,87,0.065) 30%, rgba(176,141,87,0) 68%)",
+        }}
+      />
+
+      {/* MOBILE READABILITY SCULPT */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          md:hidden
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(10,14,22,0.72) 0%, rgba(10,14,22,0.44) 34%, rgba(10,14,22,0.58) 62%, rgba(10,14,22,0.9) 100%)",
+        }}
+      />
+
+      {/* LOCALIZED SUMBA IKAT — SIGNATURE, NOT WALLPAPER */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          left-[-18%]
+          top-[10%]
+          hidden
+          h-[560px]
+          w-[min(760px,60vw)]
+          -rotate-[4deg]
+          opacity-[0.022]
+          mix-blend-soft-light
+          md:block
+        "
+        style={{
+          backgroundImage:
+            "url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "280px auto",
+          backgroundPosition: "center",
+          filter: "blur(0.15px)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 52%, rgba(0,0,0,0) 78%)",
+          maskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 52%, rgba(0,0,0,0) 78%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-[4%]
+          h-[340px]
+          opacity-[0.017]
+          mix-blend-soft-light
+          md:hidden
+        "
+        style={{
+          backgroundImage:
+            "url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "240px auto",
+          backgroundPosition: "center",
+          filter: "blur(0.15px)",
+          WebkitMaskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.22) 62%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.22) 62%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+
+      {/* GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.036]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      {/* CONTENT */}
       <div
         ref={contentRef}
-        className="relative z-10"
-        style={{ padding: 'clamp(92px, 13vh, 132px) 0' }}
+        className="
+          relative
+          z-10
+          flex
+          min-h-[760px]
+          items-center
+          py-[96px]
+          md:min-h-[820px]
+          md:py-[128px]
+          lg:py-[148px]
+        "
       >
-        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14">
-          <div className="md:max-w-[43%]">
- 
-            <p className="anim" style={{
-              fontFamily   : 'Switzer, sans-serif',
-              fontSize     : '11px',
-              letterSpacing: '0.28em',
-              textTransform: 'uppercase',
-              color        : 'rgba(176,141,87,0.74)',
-              fontWeight   : 400,
-              margin       : '0 0 18px 0',
-            }}>
+        <div
+          className="
+            mx-auto
+            w-full
+            max-w-[1280px]
+            px-6
+            md:px-10
+            lg:px-14
+          "
+        >
+          <div
+            className="
+              max-w-[500px]
+              md:max-w-[480px]
+            "
+          >
+            <p
+              className="
+                dining-reveal
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#F4F5F2]/58
+                md:text-[11px]
+              "
+            >
               Dining
             </p>
- 
-            <h2 className="anim" style={{
-              fontFamily   : 'Gambarino, Georgia, serif',
-              fontSize     : 'clamp(30px, 3.6vw, 50px)',
-              lineHeight   : 1.04,
-              letterSpacing: '-0.032em',
-              color        : '#F4F5F2',
-              fontWeight   : 400,
-              margin       : '0 0 clamp(28px, 4vh, 42px) 0',
-              maxWidth     : '22ch',
-            }}>
-              Shaped around the journey and the people sharing it.
+
+            <h2
+              id="experience-dining-title"
+              className="
+                dining-reveal
+                mt-5
+                max-w-[13ch]
+                font-[Gambarino]
+                text-[40px]
+                leading-[1]
+                tracking-[-0.04em]
+                text-[#F4F5F2]
+                sm:text-[48px]
+                md:text-[clamp(50px,5vw,66px)]
+              "
+            >
+              The table follows
+              <br />
+              the day.
             </h2>
- 
-            {/* ChatGPT: rule opacity 0.42 — more subtle */}
-            <div className="anim" style={{
-              width     : '30px',
-              height    : '1px',
-              background: 'rgba(176,141,87,0.42)',
-              margin    : '0 0 clamp(26px, 4vh, 40px) 0',
-            }} aria-hidden="true" />
- 
-            {/* ChatGPT: body opacity 0.56 — better on dark */}
-            <p className="anim" style={{
-              fontFamily: 'Switzer, sans-serif',
-              fontSize  : '15px',
-              lineHeight: 1.92,
-              color     : 'rgba(244,245,242,0.56)',
-              fontWeight: 300,
-              margin    : 0,
-              maxWidth  : '38ch',
-            }}>
-              The chef follows the day, not a menu. What came up
-              from the water. What the weather allowed. What the
-              evening calls for.
+
+            <p
+              className="
+                dining-reveal
+                mt-6
+                max-w-[400px]
+                text-[14px]
+                leading-[1.9]
+                text-[#F4F5F2]/74
+                md:text-[15px]
+              "
+            >
+              Meals follow the anchorage, the weather, and what the crew brings
+              from the water — served where the evening makes the most sense.
             </p>
- 
-            <p className="anim" style={{
-              fontFamily: 'Switzer, sans-serif',
-              fontSize  : '15px',
-              lineHeight: 1.92,
-              color     : 'rgba(244,245,242,0.56)',
-              fontWeight: 300,
-              margin    : 'clamp(18px, 2.8vh, 28px) 0 0 0',
-              maxWidth  : '38ch',
-            }}>
-              The table moves — inside when the wind is up,
-              on deck when the sky earns it, ashore when
-              the island invites.
-            </p>
- 
+
+            <div
+              aria-hidden="true"
+              className="
+                dining-reveal
+                mt-8
+                h-px
+                w-full
+                max-w-[320px]
+                origin-left
+                bg-gradient-to-r
+                from-[#B08D57]/62
+                via-[#B08D57]/22
+                to-transparent
+              "
+            />
           </div>
         </div>
       </div>
- 
-      {/* Bridge out — ChatGPT: 120px, 3 stops, more gradual */}
+
+      {/* BOTTOM BRIDGE */}
       <div
-        className="absolute bottom-0 inset-x-0 pointer-events-none"
-        style={{
-          height    : '120px',
-          background: `linear-gradient(
-            to bottom,
-            transparent 0%,
-            rgba(244,245,242,0.015) 34%,
-            rgba(244,245,242,0.04) 62%,
-            rgba(244,245,242,0.08) 100%
-          )`,
-        }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          z-[5]
+          h-[124px]
+          bg-gradient-to-b
+          from-transparent
+          via-[#1A2844]/[0.055]
+          to-[#1A2844]/[0.16]
+          md:h-[150px]
+        "
       />
- 
     </section>
   );
 }
@@ -2797,339 +3121,783 @@ function ExperienceMoments() {
 
 function ExperienceDayOnBoard() {
   const sectionRef = useRef(null);
- 
-  const [isVisible,     setIsVisible]     = useState(false);
+  const headerRef = useRef(null);
+  const carouselWrapRef = useRef(null);
+  const emblaRootRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [isMobile,      setIsMobile]      = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps,   setScrollSnaps]   = useState([]);
-  const [reduceMotion,  setReduceMotion]  = useState(false);
- 
-  useEffect(() => {
-    setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  }, []);
- 
-  // ChatGPT: containScroll + duration for smoother UX
+  const [scrollSnaps, setScrollSnaps] = useState([]);
+
+  const moments = [
+    {
+      id: "dawn",
+      time: "Morning",
+      label: "Before the day has a plan.",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1775031029/ChatGPT_Image_Apr_1_2026_03_07_35_PM_ci1xyi.png",
+      alt: "Quiet morning atmosphere aboard Serenity",
+      position: "40% 30%",
+    },
+    {
+      id: "water",
+      time: "Midday",
+      label: "Into the reef.",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776152590/Phinisi_yacht_and_vibrant_coral_reef_1_i59pqn.png",
+      alt: "Reef and water experience during a Serenity voyage",
+      position: "50% 60%",
+    },
+    {
+      id: "meal",
+      time: "Afternoon",
+      label: "Lunch finds you on deck.",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776157584/Golden_hour_on_the_phinisi_yacht_1_h8pycj.png",
+      alt: "Afternoon meal and deck life aboard Serenity",
+      position: "50% 40%",
+    },
+    {
+      id: "pause",
+      time: "Late Afternoon",
+      label: "The hours that don't need filling.",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
+      alt: "Slow late afternoon aboard Serenity",
+      position: "50% 50%",
+    },
+    {
+      id: "dusk",
+      time: "Evening",
+      label: "The day settles without announcement.",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1777295006/ChatGPT_Image_Apr_27_2026_07_59_16_PM_mp6lli.png",
+      alt: "Evening atmosphere aboard Serenity",
+      position: "50% 70%",
+    },
+  ];
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align        : 'start',
-    dragFree     : false,
-    containScroll: 'trimSnaps',
-    duration     : 32,
+    align: "start",
+    dragFree: false,
+    containScroll: "trimSnaps",
+    duration: 32,
   });
- 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
- 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
-      { threshold: 0.15 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
- 
+
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
+
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
- 
-  useEffect(() => {
+
+  const onReInit = useCallback(() => {
     if (!emblaApi) return;
+
     setScrollSnaps(emblaApi.scrollSnapList());
-    onSelect();
-    emblaApi.on('select', onSelect);
-    const onPointerDown = () => setHasInteracted(true);
-    emblaApi.on('pointerDown', onPointerDown);
-    return () => {
-      emblaApi.off('select', onSelect);
-      emblaApi.off('pointerDown', onPointerDown);
-    };
-  }, [emblaApi, onSelect]);
- 
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
   const scrollNext = () => {
     if (!emblaApi) return;
+
     emblaApi.scrollNext();
     setHasInteracted(true);
   };
- 
-  const moments = [
-    {
-      id      : 'dawn',
-      time    : 'Morning',
-      label   : 'Before the day has a plan.',
-      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1775031029/ChatGPT_Image_Apr_1_2026_03_07_35_PM_ci1xyi.png',
-      position: '40% 30%',
-    },
-    {
-      id      : 'water',
-      time    : 'Midday',
-      label   : 'Into the reef.',
-      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776152590/Phinisi_yacht_and_vibrant_coral_reef_1_i59pqn.png',
-      position: '50% 60%',
-    },
-    {
-      id      : 'meal',
-      time    : 'Afternoon',
-      label   : 'Lunch finds you on deck.',
-      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776157584/Golden_hour_on_the_phinisi_yacht_1_h8pycj.png',
-      position: '50% 40%',
-    },
-    {
-      id      : 'pause',
-      time    : 'Late Afternoon',
-      label   : 'The hours that don\'t need filling.',
-      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png',
-      position: '50% 50%',
-    },
-    {
-      id      : 'dusk',
-      time    : 'Evening',
-      label   : 'The day settles without announcement.',
-      image   : 'https://res.cloudinary.com/dombq6plz/image/upload/v1777295006/ChatGPT_Image_Apr_27_2026_07_59_16_PM_mp6lli.png',
-      position: '50% 70%',
-    },
-  ];
- 
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const handlePointerDown = () => {
+      setHasInteracted(true);
+    };
+
+    setScrollSnaps(emblaApi.scrollSnapList());
+    onSelect();
+
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onReInit);
+    emblaApi.on("pointerDown", handlePointerDown);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onReInit);
+      emblaApi.off("pointerDown", handlePointerDown);
+    };
+  }, [emblaApi, onSelect, onReInit]);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const headerNodes =
+      headerRef.current?.querySelectorAll(".day-header-reveal") ?? [];
+
+    const carouselNodes = carouselWrapRef.current
+      ? [carouselWrapRef.current]
+      : [];
+
+    const cardNodes =
+      emblaRootRef.current?.querySelectorAll(".day-card-reveal") ?? [];
+
+    const allNodes = [
+      ...headerNodes,
+      ...carouselNodes,
+      ...cardNodes,
+    ].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const serenityEase = (progress) => {
+      const x1 = 0.22;
+      const y1 = 1;
+      const x2 = 0.36;
+      const y2 = 1;
+
+      const sampleCurveX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * x1 +
+          3 * invT * t * t * x2 +
+          t * t * t
+        );
+      };
+
+      const sampleCurveY = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * t * y1 +
+          3 * invT * t * t * y2 +
+          t * t * t
+        );
+      };
+
+      const sampleDerivativeX = (t) => {
+        const invT = 1 - t;
+
+        return (
+          3 * invT * invT * x1 +
+          6 * invT * t * (x2 - x1) +
+          3 * t * t * (1 - x2)
+        );
+      };
+
+      let t = progress;
+
+      for (let i = 0; i < 6; i += 1) {
+        const x = sampleCurveX(t) - progress;
+        const derivative = sampleDerivativeX(t);
+
+        if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+        t -= x / derivative;
+        t = Math.max(0, Math.min(1, t));
+      }
+
+      return sampleCurveY(t);
+    };
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const ctx = gsap.context(() => {
+          if (headerNodes.length > 0) {
+            gsap.fromTo(
+              headerNodes,
+              {
+                opacity: 0,
+                y: mobile ? 16 : 20,
+                filter: "blur(5px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.98,
+                stagger: 0.075,
+                ease: serenityEase,
+                scrollTrigger: {
+                  trigger: headerRef.current,
+                  start: mobile ? "top 84%" : "top 80%",
+                  once: true,
+                },
+              }
+            );
+          }
+
+          if (carouselWrapRef.current) {
+            gsap.fromTo(
+              carouselWrapRef.current,
+              {
+                opacity: 0,
+                y: mobile ? 18 : 24,
+                filter: "blur(5px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 1.05,
+                ease: serenityEase,
+                scrollTrigger: {
+                  trigger: carouselWrapRef.current,
+                  start: mobile ? "top 84%" : "top 80%",
+                  once: true,
+                },
+              }
+            );
+          }
+
+          if (cardNodes.length > 0) {
+            gsap.fromTo(
+              cardNodes,
+              {
+                opacity: 0,
+                y: mobile ? 14 : 18,
+                filter: "blur(4px)",
+              },
+              {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.92,
+                stagger: mobile ? 0.04 : 0.055,
+                ease: serenityEase,
+                scrollTrigger: {
+                  trigger: emblaRootRef.current,
+                  start: mobile ? "top 86%" : "top 82%",
+                  once: true,
+                },
+              }
+            );
+          }
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, [shouldReduceMotion]);
+
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#F4F5F2]"
+      aria-labelledby="experience-day-title"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F4F5F2]
+        pb-[56px]
+        pt-[82px]
+        text-[#2D3C68]
+        md:pb-[72px]
+        md:pt-[120px]
+      "
       style={{
-        paddingTop   : 'clamp(72px, 10vh, 120px)',
-        paddingBottom: 'clamp(84px, 11vh, 132px)',
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
       }}
     >
- 
-      {/* Bridge in — strengthened, from dark Hero */}
+      {/* Bridge in from dark Hero */}
       <div
-        className="absolute top-0 inset-x-0 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          h-[126px]
+          md:h-[154px]
+        "
         style={{
-          height    : '120px',
-          background: 'linear-gradient(to bottom, rgba(45,60,104,0.12) 0%, rgba(45,60,104,0.05) 50%, transparent 100%)',
+          background:
+            "linear-gradient(to bottom, rgba(45,60,104,0.105) 0%, rgba(45,60,104,0.045) 48%, rgba(45,60,104,0) 100%)",
         }}
-        aria-hidden="true"
       />
- 
-      {/* Cool atmospheric radial */}
+
+      {/* Soft sail-white depth */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.50), transparent 52%)' }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 35% 42%, rgba(255,255,255,0.52), transparent 54%)",
+        }}
       />
- 
+
+      {/* Localized Sumba Ikat — cultural texture, not wallpaper */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          right-[-18%]
+          top-[8%]
+          hidden
+          h-[520px]
+          w-[min(760px,64vw)]
+          rotate-[3deg]
+          opacity-[0.04]
+          mix-blend-overlay
+          md:block
+        "
+        style={{
+          backgroundImage:
+            "url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "310px auto",
+          backgroundPosition: "center",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.42) 50%, rgba(0,0,0,0) 78%)",
+          maskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.42) 50%, rgba(0,0,0,0) 78%)",
+        }}
+      />
+
+      {/* Mobile texture */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-[6%]
+          h-[360px]
+          opacity-[0.026]
+          mix-blend-overlay
+          md:hidden
+        "
+        style={{
+          backgroundImage:
+            "url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png)",
+          backgroundRepeat: "repeat",
+          backgroundSize: "250px auto",
+          backgroundPosition: "center",
+          WebkitMaskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.24) 62%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.24) 62%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+
       {/* Grain */}
       <div
-        className="absolute inset-[-10%] opacity-[0.028] mix-blend-soft-light pointer-events-none"
-        style={{ backgroundImage: "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')" }}
         aria-hidden="true"
-      />
- 
-      {/* Sumba Ikat — titik 1 */}
-      <div
-        className="absolute inset-0 pointer-events-none"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.026]
+          mix-blend-soft-light
+        "
         style={{
-          backgroundImage : 'url(https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png)',
-          backgroundRepeat: 'repeat',
-          backgroundSize  : '280px',
-          opacity         : 0.035,
-          mixBlendMode    : 'overlay',
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
         }}
-        aria-hidden="true"
       />
- 
+
       {/* Header */}
       <div
-        className="relative max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14"
-        style={{ marginBottom: 'clamp(38px, 6vh, 68px)' }}
+        ref={headerRef}
+        className="
+          relative
+          z-10
+          mx-auto
+          mb-[44px]
+          max-w-[1280px]
+          px-6
+          md:mb-[68px]
+          md:px-10
+          lg:px-14
+        "
       >
-        <p style={{
-          fontFamily   : 'Switzer, sans-serif',
-          fontSize     : '11px',
-          letterSpacing: '0.28em',
-          textTransform: 'uppercase',
-          color        : 'rgba(45,60,104,0.42)',
-          fontWeight   : 400,
-          margin       : '0 0 12px 0',
-        }}>
+        <p
+          className="
+            day-header-reveal
+            text-[10px]
+            uppercase
+            tracking-[0.34em]
+            text-[#2D3C68]/42
+            md:text-[11px]
+          "
+        >
           Life on Board
         </p>
- 
-        <h2 style={{
-          fontFamily   : 'Gambarino, Georgia, serif',
-          fontSize     : 'clamp(34px, 4vw, 58px)',
-          lineHeight   : 1.02,
-          letterSpacing: '-0.035em',
-          color        : '#2D3C68',
-          fontWeight   : 400,
-          maxWidth     : '16ch',
-          margin       : '0 0 clamp(20px, 3vh, 32px) 0',
-        }}>
+
+        <div
+          className="
+            day-header-reveal
+            mt-5
+            h-px
+            w-10
+            bg-[#B08D57]/62
+          "
+        />
+
+        <h2
+          id="experience-day-title"
+          className="
+            day-header-reveal
+            mt-6
+            max-w-[16ch]
+            font-[Gambarino]
+            text-[38px]
+            leading-[1.04]
+            tracking-[-0.04em]
+            text-[#2D3C68]
+            sm:text-[46px]
+            md:text-[clamp(52px,4.4vw,62px)]
+          "
+        >
           A day on board
           <br />
           finds its own shape.
         </h2>
- 
-        <p style={{
-          fontFamily: 'Switzer, sans-serif',
-          fontSize  : '15px',
-          lineHeight: 1.9,
-          color     : 'rgba(45,60,104,0.64)',
-          fontWeight: 300,
-          maxWidth  : '52ch',
-          margin    : 0,
-        }}>
-          A day on Serenity begins before anyone has decided what it
-          will be. By the time the sun is fully up, someone is already
-          in the water. By the time dinner is ready, no one is quite
-          sure where the afternoon went.
+
+        <p
+          className="
+            day-header-reveal
+            mt-7
+            max-w-[58ch]
+            text-[14px]
+            leading-[1.9]
+            text-[#2D3C68]/64
+            md:text-[15px]
+          "
+        >
+          Some guests slip into the water before breakfast. Others stay
+          barefoot on deck while the crew shapes the day around the weather,
+          the anchorage, and the mood on board.
         </p>
       </div>
- 
+
       {/* Carousel */}
       <div
-        style={{
-          opacity  : isVisible || reduceMotion ? 1 : 0,
-          transform: isVisible || reduceMotion ? 'translateY(0)' : 'translateY(24px)',
-          transition: reduceMotion ? 'none' : 'opacity 950ms cubic-bezier(0.22,1,0.36,1), transform 950ms cubic-bezier(0.22,1,0.36,1)',
-        }}
+        ref={carouselWrapRef}
+        className="
+          relative
+          z-10
+        "
+        role="region"
+        aria-label="Moments through a day on board Serenity"
       >
-        {/* ChatGPT: touch-pan-y select-none cursor-grab for better drag UX */}
         <div
           ref={emblaRef}
-          className="overflow-hidden touch-pan-y select-none cursor-grab active:cursor-grabbing"
+          className="
+            overflow-hidden
+            touch-pan-y
+            select-none
+            cursor-grab
+            active:cursor-grabbing
+          "
         >
-          <div className="flex gap-4 px-6 md:px-10 lg:px-14">
-            {moments.map((m, i) => (
-              <div key={m.id} className="flex-shrink-0 w-[82vw] md:w-[320px]">
+          <div
+            ref={emblaRootRef}
+            className="
+              flex
+              gap-4
+              px-6
+              md:gap-5
+              md:px-10
+              lg:px-14
+            "
+          >
+            {moments.map((moment, index) => (
+              <article
+                key={moment.id}
+                className="
+                  day-card-reveal
+                  min-w-0
+                  flex-[0_0_82vw]
+                  sm:flex-[0_0_62vw]
+                  md:flex-[0_0_340px]
+                  lg:flex-[0_0_360px]
+                "
+              >
                 <div
-                  className="relative overflow-hidden"
-                  style={{ height: 'clamp(360px, 44vh, 470px)' }}
+                  className="
+                    relative
+                    h-[clamp(360px,44vh,480px)]
+                    overflow-hidden
+                    bg-[#2D3C68]/[0.045]
+                  "
                 >
-                  {/* ChatGPT: draggable=false, pointer-events-none, scale(1.015) */}
                   <img
-                    src={m.image}
-                    alt={m.label}
-                    loading={i === 0 ? 'eager' : 'lazy'}
+                    src={moment.image}
+                    alt={moment.alt}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
                     draggable="false"
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                    style={{ objectPosition: m.position, transform: 'scale(1.015)' }}
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                      h-full
+                      w-full
+                      scale-[1.015]
+                      object-cover
+                    "
+                    style={{
+                      objectPosition: moment.position,
+                    }}
                   />
- 
+
                   {/* Gradient depth */}
-                  <div className="absolute inset-0" style={{
-                    background: 'linear-gradient(to top, rgba(12,18,32,0.82) 0%, rgba(12,18,32,0.22) 44%, transparent 72%)',
-                  }} />
- 
-                  {/* ChatGPT: warm film — golden top radial */}
-                  <div className="absolute inset-0" style={{
-                    background: 'radial-gradient(ellipse at 50% 18%, rgba(176,141,87,0.06), transparent 56%)',
-                  }} />
- 
-                  {/* ChatGPT: unified cool overlay — ties cards together */}
-                  <div className="absolute inset-0" style={{ background: 'rgba(45,60,104,0.03)' }} />
- 
-                  {/* ChatGPT: subtle edge masking */}
-                  <div className="absolute inset-0 pointer-events-none" style={{
-                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.03)',
-                  }} />
- 
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                    "
+                    style={{
+                      background:
+                        "linear-gradient(to top, rgba(12,18,32,0.82) 0%, rgba(12,18,32,0.24) 44%, rgba(12,18,32,0) 72%)",
+                    }}
+                  />
+
+                  {/* Warm film */}
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                    "
+                    style={{
+                      background:
+                        "radial-gradient(ellipse at 50% 18%, rgba(176,141,87,0.065), transparent 56%)",
+                    }}
+                  />
+
+                  {/* Unified blue discipline */}
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                      bg-[#2D3C68]/[0.035]
+                    "
+                  />
+
+                  {/* Edge discipline */}
+                  <div
+                    aria-hidden="true"
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                      ring-1
+                      ring-inset
+                      ring-[#F4F5F2]/[0.035]
+                    "
+                  />
+
                   {/* Copy */}
-                  <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-                    <span style={{
-                      display      : 'block',
-                      fontFamily   : 'Switzer, sans-serif',
-                      fontSize     : '10px',
-                      letterSpacing: '0.28em',
-                      textTransform: 'uppercase',
-                      color        : 'rgba(176,141,87,0.82)',
-                      fontWeight   : 400,
-                      marginBottom : '8px',
-                    }}>
-                      {m.time}
+                  <div
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      right-0
+                      px-5
+                      pb-5
+                      md:px-6
+                      md:pb-6
+                    "
+                  >
+                    <span
+                      className="
+                        block
+                        text-[10px]
+                        uppercase
+                        tracking-[0.28em]
+                        text-[#B08D57]/85
+                      "
+                    >
+                      {moment.time}
                     </span>
-                    <p style={{
-                      fontFamily   : 'Gambarino, Georgia, serif',
-                      fontSize     : 'clamp(17px, 1.6vw, 21px)',
-                      lineHeight   : 1.18,
-                      letterSpacing: '-0.02em',
-                      color        : '#F4F5F2',
-                      fontWeight   : 400,
-                      margin       : 0,
-                      maxWidth     : '14ch',
-                    }}>
-                      {m.label}
+
+                    <p
+                      className="
+                        mt-2
+                        max-w-[18ch]
+                        font-[Gambarino]
+                        text-[20px]
+                        leading-[1.15]
+                        tracking-[-0.025em]
+                        text-[#F4F5F2]
+                        md:text-[22px]
+                      "
+                    >
+                      {moment.label}
                     </p>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
-            {/* ChatGPT: w-8 trailing breath */}
-            <div className="flex-shrink-0 w-8" />
+
+            <div
+              aria-hidden="true"
+              className="
+                flex-[0_0_24px]
+                md:flex-[0_0_44px]
+              "
+            />
           </div>
         </div>
- 
+
         {/* Dot indicators */}
-        <div className="flex justify-center items-center gap-[6px]" style={{ marginTop: '26px' }}>
-          {scrollSnaps.map((_, i) => (
+        <div
+          className="
+            mt-7
+            flex
+            items-center
+            justify-center
+            gap-1
+          "
+        >
+          {scrollSnaps.map((_, index) => (
             <button
-              key={i}
-              onClick={() => emblaApi && emblaApi.scrollTo(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              style={{
-                height      : '2px',
-                width       : i === selectedIndex ? '24px' : '7px',
-                background  : i === selectedIndex ? '#B08D57' : 'rgba(45,60,104,0.18)',
-                borderRadius: 0,
-                // ChatGPT: animate width and background separately
-                transition  : reduceMotion ? 'none' : 'width 420ms cubic-bezier(0.22,1,0.36,1), background 420ms ease',
-                border      : 'none',
-                cursor      : 'pointer',
-                padding     : 0,
+              key={index}
+              type="button"
+              onClick={() => {
+                emblaApi?.scrollTo(index);
+                setHasInteracted(true);
               }}
-            />
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={index === selectedIndex ? "true" : undefined}
+              className="
+                group
+                flex
+                h-8
+                w-8
+                items-center
+                justify-center
+                outline-none
+              "
+            >
+              <span
+                className={`
+                  h-[2px]
+                  transition-all
+                  duration-500
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+                  ${
+                    index === selectedIndex
+                      ? "w-6 bg-[#B08D57]"
+                      : "w-2 bg-[#2D3C68]/18 group-hover:bg-[#2D3C68]/34"
+                  }
+                `}
+              />
+            </button>
           ))}
         </div>
- 
+
         {/* Mobile scroll hint */}
         {isMobile && !hasInteracted && selectedIndex < scrollSnaps.length - 1 && (
           <button
+            type="button"
             onClick={scrollNext}
             aria-label="Next slide"
-            className="absolute right-3 top-[50%] -translate-y-[50%] z-20"
-            style={{
-              width         : '34px',
-              height        : '34px',
-              display       : 'flex',
-              alignItems    : 'center',
-              justifyContent: 'center',
-              background    : 'rgba(244,245,242,0.56)',
-              backdropFilter: 'blur(6px)',
-              border        : 'none',
-              opacity       : 0.72,
-              cursor        : 'pointer',
-            }}
+            className="
+              absolute
+              right-3
+              top-[43%]
+              z-20
+              flex
+              h-10
+              w-10
+              -translate-y-1/2
+              items-center
+              justify-center
+              bg-[#F4F5F2]/62
+              text-[#2D3C68]
+              opacity-80
+              backdrop-blur-md
+              transition
+              duration-300
+              hover:opacity-100
+              focus-visible:outline
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-[#B08D57]
+              md:hidden
+            "
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 6L15 12L9 18" stroke="#2D3C68" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M9 6L15 12L9 18"
+                stroke="currentColor"
+                strokeWidth="1.45"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         )}
       </div>
- 
-      {/* Bridge out — ChatGPT: two-stop gradient */}
+
+      {/* Compressed seam into Activities */}
       <div
-        className="absolute bottom-0 inset-x-0 h-[80px] pointer-events-none"
-        style={{
-          background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.04) 68%, rgba(45,60,104,0.08) 100%)',
-        }}
         aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[42px]
+          md:h-[56px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(45,60,104,0.018) 78%, rgba(45,60,104,0.03) 100%)",
+        }}
       />
- 
     </section>
   );
 }
@@ -4466,7 +5234,7 @@ function FinalClosing() {
         {/* CTA */}
         <div ref={ctaRef}>
           <a
-            href="https://wa.me/your-number"
+            href={SITE_CONTACT.whatsappHref}
             className="
               inline-flex items-center justify-center
               rounded-full

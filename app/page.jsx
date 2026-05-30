@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform , us
 import TransitionLink from "@/components/TransitionLink";
 import { FaInstagram, FaMessage, FaWhatsapp } from "react-icons/fa6";
 import { usePageTransition } from "@/components/PageTransitionProvider";
+import { SITE_DOCUMENTS, SITE_SOCIAL } from "@/lib/siteConfig";
 
 import Footer from '../components/Footer'
  
@@ -2529,7 +2530,7 @@ function Yacht() {
 
         deckPlan: "/yacht#deck-plan",
 
-        brochure: "/brochure.pdf",
+        brochure: SITE_DOCUMENTS.brochurePath,
 
         specifications: "/yacht#specifications",
       },
@@ -5968,7 +5969,7 @@ function Rates() {
           </TransitionLink>
 
           <p className="text-[11px] uppercase tracking-[0.24em] text-white/32">
-            hello@serenityphinisi.com
+            {SITE_CONTACT.primaryEmail}
           </p>
         </div>
       </div>
@@ -7275,8 +7276,6 @@ const TESTIMONIALS = [
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Switzer:wght@300;400&display=swap');
- 
         :root {
           --color-primary: #2D3C68;
           --color-base:    #F4F5F2;
@@ -8048,18 +8047,20 @@ function Social() {
             </p>
 
             <a
-              href="https://www.instagram.com/serenity.yacht/"
+              href={SITE_SOCIAL.instagramHref}
               target="_blank"
+              rel="noopener noreferrer"
               className="mt-3 inline-block text-[16px] text-[#2D3C68] hover:opacity-70 transition"
             >
-              @serenity.yacht
+              {SITE_SOCIAL.instagramHandle}
             </a>
           </div>
 
           {/* RIGHT — CTA */}
           <a
-            href="https://www.instagram.com/serenity.yacht/"
+            href={SITE_SOCIAL.instagramHref}
             target="_blank"
+            rel="noopener noreferrer"
             className="group text-[12px] tracking-[0.18em] uppercase text-[#2D3C68] border-b border-[#2D3C68]/30 hover:border-[#2D3C68] transition pb-[2px]"
           >
             Follow
@@ -8076,8 +8077,9 @@ function Social() {
           {posts.map((src, i) => (
             <a
               key={i}
-              href="https://www.instagram.com/serenity.yacht/"
+              href={SITE_SOCIAL.instagramHref}
               target="_blank"
+              rel="noopener noreferrer"
               className="flex-shrink-0 w-[220px] md:w-[260px] aspect-[4/5] overflow-hidden"
             >
               <img

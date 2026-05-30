@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
+import { SITE_CONTACT } from "@/lib/siteConfig";
 
 import Footer from '../../components/Footer'
 
@@ -967,9 +968,8 @@ function Experience() {
       ════════════════════════════════════════ */}
       <div
         className="
-          h-[96px]
+          h-[48px] md:h-[64px]
           bg-[#F4F5F2]
-          md:h-[128px]
         "
       />
     </section>
@@ -3389,8 +3389,9 @@ function Reservation() {
 
             {/* SECONDARY */}
             <a
-              href="https://wa.me/6281353613617"
+              href={SITE_CONTACT.whatsappHref}
               target="_blank"
+              rel="noopener noreferrer"
               className="px-8 py-3 border border-white/40 text-white text-[13px] tracking-[0.15em] uppercase rounded-full hover:border-white transition"
             >
               WhatsApp

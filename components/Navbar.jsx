@@ -25,7 +25,7 @@ const NAV_ITEMS = [
     label: "Home",
     href: "/",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
     // REPLACE → vessel exterior, wide ocean shot
   },
 
@@ -73,7 +73,7 @@ const NAV_ITEMS = [
     label: "Contact",
     href: "/contact",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png",
     // REPLACE → horizon, late light, open ocean
   },
 ];

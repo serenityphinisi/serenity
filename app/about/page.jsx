@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
+import { SITE_CONTACT } from "@/lib/siteConfig";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,6 +22,8 @@ export default function Page() {
       <OurStory/>
       <PhinisiHistory/>
       <TheCrew/>
+      <BeforeYouSail/>
+      <MomentsOnBoard/>
       {/* <Testimonial/> */}
       {/* <Conversion/> */}
       {/* <AboutOrigin/> */}
@@ -50,656 +53,1705 @@ function Hero() {
   const imageWrapRef = useRef(null);
   const imageRef = useRef(null);
   const contentRef = useRef(null);
-  const { stage } = usePageTransition();
   const hasPlayedEntranceRef = useRef(false);
+  const entranceTlRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+  const { stage } = usePageTransition();
 
   useEffect(() => {
+    return () => {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sectionRef.current || !imageWrapRef.current || !contentRef.current) {
+      return;
+    }
+
+    const revealNodes = Array.from(
+      contentRef.current.querySelectorAll(".about-hero-reveal")
+    );
+
+    const allNodes = [imageWrapRef.current, ...revealNodes].filter(Boolean);
+
+    if (stage === "covering") {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+
+      gsap.set(imageWrapRef.current, {
+        opacity: 0,
+        scale: 1.012,
+      });
+
+      gsap.set(revealNodes, {
+        opacity: 0,
+        y: 18,
+        filter: "blur(5px)",
+      });
+      return;
+    }
+
+    if (hasPlayedEntranceRef.current) {
+      gsap.set(imageWrapRef.current, {
+        opacity: 1,
+        scale: 1,
+      });
+      gsap.set(revealNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+      return;
+    }
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      hasPlayedEntranceRef.current = true;
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
+    entranceTlRef.current?.kill();
+    entranceTlRef.current = gsap.timeline();
+
+    entranceTlRef.current.fromTo(
+      imageWrapRef.current,
+      {
+        opacity: 0,
+        scale: 1.012,
+      },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 1.55,
+        ease: "power3.out",
+      },
+      0
+    );
+
+    if (revealNodes.length > 0) {
+      entranceTlRef.current.fromTo(
+        revealNodes,
+        {
+          opacity: 0,
+          y: 18,
+          filter: "blur(5px)",
+        },
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1.05,
+          stagger: 0.075,
+          ease: "power3.out",
+        },
+        0.18
+      );
+    }
+  }, [stage, shouldReduceMotion]);
+
+  useEffect(() => {
+    if (!sectionRef.current || !imageRef.current || shouldReduceMotion) {
+      return;
+    }
+
     const ctx = gsap.context(() => {
-      /* ===================================================== */
-      /* ENTRY */
-      /* ===================================================== */
-      if (stage === "covering") {
-        gsap.set(imageWrapRef.current, {
-          scale: 1.01,
-          opacity: 0,
-        });
-        gsap.set(contentRef.current.children, {
-          y: 8,
-          opacity: 0,
-        });
-      } else if (!hasPlayedEntranceRef.current) {
-        hasPlayedEntranceRef.current = true;
-        gsap.fromTo(
-          imageWrapRef.current,
-          {
-            scale: 1.01,
-            opacity: 0,
-          },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 1.8,
-            ease: "power2.out",
-          }
-        );
+      gsap.set(imageRef.current, {
+        yPercent: -1.4,
+        scale: 1.035,
+        transformOrigin: "center center",
+      });
 
-        gsap.fromTo(
-          contentRef.current.children,
-          {
-            y: 8,
-            opacity: 0,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            stagger: 0.08,
-            duration: 1,
-            ease: "power2.out",
-            delay: 0.2,
-          }
-        );
-      }
-
-      /* ===================================================== */
-      /* AMBIENT */
-      /* ===================================================== */
       gsap.to(imageRef.current, {
-        y: -4,
-        duration: 10,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      /* ===================================================== */
-      /* SCROLL */
-      /* ===================================================== */
-      gsap.to(imageWrapRef.current, {
-        yPercent: 1,
+        yPercent: 2.8,
+        scale: 1.055,
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 1.3,
         },
       });
 
-      gsap.to(contentRef.current, {
-        y: -10,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      if (contentRef.current) {
+        gsap.to(contentRef.current, {
+          y: -8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.1,
+          },
+        });
+      }
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [stage]);
+  }, [shouldReduceMotion]);
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[820px] overflow-hidden bg-[#F4F5F2]"
+      aria-labelledby="about-hero-title"
+      className="
+        relative
+        flex
+        h-[100svh]
+        min-h-[720px]
+        overflow-hidden
+        bg-[#F4F5F2]
+        text-[#2D3C68]
+        md:h-[92svh]
+        md:min-h-[820px]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
     >
-      {/* ===================================================== */}
       {/* IMAGE ENVIRONMENT */}
-      {/* ===================================================== */}
       <div className="absolute inset-0">
         <div
           ref={imageWrapRef}
-          className="relative h-full w-full overflow-hidden"
+          className="
+            relative
+            h-full
+            w-full
+            overflow-hidden
+          "
         >
           <img
             ref={imageRef}
             src="https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png"
-            alt="Guests aboard Serenity sailing through Indonesian waters"
-            className="h-full w-full object-cover object-[72%_center]"
+            alt="Serenity sailing through Indonesian waters"
+            loading="eager"
+            decoding="async"
+            draggable="false"
+            className="
+              h-full
+              w-full
+              object-cover
+              object-[66%_center]
+              will-change-transform
+              md:object-[72%_center]
+            "
+            style={{
+              filter: "brightness(0.94) saturate(0.92) contrast(1.04)",
+            }}
           />
 
-          {/* ================================================= */}
-          {/* ATMOSPHERIC OVERLAYS */}
-          {/* ================================================= */}
-          <div className="absolute inset-0 bg-[#2D3C68]/14" />
+          {/* GLOBAL NAVY DISCIPLINE */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              bg-[#2D3C68]/[0.105]
+            "
+          />
 
-          <div className="absolute inset-0 bg-gradient-to-r from-[#F4F5F2]/72 via-[#F4F5F2]/18 via-[18%] to-transparent" />
+          {/* TEXT-SIDE SAIL VEIL — LESS FOG, MORE STRUCTURE */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "linear-gradient(to right, rgba(244,245,242,0.80) 0%, rgba(244,245,242,0.58) 24%, rgba(244,245,242,0.28) 44%, rgba(244,245,242,0.08) 64%, rgba(244,245,242,0) 82%)",
+            }}
+          />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/14 via-transparent to-white/[0.03]" />
+          {/* LEFT READABILITY FIELD — SOFT NAVY UNDER THE SAIL-WHITE */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "radial-gradient(ellipse at 19% 54%, rgba(45,60,104,0.105) 0%, rgba(45,60,104,0.045) 34%, rgba(45,60,104,0) 68%)",
+            }}
+          />
+
+          {/* TOP NAV SUPPORT */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-x-0
+              top-0
+              h-[170px]
+              md:h-[190px]
+            "
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(45,60,104,0.18) 0%, rgba(45,60,104,0.055) 42%, rgba(45,60,104,0) 100%)",
+            }}
+          />
+
+          {/* BOTTOM / SEA DEPTH */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "linear-gradient(to top, rgba(8,12,18,0.16) 0%, rgba(8,12,18,0.055) 28%, rgba(8,12,18,0) 58%)",
+            }}
+          />
+
+          {/* SUBTLE SURFACE LIGHT */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "radial-gradient(ellipse at 52% 12%, rgba(244,245,242,0.08), rgba(244,245,242,0) 54%)",
+            }}
+          />
         </div>
       </div>
 
-      {/* ===================================================== */}
       {/* CONTENT */}
-      {/* ===================================================== */}
-      <div className="relative z-10 mx-auto flex w-full max-w-[1320px] items-center px-6 md:px-10 lg:px-16">
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          w-full
+          max-w-[1320px]
+          items-center
+          px-6
+          md:px-10
+          lg:px-16
+        "
+      >
         <div
           ref={contentRef}
-          className="max-w-[620px] pt-12 md:pt-20"
+          className="
+            max-w-[620px]
+            pt-16
+            md:pt-20
+          "
         >
-          {/* MICRO */}
-          <p className="mb-6 text-[11px] font-medium uppercase tracking-[0.34em] text-[#5F5F5F]">
+          <p
+            className="
+              about-hero-reveal
+              text-[10px]
+              uppercase
+              tracking-[0.34em]
+              text-[#2D3C68]/48
+              md:text-[11px]
+            "
+          >
             The Story of Serenity
           </p>
 
-          {/* HEADLINE */}
-          <h1 className="font-[Gambarino] text-[52px] leading-[0.94] tracking-[-0.04em] text-[#2D3C68] sm:text-[66px] md:text-[78px] xl:text-[84px]">
+          <div
+            aria-hidden="true"
+            className="
+              about-hero-reveal
+              mt-5
+              h-px
+              w-10
+              bg-[#B08D57]/62
+            "
+          />
+
+          <h1
+            id="about-hero-title"
+            className="
+              about-hero-reveal
+              mt-6
+              font-[Gambarino]
+              text-[48px]
+              leading-[0.96]
+              tracking-[-0.045em]
+              text-[#2D3C68]
+              sm:text-[64px]
+              md:text-[78px]
+              xl:text-[86px]
+            "
+          >
             There is only
             <br />
             one Serenity
           </h1>
 
-          {/* BODY */}
-          <p className="mt-8 max-w-[420px] text-[15px] leading-[1.92] text-[#2D3C68]/74 md:text-[16px]">
-            A contemporary phinisi built in Tanah Beru,
-            South Sulawesi. Four cabins. Twelve guests.
-            Ten crew. Routes shaped by sea and curiosity.
+          <p
+            className="
+              about-hero-reveal
+              mt-8
+              max-w-[460px]
+              text-[14px]
+              leading-[1.9]
+              text-[#2D3C68]/72
+              md:text-[16px]
+            "
+          >
+            Built in Tanah Beru, South Sulawesi, Serenity carries twelve guests
+            in four cabins, with ten crew and routes shaped by sea, weather,
+            and curiosity.
           </p>
         </div>
       </div>
 
-      {/* ===================================================== */}
-      {/* BOTTOM TRANSITION */}
-      {/* ===================================================== */}
-      <div className="absolute bottom-0 left-0 h-[220px] w-full bg-gradient-to-b from-transparent via-[#F4F5F2]/26 to-[#F4F5F2]" />
+      {/* BOTTOM TRANSITION — COMPRESSED, NOT FOGGY */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[132px]
+          md:h-[168px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(244,245,242,0.16) 62%, #F4F5F2 100%)",
+        }}
+      />
     </section>
   );
 }
 
 function OurStory() {
+  const sectionRef = useRef(null);
+  const openingRef = useRef(null);
+  const imageWrapRef = useRef(null);
+  const imageInnerRef = useRef(null);
+  const pillarsRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+
   const PILLARS = [
     {
-      num: '01',
-      headline: 'Twelve guests.\nNot more.',
-      body: [
-        'A larger boat carries more people. It also carries more noise, more distance, more of everything that gets between you and the sea.',
-        'Twelve is not a limitation — it is the number at which a journey still feels like one. With ten crew on board, the attention is real.',
-      ],
+      num: "01",
+      headline: "Made for twelve guests.",
+      body:
+        "Twelve keeps the voyage close without making it crowded. With ten crew on board, attention stays personal without becoming intrusive.",
     },
     {
-      num: '02',
-      headline: 'No schedule.\nNot by accident.',
-      body: [
-        'Some mornings begin with a dive at first light. Others with coffee on the upper deck, watching the coast come into view.',
-        'The sea, the season, and what the group wants shape the day. Nothing is set before you arrive.',
-      ],
+      num: "02",
+      headline: "Guided by weather and anchorage.",
+      body:
+        "Each route begins with a plan, then adjusts to weather, anchorage, and the group on board.",
     },
     {
-      num: '03',
-      headline: 'A phinisi.\nAlways.',
-      body: [
-        'Ironwood and teak. Built in the same tradition as the vessels that navigated these waters for centuries.',
-        'Not a modern charter boat that looks like a phinisi — the real thing, on the same coastline where phinisi have always been built.',
-      ],
+      num: "03",
+      headline: "Built from phinisi lineage.",
+      body:
+        "Built in the South Sulawesi phinisi tradition, Serenity carries that origin into a contemporary yacht.",
     },
-  ]
+  ];
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const openingNodes = openingRef.current
+      ? Array.from(openingRef.current.querySelectorAll(".story-reveal"))
+      : [];
+
+    const pillarNodes = pillarsRef.current
+      ? Array.from(pillarsRef.current.querySelectorAll(".pillar-reveal"))
+      : [];
+
+    const allNodes = [
+      ...openingNodes,
+      imageWrapRef.current,
+      ...pillarNodes,
+    ].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      if (imageInnerRef.current) {
+        gsap.set(imageInnerRef.current, {
+          yPercent: 0,
+          scale: 1,
+        });
+      }
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (openingNodes.length > 0 && openingRef.current) {
+        gsap.fromTo(
+          openingNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.05,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: openingRef.current,
+              start: "top 84%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (imageWrapRef.current) {
+        gsap.fromTo(
+          imageWrapRef.current,
+          {
+            opacity: 0,
+            y: 22,
+            scale: 1.01,
+            filter: "blur(6px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 1.16,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: imageWrapRef.current,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (pillarNodes.length > 0 && pillarsRef.current) {
+        gsap.fromTo(
+          pillarNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(4px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.96,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: pillarsRef.current,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (imageInnerRef.current && imageWrapRef.current) {
+        gsap.set(imageInnerRef.current, {
+          yPercent: -2,
+          scale: 1.035,
+          transformOrigin: "center center",
+        });
+
+        gsap.to(imageInnerRef.current, {
+          yPercent: 2.4,
+          scale: 1.052,
+          ease: "none",
+          scrollTrigger: {
+            trigger: imageWrapRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.4,
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [shouldReduceMotion]);
 
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: '#F4F5F2' }}
+      ref={sectionRef}
+      aria-labelledby="our-story-title"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F4F5F2]
+        pt-[56px]
+        pb-[92px]
+        text-[#2D3C68]
+        md:pt-[96px]
+        md:pb-[128px]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
     >
-      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-24 md:py-32">
+      <h2 id="our-story-title" className="sr-only">
+        Our Story
+      </h2>
 
-        {/* ───────────────────────────────────────────── */}
+      {/* SOFT SURFACE ATMOSPHERE */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 78% 18%, rgba(176,141,87,0.04) 0%, rgba(176,141,87,0) 46%)",
+        }}
+      />
+
+      {/* GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.022]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-[1280px]
+          px-6
+          md:px-10
+          lg:px-14
+        "
+      >
         {/* OPENING */}
-        {/* ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[52fr_48fr] gap-16 lg:gap-20 items-center mb-20 md:mb-28">
-
-          {/* LEFT — TEXT */}
-          <div className="max-w-[700px]">
-
-            <h2
-              className="mb-9"
-              style={{
-                fontFamily: 'Gambarino, serif',
-                fontSize: 'clamp(40px, 4.8vw, 64px)',
-                lineHeight: '0.98',
-                letterSpacing: '-0.045em',
-                color: '#2D3C68',
-              }}
-            >
-              Not a bigger boat.
-              <br />
-              Not a resort that floats.
-            </h2>
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-9
+            lg:grid-cols-[52fr_48fr]
+            lg:items-center
+            lg:gap-20
+          "
+        >
+          {/* TEXT */}
+          <div
+            ref={openingRef}
+            className="
+              order-2
+              max-w-[640px]
+              lg:order-1
+            "
+          >
+            <div
+              aria-hidden="true"
+              className="
+                story-reveal
+                h-px
+                w-10
+                bg-[#B08D57]/62
+              "
+            />
 
             <p
-              style={{
-                fontFamily: 'Switzer, sans-serif',
-                fontWeight: 300,
-                fontSize: '16px',
-                lineHeight: '1.92',
-                color: '#5C5C5C',
-                maxWidth: '500px',
-              }}
+              className="
+                story-reveal
+                mt-7
+                max-w-[590px]
+                text-[15px]
+                leading-[1.9]
+                text-[#2D3C68]/68
+                md:text-[16px]
+              "
             >
-              Serenity is a 40.75-meter phinisi, built by hand in Tanah Beru,
-              South Sulawesi in 2025. Four cabins. Twelve guests. Ten crew.
-              She sails through Raja Ampat and Labuan Bajo — not on a fixed
-              itinerary, but shaped by the sea and the people on board.
+              Serenity is a 40.75-meter phinisi from Tanah Beru, South Sulawesi,
+              built for twelve guests in four cabins, with ten crew on board.
+              The scale is deliberate: small enough for the voyage to stay
+              personal, structured enough for each day to respond to weather,
+              anchorage, and the people on board.
             </p>
-
           </div>
 
-          {/* RIGHT — IMAGE */}
-          <div className="hidden lg:flex justify-end">
-
+          {/* IMAGE */}
+          <figure
+            ref={imageWrapRef}
+            className="
+              relative
+              order-1
+              w-full
+              overflow-hidden
+              bg-[#2D3C68]/[0.045]
+              shadow-[0_18px_44px_rgba(22,32,55,0.07)]
+              ring-1
+              ring-[#2D3C68]/[0.07]
+              md:shadow-[0_24px_60px_rgba(22,32,55,0.08)]
+              lg:order-2
+              lg:ml-auto
+              lg:max-w-[640px]
+            "
+          >
             <div
-              className="overflow-hidden w-full"
-              style={{
-                maxWidth: '640px',
-                borderRadius: '2px',
-                boxShadow: '0 24px 60px rgba(22,32,55,0.08)',
-              }}
+              className="
+                relative
+                aspect-[4/3]
+                overflow-hidden
+              "
             >
-              <img
-                src="https://res.cloudinary.com/dombq6plz/image/upload/v1776870966/ChatGPT_Image_Apr_22_2026_10_15_17_PM_1_clrjp0.png"
-                alt=""
-                className="w-full aspect-[1.38/1] object-cover"
-                draggable={false}
+              <div
+                ref={imageInnerRef}
+                className="
+                  absolute
+                  inset-[-4%]
+                  will-change-transform
+                "
+              >
+                <img
+                  src="https://celestiayacht.com/api/media/file/VESSEL_CELESTIA-4(1).webp"
+                  alt="Serenity phinisi sailing through Indonesian waters"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                  className="
+                    h-full
+                    w-full
+                    object-cover
+                    object-center
+                  "
+                  style={{
+                    filter: "brightness(0.96) saturate(0.92) contrast(1.04)",
+                  }}
+                />
+              </div>
+
+              <div
+                aria-hidden="true"
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-0
+                  bg-[#2D3C68]/[0.035]
+                "
+              />
+
+              <div
+                aria-hidden="true"
+                className="
+                  pointer-events-none
+                  absolute
+                  inset-0
+                  bg-gradient-to-t
+                  from-[#2D3C68]/[0.10]
+                  via-transparent
+                  to-[#F4F5F2]/[0.04]
+                "
               />
             </div>
-
-          </div>
-
+          </figure>
         </div>
 
-        {/* ───────────────────────────────────────────── */}
         {/* DIVIDER */}
-        {/* ───────────────────────────────────────────── */}
         <div
-          className="w-full h-px mb-16 md:mb-20"
-          style={{
-            background: 'rgba(45,60,104,0.12)',
-          }}
+          aria-hidden="true"
+          className="
+            mt-12
+            mb-10
+            h-px
+            w-full
+            bg-[#2D3C68]/10
+            md:mt-20
+            md:mb-16
+          "
         />
 
-        {/* ───────────────────────────────────────────── */}
-        {/* THREE PILLARS */}
-        {/* ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
-          {PILLARS.map((pillar, i) => (
-            <div key={i}>
-
-              {/* NUMBER */}
-              <p
-                className="mb-5"
-                style={{
-                  fontFamily: 'Gambarino, serif',
-                  fontSize: 'clamp(48px, 5vw, 68px)',
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: 'rgba(45,60,104,0.10)',
-                  userSelect: 'none',
-                }}
+        {/* THREE QUIET CONVICTIONS */}
+        <div
+          ref={pillarsRef}
+          className="
+            grid
+            grid-cols-1
+            gap-9
+            md:grid-cols-3
+            md:gap-10
+            lg:gap-14
+          "
+        >
+          {PILLARS.map((pillar) => (
+            <article key={pillar.num} className="pillar-reveal">
+              <div
+                className="
+                  mb-4
+                  flex
+                  items-center
+                  gap-4
+                "
               >
-                {pillar.num}
-              </p>
+                <span
+                  className="
+                    text-[10px]
+                    uppercase
+                    tracking-[0.28em]
+                    text-[#2D3C68]/34
+                  "
+                >
+                  {pillar.num}
+                </span>
 
-              {/* HEADLINE */}
+                <span
+                  aria-hidden="true"
+                  className="
+                    h-px
+                    w-10
+                    bg-[#B08D57]/46
+                  "
+                />
+              </div>
+
               <h3
-                className="mb-5"
-                style={{
-                  fontFamily: 'Gambarino, serif',
-                  fontSize: 'clamp(22px, 2vw, 28px)',
-                  lineHeight: '1.1',
-                  letterSpacing: '-0.025em',
-                  color: '#2D3C68',
-                  whiteSpace: 'pre-line',
-                }}
+                className="
+                  font-[Gambarino]
+                  text-[25px]
+                  leading-[1.08]
+                  tracking-[-0.03em]
+                  text-[#2D3C68]
+                  md:text-[clamp(25px,2vw,30px)]
+                "
               >
                 {pillar.headline}
               </h3>
 
-              {/* BODY */}
-              <div
-                className="space-y-4"
-                style={{
-                  fontFamily: 'Switzer, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '14px',
-                  lineHeight: '1.9',
-                  color: '#5C5C5C',
-                }}
+              <p
+                className="
+                  mt-4
+                  max-w-[38ch]
+                  text-[14px]
+                  leading-[1.85]
+                  text-[#2D3C68]/62
+                "
               >
-                {pillar.body.map((paragraph, idx) => (
-                  <p key={idx}>
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-
-            </div>
+                {pillar.body}
+              </p>
+            </article>
           ))}
         </div>
-
       </div>
 
-      {/* ───────────────────────────────────────────── */}
       {/* BOTTOM BRIDGE */}
-      {/* ───────────────────────────────────────────── */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[72px]
+          md:h-[96px]
+        "
         style={{
           background:
-            'linear-gradient(to bottom, transparent 0%, rgba(45,60,104,0.05) 100%)',
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(45,60,104,0.035) 100%)",
         }}
       />
     </section>
-  )
+  );
 }
 
 function PhinisiHistory() {
+  const sectionRef = useRef(null);
+  const imageWrapRef = useRef(null);
+  const imageInnerRef = useRef(null);
+  const copyRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+
   const IKAT_URL =
-    'https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png'
+    "https://res.cloudinary.com/dombq6plz/image/upload/v1778486752/ChatGPT_Image_May_11_2026_03_01_56_PM_2_k2aiwl.png";
+
+  const IMAGE_URL =
+    "https://plus.unsplash.com/premium_photo-1664121799894-eb6c2af13bc8?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const copyNodes = copyRef.current
+      ? Array.from(copyRef.current.querySelectorAll(".phinisi-reveal"))
+      : [];
+
+    const allNodes = [imageWrapRef.current, ...copyNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      if (imageInnerRef.current) {
+        gsap.set(imageInnerRef.current, {
+          yPercent: 0,
+          scale: 1,
+        });
+      }
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (imageWrapRef.current) {
+        gsap.fromTo(
+          imageWrapRef.current,
+          {
+            opacity: 0,
+            y: 24,
+            scale: 1.012,
+            filter: "blur(6px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 1.18,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: imageWrapRef.current,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (copyNodes.length > 0 && copyRef.current) {
+        gsap.fromTo(
+          copyNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(4px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: copyRef.current,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (imageInnerRef.current && imageWrapRef.current) {
+        gsap.set(imageInnerRef.current, {
+          yPercent: -2,
+          scale: 1.035,
+          transformOrigin: "center center",
+        });
+
+        gsap.to(imageInnerRef.current, {
+          yPercent: 2.5,
+          scale: 1.055,
+          ease: "none",
+          scrollTrigger: {
+            trigger: imageWrapRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.45,
+          },
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [shouldReduceMotion]);
 
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: '#2D3C68' }}
+      ref={sectionRef}
+      aria-label="Phinisi history"
+      className="
+        relative
+        overflow-hidden
+        bg-[#2D3C68]
+        px-6
+        py-[88px]
+        text-[#F4F5F2]
+        md:px-10
+        md:py-[128px]
+        lg:px-14
+      "
+      style={{
+        backgroundColor: "#2D3C68",
+        colorScheme: "dark",
+      }}
     >
-      {/* ── Sumba Ikat ── */}
-      <style>{`
-        @keyframes ikatRotate {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to   { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-      `}</style>
-
+      {/* BRIDGE IN FROM SAIL-WHITE */}
       <div
-        className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
-        style={{ opacity: 0.08, overflow: 'hidden' }}
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[5]
+          h-[140px]
+          md:h-[170px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0.085) 0%, rgba(244,245,242,0.028) 38%, rgba(244,245,242,0) 100%)",
+        }}
+      />
+
+      {/* STATIC IKAT FIELD — SUBTLE SIGNATURE ONLY */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          left-[-24%]
+          top-[-14%]
+          h-[620px]
+          w-[min(920px,90vw)]
+          opacity-[0.22]
+          mix-blend-soft-light
+          md:left-[-14%]
+          md:top-[-10%]
+          md:h-[740px]
+          md:w-[min(1040px,68vw)]
+        "
+        style={{
+          backgroundImage: `url(${IKAT_URL})`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "280px auto",
+          backgroundPosition: "center",
+          filter: "blur(0.15px)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.32) 54%, rgba(0,0,0,0) 78%)",
+          maskImage:
+            "radial-gradient(ellipse at center, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.32) 54%, rgba(0,0,0,0) 78%)",
+        }}
+      />
+
+      {/* NAVY DEPTH */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 34% 42%, rgba(244,245,242,0.045) 0%, rgba(244,245,242,0.014) 28%, rgba(244,245,242,0) 58%)",
+        }}
+      />
+
+      {/* WARM CRAFT ATMOSPHERE */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 82% 28%, rgba(176,141,87,0.095) 0%, rgba(176,141,87,0.032) 34%, rgba(176,141,87,0) 64%)",
+        }}
+      />
+
+      {/* SURFACE DEPTH */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0.016) 0%, rgba(8,12,18,0) 42%, rgba(8,12,18,0.13) 100%)",
+        }}
+      />
+
+      {/* GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.036]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          grid
+          max-w-[1280px]
+          grid-cols-1
+          gap-9
+          lg:grid-cols-[47fr_53fr]
+          lg:items-center
+          lg:gap-14
+        "
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: '120%',
-            aspectRatio: '1',
-            backgroundImage: `url(${IKAT_URL})`,
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            animation: 'ikatRotate 120s linear infinite',
-          }}
-        />
-      </div>
-
-      {/* ── Atmospheric radial ── */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.04), transparent 55%)',
-        }}
-      />
-
-      {/* ── Bridge in ── */}
-      <div
-        className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(to bottom, rgba(244,245,242,0.05) 0%, transparent 100%)',
-        }}
-      />
-
-      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 py-24 md:py-32">
-
-        <div className="grid grid-cols-1 lg:grid-cols-[47fr_53fr] gap-6 lg:gap-14 items-stretch">
-
-          {/* ── Left — image dengan headline overlay ── */}
+        {/* IMAGE — FIRST ON MOBILE, LEFT ON DESKTOP */}
+        <figure
+          ref={imageWrapRef}
+          className="
+            relative
+            order-1
+            overflow-hidden
+            bg-[#0B1322]/24
+            shadow-[0_22px_64px_rgba(5,10,20,0.20)]
+            ring-1
+            ring-[#F4F5F2]/[0.045]
+            lg:min-h-[520px]
+          "
+        >
           <div
-            className="relative overflow-hidden"
-            style={{
-              borderRadius: '2px',
-              minHeight: '420px',
-            }}
+            className="
+              relative
+              aspect-[4/3]
+              overflow-hidden
+              lg:h-full
+              lg:min-h-[520px]
+              lg:aspect-auto
+            "
           >
-            <img
-              src="https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png"
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              draggable={false}
-            />
-
-            {/* Gradient untuk text readability */}
             <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(to top, rgba(22,30,56,0.95) 0%, rgba(22,30,56,0.5) 40%, transparent 70%)',
-              }}
-            />
- 
-          </div>
-
-          {/* ── Right — body + UNESCO + coda ── */}
-          <div className="flex flex-col justify-center gap-8 lg:py-4">
-
-            <p
-              style={{
-                fontFamily: 'Switzer, sans-serif',
-                fontWeight: 300,
-                fontSize: '15px',
-                lineHeight: '1.85',
-                color: 'rgba(244,245,242,0.72)',
-              }}
+              ref={imageInnerRef}
+              className="
+                absolute
+                inset-[-4%]
+                will-change-transform
+              "
             >
-              The phinisi originates from Tanah Beru and Bira, South
-              Sulawesi — built by the Konjo-speaking shipbuilders of Ara
-              and long sailed by Bugis and Makassar seafarers across the
-              archipelago. Each vessel is constructed entirely by hand,
-              using techniques passed down through generations of people
-              who learned the sea before they learned anything else.
-            </p>
-
-            {/* UNESCO callout */}
-            <div
-              className="pl-5"
-              style={{ borderLeft: '2px solid #B08D57' }}
-            >
-              <p
-                className="mb-2"
+              <img
+                src={IMAGE_URL}
+                alt="Traditional wooden phinisi vessel in Indonesia"
+                loading="lazy"
+                decoding="async"
+                draggable="false"
+                className="
+                  h-full
+                  w-full
+                  object-cover
+                  object-center
+                "
                 style={{
-                  fontFamily: 'Switzer, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '11px',
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  color: '#B08D57',
+                  filter: "brightness(0.78) saturate(0.86) contrast(1.05)",
                 }}
-              >
-                2017 · UNESCO
-              </p>
-              <p
-                style={{
-                  fontFamily: 'Switzer, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '14px',
-                  lineHeight: '1.75',
-                  color: 'rgba(244,245,242,0.60)',
-                }}
-              >
-                The art of phinisi boatbuilding was recognized as part of
-                the Intangible Cultural Heritage of Humanity — a
-                reflection of its enduring craftsmanship and cultural
-                significance.
-              </p>
+              />
             </div>
 
-            {/* Divider */}
             <div
-              className="w-full h-px"
-              style={{ background: 'rgba(244,245,242,0.08)' }}
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                bg-[#2D3C68]/[0.12]
+              "
             />
 
-            {/* Coda */}
-            <p
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+              "
               style={{
-                fontFamily: 'Switzer, sans-serif',
-                fontWeight: 300,
-                fontSize: '14px',
-                lineHeight: '1.85',
-                color: 'rgba(244,245,242,0.50)',
+                background:
+                  "linear-gradient(to top, rgba(8,12,18,0.58) 0%, rgba(8,12,18,0.22) 38%, rgba(8,12,18,0) 72%)",
               }}
-            >
-              Serenity was built on the same coastline, by the same
-              hands, in 2025. Ironwood and teak. No fiberglass, no
-              aluminum. The Sumba Ikat woven into her interior is not
-              decoration — it is a deliberate acknowledgment that craft
-              and culture belong together.
-            </p>
+            />
 
+            <div
+              aria-hidden="true"
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                ring-1
+                ring-inset
+                ring-[#F4F5F2]/[0.032]
+              "
+            />
           </div>
+        </figure>
+
+        {/* COPY — NO HEADER */}
+        <div
+          ref={copyRef}
+          className="
+            order-2
+            max-w-[640px]
+            lg:pl-2
+          "
+        >
+          <div
+            aria-hidden="true"
+            className="
+              phinisi-reveal
+              mb-7
+              h-px
+              w-10
+              bg-[#B08D57]/56
+            "
+          />
+
+          <p
+            className="
+              phinisi-reveal
+              text-[15px]
+              leading-[1.9]
+              text-[#F4F5F2]/72
+              md:text-[16px]
+              md:leading-[1.86]
+            "
+          >
+            Serenity was built in Tanah Beru, South Sulawesi — one of the
+            recognized centres of Pinisi construction, alongside Bira and Batu
+            Licin. Pinisi is not just a visual style; UNESCO describes it as the
+            art of boatbuilding in South Sulawesi, connected to the rig and sail
+            of the Sulawesi schooner.
+          </p>
+
+          <p
+            className="
+              phinisi-reveal
+              mt-6
+              max-w-[560px]
+              text-[14px]
+              leading-[1.82]
+              text-[#F4F5F2]/60
+            "
+          >
+            In 2017, Pinisi: Art of Boatbuilding in South Sulawesi was inscribed
+            on UNESCO&apos;s Representative List of the Intangible Cultural
+            Heritage of Humanity.
+          </p>
+
+          <div
+            aria-hidden="true"
+            className="
+              phinisi-reveal
+              my-7
+              h-px
+              w-full
+              max-w-[480px]
+              bg-[#F4F5F2]/10
+              md:my-8
+            "
+          />
+
+          <p
+            className="
+              phinisi-reveal
+              max-w-[560px]
+              text-[14px]
+              leading-[1.85]
+              text-[#F4F5F2]/54
+            "
+          >
+            For Serenity, that origin matters because the yacht is not borrowing
+            a shape from Indonesian maritime culture. She was built on the
+            coastline where the craft is still practiced, then finished as a
+            contemporary private yacht for twelve guests, four cabins, and ten
+            crew.
+          </p>
         </div>
       </div>
 
-      {/* ── Bridge out ── */}
+      {/* BRIDGE OUT */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[104px]
+          md:h-[124px]
+        "
         style={{
           background:
-            'linear-gradient(to bottom, transparent 0%, rgba(244,245,242,0.04) 100%)',
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(244,245,242,0.04) 100%)",
         }}
       />
     </section>
-  )
+  );
 }
 
 function TheCrew() {
-  const CREW_IMAGE = 'https://res.cloudinary.com/dombq6plz/image/upload/v1778534690/ChatGPT_Image_May_12_2026_04_23_45_AM_ircnlq.png'
- 
+  const sectionRef = useRef(null);
+  const textRef = useRef(null);
+  const imageWrapRef = useRef(null);
+  const imageInnerRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+
+  const CREW_IMAGE =
+    "https://res.cloudinary.com/dombq6plz/image/upload/v1780142533/38140754-66e0-4ab7-9cec-c6e690dd7ed6_1_ephzjz.png";
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const textNodes = textRef.current
+      ? Array.from(textRef.current.querySelectorAll(".crew-reveal"))
+      : [];
+
+    const allNodes = [imageWrapRef.current, ...textNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      if (imageInnerRef.current) {
+        gsap.set(imageInnerRef.current, {
+          yPercent: 0,
+          scale: 1,
+        });
+      }
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (textNodes.length > 0 && textRef.current) {
+        gsap.fromTo(
+          textNodes,
+          {
+            opacity: 0,
+            y: 20,
+            filter: "blur(5px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.08,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: "top 82%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (imageWrapRef.current) {
+        gsap.fromTo(
+          imageWrapRef.current,
+          {
+            opacity: 0,
+            y: 24,
+            scale: 1.008,
+            filter: "blur(6px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 1.18,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: imageWrapRef.current,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    const mm = gsap.matchMedia();
+
+    if (imageInnerRef.current && imageWrapRef.current) {
+      mm.add(
+        {
+          mobile: "(max-width: 767px)",
+          desktop: "(min-width: 768px)",
+        },
+        (context) => {
+          const { mobile } = context.conditions;
+
+          gsap.set(imageInnerRef.current, {
+            yPercent: mobile ? -2.5 : -3.5,
+            scale: mobile ? 1.035 : 1.045,
+            transformOrigin: "center center",
+          });
+
+          const parallaxTween = gsap.to(imageInnerRef.current, {
+            yPercent: mobile ? 2.5 : 3.5,
+            scale: mobile ? 1.055 : 1.065,
+            ease: "none",
+            scrollTrigger: {
+              trigger: imageWrapRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.25,
+            },
+          });
+
+          return () => {
+            parallaxTween.kill();
+          };
+        }
+      );
+    }
+
+    return () => {
+      mm.revert();
+      ctx.revert();
+    };
+  }, [shouldReduceMotion]);
+
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ background: '#F4F5F2' }}
+      ref={sectionRef}
+      aria-labelledby="crew-title"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F4F5F2]
+        text-[#2D3C68]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
     >
-      {/* ── Warm radial — temperature shift ── */}
+      {/* BRIDGE IN FROM DARK NAVY */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          top-0
+          z-[5]
+          h-[128px]
+          md:h-[156px]
+        "
         style={{
           background:
-            'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.06), transparent 50%)',
+            "linear-gradient(to bottom, rgba(45,60,104,0.075) 0%, rgba(45,60,104,0.026) 42%, rgba(45,60,104,0) 100%)",
         }}
       />
- 
-      {/* ── Bridge in — dari maritime blue Phinisi ── */}
+
+      {/* WARM HUMAN ATMOSPHERE */}
       <div
-        className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
         style={{
           background:
-            'linear-gradient(to bottom, rgba(45,60,104,0.06) 0%, transparent 100%)',
+            "radial-gradient(circle at 70% 22%, rgba(176,141,87,0.055) 0%, rgba(176,141,87,0) 50%)",
         }}
       />
- 
-      {/* ── Text block ── */}
-      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-14 pt-24 md:pt-32 pb-14 md:pb-16">
- 
-        {/* Eyebrow */}
+
+      {/* SURFACE GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.02]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      {/* TEXT BLOCK */}
+      <div
+        ref={textRef}
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-[1280px]
+          px-6
+          pt-[88px]
+          pb-[42px]
+          md:px-10
+          md:pt-[124px]
+          md:pb-[54px]
+          lg:px-14
+        "
+      >
         <p
-          className="mb-8"
-          style={{
-            fontFamily: 'Switzer, sans-serif',
-            fontWeight: 300,
-            fontSize: '11px',
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color: '#6A6A6A',
-          }}
+          className="
+            crew-reveal
+            mb-7
+            text-[10px]
+            uppercase
+            tracking-[0.34em]
+            text-[#2D3C68]/42
+            md:mb-8
+            md:text-[11px]
+          "
         >
           The Crew
         </p>
- 
-        {/* Headline + body — dua kolom */}
-        <div className="grid grid-cols-1 lg:grid-cols-[52fr_44fr] gap-12 lg:gap-20 items-end">
- 
-          {/* Left — headline */}
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            items-end
+            gap-10
+            lg:grid-cols-[52fr_44fr]
+            lg:gap-20
+          "
+        >
           <h2
-            style={{
-              fontFamily: 'Gambarino, serif',
-              fontSize: 'clamp(40px, 4.8vw, 64px)',
-              lineHeight: '1.02',
-              letterSpacing: '-0.035em',
-              color: '#2D3C68',
-            }}
+            id="crew-title"
+            className="
+              crew-reveal
+              max-w-[13ch]
+              font-[Gambarino]
+              text-[40px]
+              leading-[1.02]
+              tracking-[-0.04em]
+              text-[#2D3C68]
+              sm:text-[50px]
+              md:text-[clamp(54px,4.8vw,66px)]
+            "
           >
-            They know every<br />
-            current by name
+            They keep the voyage
+            <br />
+            quietly moving.
           </h2>
- 
-          {/* Right — body + stat */}
-          <div>
+
+          <div className="max-w-[570px] lg:pb-1">
             <p
-              className="mb-8"
-              style={{
-                fontFamily: 'Switzer, sans-serif',
-                fontWeight: 300,
-                fontSize: '15px',
-                lineHeight: '1.85',
-                color: '#5C5C5C',
-              }}
+              className="
+                crew-reveal
+                text-[15px]
+                leading-[1.9]
+                text-[#2D3C68]/66
+                md:text-[16px]
+                md:leading-[1.86]
+              "
             >
-              Ten crew from Indonesia's maritime communities — warm, attentive,
-              and shaped entirely around the rhythm of each voyage. They read
-              the sea, not a script. They adapt to the group — not the other
-              way around.
+              Ten crew are aboard for twelve guests — handling cabins, meals,
+              tenders, anchorages, safety, and the small timing that makes each
+              day feel unforced. They read the sea, not a script, and adjust the
+              rhythm around the group on board.
             </p>
- 
-            {/* Stat */}
-            <div className="flex items-center gap-4">
-              <div
-                style={{
-                  width: '32px',
-                  height: '1px',
-                  background: '#B08D57',
-                  flexShrink: 0,
-                }}
-              />
-              <p
-                style={{
-                  fontFamily: 'Switzer, sans-serif',
-                  fontWeight: 300,
-                  fontSize: '11px',
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  color: '#8B6A4F',
-                }}
-              >
-                Ten crew · Twelve guests
-              </p>
-            </div>
+
+            <div
+              aria-hidden="true"
+              className="
+                crew-reveal
+                mt-8
+                h-px
+                w-10
+                bg-[#B08D57]/62
+              "
+            />
           </div>
- 
         </div>
       </div>
- 
-      {/* ── Crew photo — full width, foreground, closing statement ── */}
-      <div className="relative w-full overflow-hidden">
-        <img
-          src={CREW_IMAGE}
-          alt=""
-          className="w-full object-cover object-center"
-          style={{ aspectRatio: '16/7' }}
-          draggable={false}
-        />
- 
-        {/* Subtle top fade — blend dari sail-white ke foto */}
+
+      {/* FULL-WIDTH CREW PHOTO */}
+      <figure
+        ref={imageWrapRef}
+        className="
+          relative
+          z-10
+          w-full
+          overflow-hidden
+          bg-[#2D3C68]/[0.04]
+        "
+      >
         <div
-          className="absolute top-0 left-0 right-0 h-20 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(to bottom, #F4F5F2 0%, transparent 100%)',
-          }}
-        />
-      </div>
- 
+          className="
+            relative
+            aspect-[4/5]
+            overflow-hidden
+            sm:aspect-[3/4]
+            md:aspect-[16/9]
+            lg:aspect-[16/7]
+          "
+        >
+          <div
+            ref={imageInnerRef}
+            className="
+              absolute
+              inset-[-5%]
+              will-change-transform
+            "
+          >
+            <img
+              src={CREW_IMAGE}
+              alt="The Serenity crew gathered on deck"
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+              className="
+                h-full
+                w-full
+                object-cover
+                object-[50%_42%]
+                md:object-center
+              "
+              style={{
+                filter: "brightness(0.88) saturate(0.92) contrast(1.04)",
+              }}
+            />
+          </div>
+
+          {/* PHOTO NAVY DISCIPLINE */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              bg-[#2D3C68]/[0.055]
+            "
+          />
+
+          {/* TOP FADE — TEXT FIELD TO PHOTO FIELD */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-x-0
+              top-0
+              h-[150px]
+              md:h-[180px]
+            "
+            style={{
+              background:
+                "linear-gradient(to bottom, #F4F5F2 0%, rgba(244,245,242,0.78) 24%, rgba(244,245,242,0.32) 58%, rgba(244,245,242,0) 100%)",
+            }}
+          />
+
+          {/* BOTTOM READABILITY / DEPTH */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "linear-gradient(to top, rgba(8,12,18,0.28) 0%, rgba(8,12,18,0.09) 34%, rgba(8,12,18,0) 68%)",
+            }}
+          />
+
+          {/* SUBTLE WARM HUMAN FIELD */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+            "
+            style={{
+              background:
+                "radial-gradient(circle at 48% 44%, rgba(176,141,87,0.06) 0%, rgba(176,141,87,0) 56%)",
+            }}
+          />
+
+          {/* FINE PHOTO EDGE */}
+          <div
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              ring-1
+              ring-inset
+              ring-[#F4F5F2]/[0.04]
+            "
+          />
+        </div>
+      </figure>
     </section>
-  )
+  );
 }
 
 function Testimonial() {
@@ -916,13 +1968,13 @@ function Conversion() {
           >
             or write directly at{' '}
             <a
-              href="mailto:hello@serenityphinisi.com"
+              href={SITE_CONTACT.primaryEmailHref}
               style={{
                 color: '#8B6A4F',
                 textDecoration: 'none',
               }}
             >
-              hello@serenityphinisi.com
+              {SITE_CONTACT.primaryEmail}
             </a>
           </p>
  
@@ -932,7 +1984,816 @@ function Conversion() {
   )
 }
  
+function MomentsOnBoard() {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const galleryRef = useRef(null);
+  const firstImageInnerRef = useRef(null);
 
+  const shouldReduceMotion = useReducedMotion();
+
+  const FRAMES = [
+    {
+      id: "vessel",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_14_PM_liebfi.png",
+      alt: "Serenity phinisi moving through Indonesian waters",
+      position: "50% 50%",
+      desktopClass:
+        "md:col-span-7 md:row-span-2 md:min-h-[620px] lg:min-h-[680px]",
+      priority: true,
+    },
+    {
+      id: "service",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1777271186/ChatGPT_Image_Apr_27_2026_01_24_38_PM_iuf3mw.png",
+      alt: "Crew preparing food aboard Serenity",
+      position: "50% 46%",
+      desktopClass: "md:col-span-5 md:min-h-[300px] lg:min-h-[330px]",
+      priority: false,
+    },
+    {
+      id: "dining",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png",
+      alt: "Dining atmosphere aboard Serenity",
+      position: "58% 50%",
+      desktopClass: "md:col-span-5 md:min-h-[300px] lg:min-h-[330px]",
+      priority: false,
+    },
+    {
+      id: "water",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776152590/Phinisi_yacht_and_vibrant_coral_reef_1_i59pqn.png",
+      alt: "Coral reef and water around Serenity",
+      position: "50% 58%",
+      desktopClass: "md:col-span-6 md:min-h-[320px]",
+      priority: false,
+    },
+    {
+      id: "quiet",
+      image:
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
+      alt: "Quiet deck moment aboard Serenity",
+      position: "50% 50%",
+      desktopClass: "md:col-span-6 md:min-h-[320px]",
+      priority: false,
+    },
+  ];
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const headerNodes = headerRef.current
+      ? Array.from(headerRef.current.querySelectorAll(".moments-reveal"))
+      : [];
+
+    const cardNodes = galleryRef.current
+      ? Array.from(galleryRef.current.querySelectorAll(".moment-card"))
+      : [];
+
+    const allNodes = [...headerNodes, ...cardNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
+
+      if (firstImageInnerRef.current) {
+        gsap.set(firstImageInnerRef.current, {
+          yPercent: 0,
+          scale: 1,
+        });
+      }
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (headerNodes.length > 0 && headerRef.current) {
+        gsap.fromTo(
+          headerNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.05,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: headerRef.current,
+              start: "top 84%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (cardNodes.length > 0 && galleryRef.current) {
+        gsap.fromTo(
+          cardNodes,
+          {
+            opacity: 0,
+            y: 24,
+            scale: 1.01,
+            filter: "blur(6px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            filter: "blur(0px)",
+            duration: 1.12,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: galleryRef.current,
+              start: "top 84%",
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    const mm = gsap.matchMedia();
+
+    if (firstImageInnerRef.current && galleryRef.current) {
+      mm.add("(min-width: 768px)", () => {
+        gsap.set(firstImageInnerRef.current, {
+          yPercent: -3,
+          scale: 1.04,
+          transformOrigin: "center center",
+        });
+
+        const parallaxTween = gsap.to(firstImageInnerRef.current, {
+          yPercent: 3,
+          scale: 1.06,
+          ease: "none",
+          scrollTrigger: {
+            trigger: galleryRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.3,
+          },
+        });
+
+        return () => {
+          parallaxTween.kill();
+        };
+      });
+    }
+
+    return () => {
+      mm.revert();
+      ctx.revert();
+    };
+  }, [shouldReduceMotion]);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby="moments-on-board-title"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F4F5F2]
+        py-[84px]
+        text-[#2D3C68]
+        md:py-[124px]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
+    >
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+            .moments-scrollbar {
+              scrollbar-width: none;
+            }
+
+            .moments-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+          `,
+        }}
+      />
+
+      {/* WARM SURFACE */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 72% 18%, rgba(176,141,87,0.05) 0%, rgba(176,141,87,0) 48%)",
+        }}
+      />
+
+      {/* SOFT NAVY DEPTH */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 14% 82%, rgba(45,60,104,0.045) 0%, rgba(45,60,104,0) 54%)",
+        }}
+      />
+
+      {/* GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.022]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          max-w-[1280px]
+          px-6
+          md:px-10
+          lg:px-14
+        "
+      >
+        {/* HEADER — SMALL, NOT A HERO */}
+        <div
+          ref={headerRef}
+          className="
+            mb-10
+            grid
+            grid-cols-1
+            gap-6
+            md:mb-14
+            md:grid-cols-12
+            md:items-end
+            md:gap-10
+          "
+        >
+          <div className="md:col-span-4">
+            <h2
+              id="moments-on-board-title"
+              className="
+                moments-reveal
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#2D3C68]/44
+                md:text-[11px]
+              "
+            >
+              Moments On Board
+            </h2>
+
+            <div
+              aria-hidden="true"
+              className="
+                moments-reveal
+                mt-5
+                h-px
+                w-10
+                bg-[#B08D57]/62
+              "
+            />
+          </div>
+
+          <p
+            className="
+              moments-reveal
+              max-w-[520px]
+              text-[15px]
+              leading-[1.9]
+              text-[#2D3C68]/66
+              md:col-span-6
+              md:col-start-7
+              md:text-[16px]
+              md:leading-[1.86]
+            "
+          >
+            Meals, crossings, quiet hours, and the small movements of a day at
+            sea.
+          </p>
+        </div>
+
+        {/* EDITORIAL IMAGE SEQUENCE */}
+        <div
+          ref={galleryRef}
+          className="
+            moments-scrollbar
+            -mx-6
+            flex
+            snap-x
+            snap-mandatory
+            gap-4
+            overflow-x-auto
+            px-6
+            pb-2
+            md:mx-0
+            md:grid
+            md:grid-cols-12
+            md:gap-4
+            md:overflow-visible
+            md:px-0
+            md:pb-0
+            lg:gap-5
+          "
+        >
+          {FRAMES.map((frame, index) => (
+            <figure
+              key={frame.id}
+              className={`
+                moment-card
+                relative
+                flex-none
+                w-[78vw]
+                snap-start
+                overflow-hidden
+                bg-[#2D3C68]/[0.045]
+                shadow-[0_18px_44px_rgba(22,32,55,0.07)]
+                ring-1
+                ring-[#2D3C68]/[0.065]
+                md:w-auto
+                md:shadow-[0_24px_70px_rgba(22,32,55,0.08)]
+                ${frame.desktopClass}
+              `}
+            >
+              <div
+                className="
+                  relative
+                  aspect-[4/5]
+                  overflow-hidden
+                  md:h-full
+                  md:aspect-auto
+                "
+              >
+                <div
+                  ref={index === 0 ? firstImageInnerRef : null}
+                  className="
+                    absolute
+                    inset-[-4%]
+                    will-change-transform
+                  "
+                >
+                  <img
+                    src={frame.image}
+                    alt={frame.alt}
+                    loading={frame.priority ? "eager" : "lazy"}
+                    decoding="async"
+                    draggable="false"
+                    className="
+                      h-full
+                      w-full
+                      object-cover
+                    "
+                    style={{
+                      objectPosition: frame.position,
+                      filter: "brightness(0.94) saturate(0.9) contrast(1.045)",
+                    }}
+                  />
+                </div>
+
+                {/* NAVY UNIFIER */}
+                <div
+                  aria-hidden="true"
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    bg-[#2D3C68]/[0.035]
+                  "
+                />
+
+                {/* IMAGE DEPTH */}
+                <div
+                  aria-hidden="true"
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                  "
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(8,12,18,0.28) 0%, rgba(8,12,18,0.08) 34%, rgba(8,12,18,0) 70%)",
+                  }}
+                />
+
+                {/* WARM FILM */}
+                <div
+                  aria-hidden="true"
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                  "
+                  style={{
+                    background:
+                      "radial-gradient(circle at 52% 34%, rgba(176,141,87,0.055) 0%, rgba(176,141,87,0) 58%)",
+                  }}
+                />
+
+                {/* FINE EDGE */}
+                <div
+                  aria-hidden="true"
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    ring-1
+                    ring-inset
+                    ring-[#F4F5F2]/[0.035]
+                  "
+                />
+              </div>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      {/* BRIDGE OUT */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[88px]
+          md:h-[112px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(45,60,104,0.035) 100%)",
+        }}
+      />
+    </section>
+  );
+}
+
+function BeforeYouSail() {
+  const sectionRef = useRef(null);
+  const introRef = useRef(null);
+  const listRef = useRef(null);
+
+  const shouldReduceMotion = useReducedMotion();
+
+  const QUESTIONS = [
+    {
+      question: "How many guests does Serenity carry?",
+      answer:
+        "Serenity carries twelve guests across four cabins, with ten crew aboard.",
+    },
+    {
+      question: "Where does Serenity sail?",
+      answer:
+        "Serenity sails through Indonesian waters including Raja Ampat and Labuan Bajo, depending on season, route, and sea conditions.",
+    },
+    {
+      question: "Is the itinerary fixed?",
+      answer:
+        "Each voyage begins with a route plan, then adjusts to weather, anchorage, and the rhythm of the group on board.",
+    },
+    {
+      question: "What does the crew handle?",
+      answer:
+        "The crew handles cabins, meals, tenders, anchorages, safety, and the small timing that keeps each day moving without feeling managed.",
+    },
+    {
+      question: "Who is Serenity best suited for?",
+      answer:
+        "Serenity is best suited for guests who want a slower, more personal voyage: fewer people, more space, and days shaped by the sea rather than a fixed schedule.",
+    },
+  ];
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const introNodes = introRef.current
+      ? Array.from(introRef.current.querySelectorAll(".sail-reveal"))
+      : [];
+
+    const questionNodes = listRef.current
+      ? Array.from(listRef.current.querySelectorAll(".sail-question"))
+      : [];
+
+    const allNodes = [...introNodes, ...questionNodes].filter(Boolean);
+
+    if (shouldReduceMotion) {
+      gsap.set(allNodes, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      if (introNodes.length > 0 && introRef.current) {
+        gsap.fromTo(
+          introNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(5px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.04,
+            stagger: 0.08,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: introRef.current,
+              start: "top 84%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (questionNodes.length > 0 && listRef.current) {
+        gsap.fromTo(
+          questionNodes,
+          {
+            opacity: 0,
+            y: 18,
+            filter: "blur(4px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.96,
+            stagger: 0.075,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: listRef.current,
+              start: "top 84%",
+              once: true,
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [shouldReduceMotion]);
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby="before-you-sail-title"
+      className="
+        relative
+        overflow-hidden
+        bg-[#F4F5F2]
+        py-[84px]
+        text-[#2D3C68]
+        md:py-[124px]
+      "
+      style={{
+        backgroundColor: "#F4F5F2",
+        colorScheme: "light",
+      }}
+    >
+      {/* SOFT NAVY SURFACE */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 84% 16%, rgba(45,60,104,0.045) 0%, rgba(45,60,104,0) 48%)",
+        }}
+      />
+
+      {/* LOWER DEPTH */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+        style={{
+          background:
+            "radial-gradient(circle at 10% 86%, rgba(45,60,104,0.038) 0%, rgba(45,60,104,0) 54%)",
+        }}
+      />
+
+      {/* GRAIN */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-[-10%]
+          opacity-[0.022]
+          mix-blend-soft-light
+        "
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/dombq6plz/image/upload/v1747227718/noise_t0x7vx.png')",
+        }}
+      />
+
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          grid
+          max-w-[1280px]
+          grid-cols-1
+          gap-12
+          px-6
+          md:grid-cols-12
+          md:gap-10
+          md:px-10
+          lg:gap-14
+          lg:px-14
+        "
+      >
+        {/* INTRO */}
+        <div
+          ref={introRef}
+          className="
+            md:col-span-4
+            lg:col-span-4
+          "
+        >
+          <p
+            className="
+              sail-reveal
+              text-[10px]
+              uppercase
+              tracking-[0.34em]
+              text-[#2D3C68]/42
+              md:text-[11px]
+            "
+          >
+            Before You Sail
+          </p>
+
+          <h2
+            id="before-you-sail-title"
+            className="
+              sail-reveal
+              mt-7
+              max-w-[11ch]
+              font-[Gambarino]
+              text-[34px]
+              leading-[1.04]
+              tracking-[-0.038em]
+              text-[#2D3C68]
+              sm:text-[40px]
+              md:text-[clamp(42px,3.6vw,52px)]
+            "
+          >
+            A few practical notes
+          </h2>
+ 
+        </div>
+
+        {/* PRACTICAL LIST */}
+        <div
+          ref={listRef}
+          className="
+            md:col-span-7
+            md:col-start-6
+            lg:col-span-7
+            lg:col-start-6
+          "
+        >
+          <div className="border-t border-[#2D3C68]/10">
+            {QUESTIONS.map((item, index) => {
+              const number = String(index + 1).padStart(2, "0");
+
+              return (
+                <article
+                  key={item.question}
+                  className="
+                    sail-question
+                    border-b
+                    border-[#2D3C68]/10
+                    py-8
+                    md:py-9
+                  "
+                >
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      gap-4
+                      md:grid-cols-12
+                      md:gap-8
+                    "
+                  >
+                    <div
+                      className="
+                        md:col-span-2
+                        md:pt-[3px]
+                      "
+                    >
+                      <p
+                        className="
+                          text-[10px]
+                          uppercase
+                          tracking-[0.28em]
+                          text-[#2D3C68]/34
+                        "
+                      >
+                        {number}
+                      </p>
+                    </div>
+
+                    <div className="md:col-span-4">
+                      <h3
+                        className="
+                          max-w-[28ch]
+                          text-[15px]
+                          leading-[1.45]
+                          tracking-[-0.01em]
+                          text-[#2D3C68]/88
+                          md:text-[16px]
+                        "
+                      >
+                        {item.question}
+                      </h3>
+                    </div>
+
+                    <div className="md:col-span-6">
+                      <p
+                        className="
+                          max-w-[560px]
+                          text-[14px]
+                          leading-[1.82]
+                          text-[#2D3C68]/62
+                          md:text-[15px]
+                        "
+                      >
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* BRIDGE OUT */}
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          inset-x-0
+          bottom-0
+          h-[88px]
+          md:h-[112px]
+        "
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(244,245,242,0) 0%, rgba(45,60,104,0.035) 100%)",
+        }}
+      />
+    </section>
+  );
+}
 
 function AboutOrigin() {
   const sectionRef = useRef(null);

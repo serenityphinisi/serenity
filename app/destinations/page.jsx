@@ -36,55 +36,67 @@ function Hero() {
   const pathRefD = useRef(null);
   const { stage } = usePageTransition();
   const hasPlayedEntranceRef = useRef(false);
+  const entranceTlRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+    };
+  }, []);
  
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- 
-    const ctx = gsap.context(() => {
- 
-      if (pathRefD.current) {
-        const len = pathRefD.current.getTotalLength();
+    const path = pathRefD.current;
 
-        if (stage === "covering") {
-          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: len });
-          return;
-        }
+    if (!path) return;
 
-        if (hasPlayedEntranceRef.current) {
-          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
-          return;
-        }
+    const len = path.getTotalLength();
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
 
-        if (reduce) {
-          gsap.set(pathRefD.current, { strokeDasharray: len, strokeDashoffset: 0 });
-          hasPlayedEntranceRef.current = true;
-          return;
-        }
-      }
-
-      if (reduce) {
-        return;
-      }
- 
-      const mm = gsap.matchMedia();
- 
-      // Desktop only — mobile has no route line
-      mm.add('(min-width: 768px)', () => {
-        const path = pathRefD.current;
-        if (!path) return;
-        const len = path.getTotalLength();
-        gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
-        gsap.to(path, {
-          strokeDashoffset: 0,
-          duration: 10.4,
-          ease: 'none',
-        });
-        hasPlayedEntranceRef.current = true;
+    if (stage === "covering") {
+      entranceTlRef.current?.kill();
+      entranceTlRef.current = null;
+      gsap.set(path, {
+        strokeDasharray: len,
+        strokeDashoffset: len,
+        opacity: 1,
       });
- 
+      return;
+    }
+
+    if (hasPlayedEntranceRef.current) {
+      gsap.set(path, {
+        strokeDasharray: len,
+        strokeDashoffset: 0,
+        opacity: 1,
+      });
+      return;
+    }
+
+    if (reduce || !isDesktop) {
+      gsap.set(path, {
+        strokeDasharray: len,
+        strokeDashoffset: 0,
+        opacity: 1,
+      });
+      hasPlayedEntranceRef.current = true;
+      return;
+    }
+
+    hasPlayedEntranceRef.current = true;
+    entranceTlRef.current?.kill();
+    gsap.set(path, {
+      strokeDasharray: len,
+      strokeDashoffset: len,
+      opacity: 1,
     });
- 
-    return () => ctx.revert();
+    entranceTlRef.current = gsap.timeline();
+    entranceTlRef.current.to(path, {
+      strokeDashoffset: 0,
+      duration: 10.4,
+      ease: "none",
+    });
   }, [stage]);
  
   return (

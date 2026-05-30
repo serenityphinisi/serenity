@@ -1,37 +1,64 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import Providers from "./providers";
+import { SITE_BRAND, SITE_CONTACT } from "@/lib/siteConfig";
 
 import Navbar from "../components/Navbar";
 
 import { MessageCircle } from "lucide-react";
 
+const DEFAULT_TITLE =
+  "Serenity Phinisi — Intimate Yacht Journeys Across Indonesia";
+
+const DEFAULT_DESCRIPTION =
+  "Private phinisi yacht journeys through Indonesia’s most remarkable waters, from Komodo to Raja Ampat.";
+
 export const metadata = {
+  metadataBase: new URL(SITE_BRAND.url),
+
   title: {
-    default:
-      "Serenity Phinisi — Intimate Yacht Journeys Across Indonesia",
+    default: DEFAULT_TITLE,
     template: "%s | Serenity Phinisi",
   },
 
-  description:
-    "A contemporary phinisi built in South Sulawesi for intimate ocean adventures through Raja Ampat and Komodo with only twelve guests aboard.",
+  description: DEFAULT_DESCRIPTION,
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: SITE_BRAND.name,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
+
+  twitter: {
+    card: "summary",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 function WhatsAppButton() {
   return (
     <a
-      href="https://wa.me/6281234567890"
+      href={SITE_CONTACT.whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contact Serenity via WhatsApp"
@@ -113,10 +140,7 @@ function WhatsAppButton() {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
+    <html lang="en">
       <body
         className="
           bg-[#F4F5F2]

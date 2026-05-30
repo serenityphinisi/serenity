@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence,useInView, useReducedMotion } from "framer-motion";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
+import { SITE_CONTACT } from "@/lib/siteConfig";
 
 
 import Footer from '../../components/Footer'
@@ -3049,7 +3050,7 @@ function FinalCTA() {
             </p>
 
             <a
-              href="mailto:hello@serenityphinisi.com"
+              href={SITE_CONTACT.primaryEmailHref}
               style={{
                 width: 'fit-content',
                 fontFamily: 'Switzer, sans-serif',
@@ -3067,7 +3068,7 @@ function FinalCTA() {
                 e.currentTarget.style.opacity = '0.72'
               }}
             >
-              hello@serenityphinisi.com
+              {SITE_CONTACT.primaryEmail}
             </a>
           </div>
 

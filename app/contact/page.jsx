@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence,useInView, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { usePageTransition } from "@/components/PageTransitionProvider";
+import { SITE_CONTACT, SITE_SOCIAL } from "@/lib/siteConfig";
 
 
 import Footer from '../../components/Footer'
@@ -22,10 +23,12 @@ export default function Page() {
 }
 
 function ContactHero() {
-  const lineRef     = useRef(null);
+  const currentRef = useRef(null);
+  const labelRef = useRef(null);
   const headlineRef = useRef(null);
-  const supportRef  = useRef(null);
+
   const { stage } = usePageTransition();
+
   const hasPlayedEntranceRef = useRef(false);
   const entranceTlRef = useRef(null);
 
@@ -35,145 +38,375 @@ function ContactHero() {
       entranceTlRef.current = null;
     };
   }, []);
- 
-  useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (hasPlayedEntranceRef.current) return;
+  useEffect(() => {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const ease = [0.22, 1, 0.36, 1];
+
+    const currentPath = currentRef.current;
+    const contentTargets = [labelRef.current, headlineRef.current].filter(
+      Boolean
+    );
+
+    const resetPath = () => {
+      if (!currentPath) return;
+
+      const length = currentPath.getTotalLength();
+
+      gsap.set(currentPath, {
+        strokeDasharray: length,
+        strokeDashoffset: length,
+        opacity: 0,
+      });
+    };
+
+    const resetContent = () => {
+      if (labelRef.current) {
+        gsap.set(labelRef.current, {
+          opacity: 0,
+          y: 14,
+          filter: "blur(6px)",
+        });
+      }
+
+      if (headlineRef.current) {
+        gsap.set(headlineRef.current, {
+          opacity: 0,
+          y: 32,
+          filter: "blur(10px)",
+        });
+      }
+    };
 
     if (stage === "covering") {
       entranceTlRef.current?.kill();
       entranceTlRef.current = null;
-      gsap.set(lineRef.current, { scaleX: 0, transformOrigin: 'left center' });
-      gsap.set(headlineRef.current, { opacity: 0, y: 24, filter: 'blur(8px)' });
-      gsap.set(supportRef.current, { opacity: 0, y: 20, filter: 'blur(6px)' });
+
+      resetPath();
+      resetContent();
+
       return;
     }
 
+    if (hasPlayedEntranceRef.current) return;
+
     hasPlayedEntranceRef.current = true;
- 
+
     if (reduce) {
-      gsap.set([lineRef.current, headlineRef.current, supportRef.current], {
-        opacity: 1, y: 0, scaleX: 1, filter: 'blur(0px)',
+      if (currentPath) {
+        gsap.set(currentPath, {
+          opacity: 1,
+          strokeDashoffset: 0,
+        });
+      }
+
+      gsap.set(contentTargets, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
       });
+
       return;
     }
- 
-    gsap.set(lineRef.current,     { scaleX: 0, transformOrigin: 'left center' });
-    gsap.set(headlineRef.current, { opacity: 0, y: 28, filter: 'blur(8px)' });
-    gsap.set(supportRef.current,  { opacity: 0, y: 20, filter: 'blur(6px)' });
- 
+
+    resetPath();
+    resetContent();
+
     entranceTlRef.current?.kill();
-    entranceTlRef.current = gsap.timeline({ delay: 0.3 });
- 
-    entranceTlRef.current.to(lineRef.current, {
-      scaleX:   1,
-      duration: 0.5,
-      ease:     'power2.out',
-    })
-    .to(headlineRef.current, {
-      opacity:  1,
-      y:        0,
-      filter:   'blur(0px)',
-      duration: 1.05,
-      ease:     [0.22, 1, 0.36, 1],
-    }, '-=0.15')
-    .to(supportRef.current, {
-      opacity:  1,
-      y:        0,
-      filter:   'blur(0px)',
-      duration: 0.9,
-      ease:     [0.22, 1, 0.36, 1],
-    }, '-=0.65');
+
+    entranceTlRef.current = gsap.timeline({
+      delay: 0.26,
+      defaults: {
+        ease,
+      },
+    });
+
+    if (currentPath) {
+      entranceTlRef.current.to(
+        currentPath,
+        {
+          strokeDashoffset: 0,
+          opacity: 1,
+          duration: 1.22,
+        },
+        0
+      );
+    }
+
+    entranceTlRef.current
+      .to(
+        labelRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.82,
+        },
+        0.12
+      )
+      .to(
+        headlineRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1.16,
+        },
+        0.22
+      );
+
+    entranceTlRef.current.eventCallback("onComplete", () => {
+      if (currentPath) {
+        gsap.set(currentPath, {
+          opacity: 1,
+          strokeDashoffset: 0,
+        });
+      }
+
+      gsap.set(contentTargets, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+      });
+    });
   }, [stage]);
- 
+
   return (
     <section
-      className="relative min-h-[55vh] flex items-end overflow-hidden"
-      style={{ backgroundColor: '#2D3C68' }}
+      className="
+        relative
+        flex
+        min-h-[60vh]
+        items-end
+        overflow-hidden
+        bg-[#2D3C68]
+        text-[#F4F5F2]
+        md:min-h-[64vh]
+      "
     >
-      {/* ── Atmospheric layers — cool section ── */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: [
-            'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.04), transparent 55%)',
-            'radial-gradient(circle at 68% 22%, rgba(176,141,87,0.06), transparent 50%)',
-          ].join(', '),
-        }}
-      />
- 
-      {/* ── Content ── */}
-      <div className="relative w-full px-6 md:px-10 lg:px-14 pb-14 md:pb-20">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 md:gap-24">
- 
-            {/* LEFT — Headline */}
-            <div className="flex-1 max-w-[700px]">
-              <div
-                ref={lineRef}
-                aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(
+                circle at 34% 42%,
+                rgba(244,245,242,0.055),
+                transparent 54%
+              ),
+              radial-gradient(
+                circle at 74% 18%,
+                rgba(176,141,87,0.08),
+                transparent 42%
+              ),
+              linear-gradient(
+                to bottom,
+                rgba(45,60,104,1) 0%,
+                rgba(34,48,83,1) 52%,
+                rgba(24,34,60,1) 100%
+              )
+            `,
+          }}
+        />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(26,26,26,0.06), rgba(26,26,26,0.34))",
+          }}
+        />
+
+        <div
+          className="
+            absolute
+            left-[-12%]
+            top-[-24%]
+            h-[52vw]
+            w-[52vw]
+            rounded-full
+            blur-3xl
+          "
+          style={{
+            background: "rgba(244,245,242,0.032)",
+          }}
+        />
+
+        <div
+          className="
+            absolute
+            bottom-[-28%]
+            right-[-14%]
+            h-[42vw]
+            w-[42vw]
+            rounded-full
+            blur-3xl
+          "
+          style={{
+            background: "rgba(176,141,87,0.07)",
+          }}
+        />
+
+        <svg
+          className="
+            absolute
+            inset-0
+            h-full
+            w-full
+          "
+          viewBox="0 0 1600 760"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient
+              id="contactCurrentPrimary"
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="0"
+            >
+              <stop offset="0%" stopColor="#B08D57" stopOpacity="0" />
+              <stop offset="20%" stopColor="#B08D57" stopOpacity="0.1" />
+              <stop offset="50%" stopColor="#B08D57" stopOpacity="0.46" />
+              <stop offset="80%" stopColor="#B08D57" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#B08D57" stopOpacity="0" />
+            </linearGradient>
+
+            <filter id="contactCurrentGlow">
+              <feGaussianBlur stdDeviation="1.25" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <path
+            ref={currentRef}
+            d="M-120 520 C250 400, 470 610, 760 500 S1160 330, 1500 470 S1740 600, 1880 500"
+            fill="none"
+            stroke="url(#contactCurrentPrimary)"
+            strokeWidth="1.15"
+            strokeLinecap="round"
+            filter="url(#contactCurrentGlow)"
+          />
+        </svg>
+
+        <div
+          className="
+            absolute
+            inset-[-8%]
+            opacity-[0.014]
+            mix-blend-soft-light
+          "
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at center, rgba(244,245,242,0.75) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          }}
+        />
+      </div>
+
+      <div
+        className="
+          relative
+          z-10
+          w-full
+          px-6
+          pb-20
+          pt-[148px]
+          md:px-10
+          md:pb-24
+          md:pt-[168px]
+          lg:px-14
+        "
+      >
+        <div className="mx-auto w-full max-w-[1280px]">
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-12
+              md:items-end
+              md:gap-8
+            "
+          >
+            <div className="md:col-span-10">
+              <p
+                ref={labelRef}
+                className="mb-5 uppercase"
                 style={{
-                  height:          '1px',
-                  width:           '64px',
-                  backgroundColor: '#B08D57',
-                  marginBottom:    '24px',
+                  fontFamily: "Switzer, sans-serif",
+                  fontWeight: 400,
+                  fontSize: "10px",
+                  letterSpacing: "0.32em",
+                  color: "rgba(244,245,242,0.45)",
                 }}
-              />
+              >
+                Inquiry
+              </p>
+
               <h1
                 ref={headlineRef}
                 style={{
-                  fontFamily:    'Gambarino',
-                  fontSize:      'clamp(38px, 5vw, 64px)',
-                  lineHeight:    1.02,
-                  letterSpacing: '-0.03em',
-                  color:         '#F4F5F2',
-                  margin:        0,
+                  fontFamily: "Gambarino, serif",
+                  fontSize: "clamp(42px, 5.6vw, 74px)",
+                  lineHeight: 1.02,
+                  letterSpacing: "-0.04em",
+                  color: "#F4F5F2",
+                  margin: 0,
+                  maxWidth: "880px",
                 }}
               >
-                Your voyage begins<br />
-                with a conversation
+                Begin with the route, and we shape the rest.
               </h1>
             </div>
- 
-            {/* RIGHT — Human reassurance */}
-            <div ref={supportRef} style={{ maxWidth: '220px' }}>
-              <p style={{
-                fontFamily:    'Switzer',
-                fontWeight:    400,
-                fontSize:      '10px',
-                letterSpacing: '0.28em',
-                textTransform: 'uppercase',
-                color:         'rgba(244,245,242,0.45)',
-                marginBottom:  '12px',
-              }}>
-                Guest Inquiries
-              </p>
-              <p style={{
-                fontFamily: 'Switzer',
-                fontWeight: 300,
-                fontSize:   '13px',
-                lineHeight: 1.78,
-                color:      'rgba(244,245,242,0.65)',
-              }}>
-                Alexandra Wira personally reviews
-                every inquiry and responds
-                within 24 hours.
-              </p>
-            </div>
- 
           </div>
         </div>
       </div>
- 
-      {/* ── Atmospheric bridge → sail-white form below ── */}
+
       <div
         aria-hidden="true"
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        className="
+          pointer-events-none
+          absolute
+          bottom-0
+          left-0
+          right-0
+          z-[4]
+        "
         style={{
-          height:     '80px',
-          background: 'linear-gradient(to bottom, transparent, rgba(244,245,242,0.05) 70%, rgba(244,245,242,0.12) 100%)',
+          height: "132px",
+          background:
+            "linear-gradient(to bottom, transparent, rgba(244,245,242,0.055) 58%, rgba(244,245,242,0.16) 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="
+          pointer-events-none
+          absolute
+          bottom-0
+          left-6
+          right-6
+          z-[5]
+          h-px
+          md:left-10
+          md:right-10
+          lg:left-14
+          lg:right-14
+        "
+        style={{
+          background:
+            "linear-gradient(to right, transparent, rgba(176,141,87,0.24), transparent)",
         }}
       />
     </section>
@@ -193,7 +426,11 @@ function ContactHero() {
    const GUESTS_OPTS  = ["1–4 guests", "5–8 guests", "9–12 guests"];
     
    // Required field keys — name, email, message minimum
-   const REQUIRED = ["name", "email", "message"];
+const REQUIRED = ["name", "email", "message"];
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
     
    /* ============================================================
       TEXT INPUT
@@ -466,18 +703,18 @@ function ContactHero() {
      const contacts = [
        {
          label: "Email",
-         value: "hello@serenityphinisi.com",
-         href:  "mailto:hello@serenityphinisi.com",
+         value: SITE_CONTACT.primaryEmail,
+         href:  SITE_CONTACT.primaryEmailHref,
        },
        {
          label: "WhatsApp",
-         value: "+62 xxx xxxx xxxx", // REPLACE with actual number
-         href:  "https://wa.me/62xxxxxxxxxx",
+         value: SITE_CONTACT.whatsappDisplay,
+         href:  SITE_CONTACT.whatsappHref,
        },
        {
          label: "Instagram",
-         value: "@serenity.phinisi",
-         href:  "https://instagram.com/serenity.phinisi",
+         value: SITE_SOCIAL.instagramHandle,
+         href:  SITE_SOCIAL.instagramHref,
        },
      ];
     
@@ -561,10 +798,13 @@ function ContactHero() {
        guests:      "",
        dates:       "",
        message:     "",
+       website:     "",
      });
     
      const [submitted,       setSubmitted]       = useState(false);
      const [submitAttempted, setSubmitAttempted] = useState(false);
+     const [submitting,      setSubmitting]      = useState(false);
+     const [serverError,     setServerError]     = useState("");
     
      const sectionRef = useRef(null);
      const triggerRef = useRef(null);
@@ -573,7 +813,9 @@ function ContactHero() {
      const set    = (key) => (val) => setFields((f) => ({ ...f, [key]: val }));
      const addRef = (i)   => (el)  => { rowRefs.current[i] = el; };
     
-     const hasErrors = REQUIRED.some((k) => !fields[k]);
+     const missingRequired = REQUIRED.some((k) => !fields[k].trim());
+     const invalidEmail    = fields.email.trim() !== "" && !isValidEmail(fields.email.trim());
+     const hasErrors       = missingRequired || invalidEmail;
     
      /* ── SUMBA IKAT keyframe injection ─── */
      useEffect(() => {
@@ -617,12 +859,47 @@ function ContactHero() {
      }, []);
     
      /* ── SUBMIT ───────────────────────── */
-     const handleSubmit = (e) => {
+     const handleSubmit = async (e) => {
        e.preventDefault();
        setSubmitAttempted(true);
+       setServerError("");
        if (hasErrors) return;
-       // TODO: replace with actual API call (e.g. fetch POST to /api/contact)
-       setSubmitted(true);
+
+       setSubmitting(true);
+
+       try {
+         const response = await fetch("/api/contact", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify(fields),
+         });
+
+         let data = null;
+
+         try {
+           data = await response.json();
+         } catch {
+           data = null;
+         }
+
+         if (!response.ok || !data?.ok) {
+           setServerError(
+             data?.message ||
+               "We could not send your enquiry. Please email us directly."
+           );
+           return;
+         }
+
+         setSubmitted(true);
+       } catch {
+         setServerError(
+           "We could not send your enquiry. Please email us directly."
+         );
+       } finally {
+         setSubmitting(false);
+       }
      };
     
      return (
@@ -679,6 +956,16 @@ function ContactHero() {
                    transition={{ duration: 0.4, ease }}
                    noValidate
                  >
+                   <input
+                     type="text"
+                     name="website"
+                     value={fields.website}
+                     onChange={(e) => set("website")(e.target.value)}
+                     tabIndex={-1}
+                     autoComplete="off"
+                     aria-hidden="true"
+                     className="hidden"
+                   />
                    <div className="flex flex-col gap-8">
     
                      {/* ROW 1 — Full Name + Email */}
@@ -702,7 +989,7 @@ function ContactHero() {
                          placeholder="your@email.com"
                          type="email"
                          required
-                         error={submitAttempted}
+                         error={submitAttempted && (!fields.email.trim() || invalidEmail)}
                          autoComplete="email"
                        />
                      </div>
@@ -713,7 +1000,7 @@ function ContactHero() {
                          label="Phone or WhatsApp — optional"
                          value={fields.phone}
                          onChange={set("phone")}
-                         placeholder="+62 xxx xxxx xxxx"
+                        placeholder="Your phone or WhatsApp number"
                          type="tel"
                          autoComplete="tel"
                        />
@@ -777,6 +1064,7 @@ function ContactHero() {
                      <div ref={addRef(6)} className="pt-2">
                        <button
                          type="submit"
+                         disabled={submitting}
                          className="
                            font-[Switzer] font-light
                            text-[11px] uppercase tracking-[0.28em]
@@ -786,16 +1074,17 @@ function ContactHero() {
                            transition-colors duration-500
                            hover:bg-[#B08D57]
                            cursor-pointer
+                           disabled:opacity-60 disabled:cursor-not-allowed
                            border-none
                            outline-none
                          "
                        >
-                         Send Enquiry
+                         {submitting ? "Sending" : "Send Enquiry"}
                        </button>
     
                        {/* Validation feedback — only shows after submit attempt */}
                        <AnimatePresence>
-                         {submitAttempted && hasErrors && (
+                         {submitAttempted && missingRequired && (
                            <motion.p
                              initial={{ opacity: 0, y: -6 }}
                              animate={{ opacity: 1, y: 0  }}
@@ -809,6 +1098,42 @@ function ContactHero() {
                              "
                            >
                              Please fill in your name, email, and message.
+                           </motion.p>
+                         )}
+                       </AnimatePresence>
+                       <AnimatePresence>
+                         {submitAttempted && !missingRequired && invalidEmail && (
+                           <motion.p
+                             initial={{ opacity: 0, y: -6 }}
+                             animate={{ opacity: 1, y: 0  }}
+                             exit={{    opacity: 0         }}
+                             transition={{ duration: 0.35, ease }}
+                             className="
+                               font-[Switzer] font-light
+                               text-[12px] tracking-[0.03em]
+                               text-[#C66A4A]
+                               mt-4
+                             "
+                           >
+                             Please enter a valid email address.
+                           </motion.p>
+                         )}
+                       </AnimatePresence>
+                       <AnimatePresence>
+                         {serverError && (
+                           <motion.p
+                             initial={{ opacity: 0, y: -6 }}
+                             animate={{ opacity: 1, y: 0  }}
+                             exit={{    opacity: 0         }}
+                             transition={{ duration: 0.35, ease }}
+                             className="
+                               font-[Switzer] font-light
+                               text-[12px] tracking-[0.03em]
+                               text-[#C66A4A]
+                               mt-4
+                             "
+                           >
+                             {serverError}
                            </motion.p>
                          )}
                        </AnimatePresence>
