@@ -25,7 +25,7 @@ const NAV_ITEMS = [
     label: "Home",
     href: "/",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869679/ChatGPT_Image_Apr_22_2026_09_52_18_PM_ylbg4q.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331037/ChatGPT_Image_Jun_1_2026_08_27_00_PM_st80e6.png",
     // REPLACE → vessel exterior, wide ocean shot
   },
 
@@ -49,7 +49,7 @@ const NAV_ITEMS = [
     label: "Destinations",
     href: "/destinations",
     image:
-      "https://images.unsplash.com/photo-1537956965359-7573183d1f57?q=80&w=1600&fit=crop",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331033/ChatGPT_Image_Jun_1_2026_09_10_09_PM_jyycnr.png",
     // REPLACE → aerial Labuan Bajo or Raja Ampat landscape
   },
 
@@ -57,7 +57,7 @@ const NAV_ITEMS = [
     label: "Rates & Schedule",
     href: "/rates-and-schedule",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png",
     // REPLACE → aerial vessel shot, route context
   },
 
@@ -65,7 +65,7 @@ const NAV_ITEMS = [
     label: "About",
     href: "/about",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1778534689/ChatGPT_Image_May_12_2026_04_15_19_AM_h2oc4i.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331026/ChatGPT_Image_Jun_1_2026_11_20_51_PM_ycf9qo.png",
     // REPLACE → crew candid, golden hour on deck
   },
 
@@ -73,7 +73,7 @@ const NAV_ITEMS = [
     label: "Contact",
     href: "/contact",
     image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1778524009/ChatGPT_Image_May_12_2026_01_25_22_AM_rultco.png",
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1780142533/38140754-66e0-4ab7-9cec-c6e690dd7ed6_1_ephzjz.png",
     // REPLACE → horizon, late light, open ocean
   },
 ];

@@ -95,7 +95,7 @@ function Hero() {
       https://www.pexels.com/download/video/29525835/
     */
 
-    src: "https://res.cloudinary.com/dombq6plz/video/upload/v1779878587/taaser_jyqk2t.mp4",
+    src: "https://res.cloudinary.com/dombq6plz/video/upload/v1780307478/13763834_3840_2160_30fps_1_odhftg.mp4",
   };
 
   const ease = [0.22, 1, 0.36, 1];
@@ -618,7 +618,7 @@ function Introduction() {
         left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_05_17_PM_ajh5dz.png",
 
         center:
-          "https://celestiayacht.com/api/media/file/3efc261c8065751c0365a79b3dcc54be.webp",
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1780319407/ChatGPT_Image_Jun_1_2026_08_01_23_PM_u0jsxp.png",
 
         right:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_49_30_PM_mcgmc4.png",
@@ -1334,10 +1334,10 @@ function Experiences() {
   const config = useMemo(
     () => ({
       images: {
-        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1778509540/ChatGPT_Image_May_11_2026_09_24_55_PM_1_bc9y57.png",
+        left: "https://res.cloudinary.com/dombq6plz/image/upload/v1780319408/ChatGPT_Image_Jun_1_2026_08_07_55_PM_cgzblf.png",
 
         right:
-          "https://res.cloudinary.com/dombq6plz/image/upload/v1778425837/ChatGPT_Image_May_10_2026_10_10_05_PM_1_dv3ebm.png",
+          "https://res.cloudinary.com/dombq6plz/image/upload/v1780319407/ChatGPT_Image_Jun_1_2026_08_01_16_PM_tosr0g.png",
       },
 
       text: {
@@ -1742,726 +1742,726 @@ function Experiences() {
   );
 }
 
-function Destinations() {
-  const sectionRef = useRef(null);
+  function Destinations() {
+    const sectionRef = useRef(null);
 
-  const leftClipRef = useRef(null);
-  const rightClipRef = useRef(null);
+    const leftClipRef = useRef(null);
+    const rightClipRef = useRef(null);
 
-  const leftImgRef = useRef(null);
-  const rightImgRef = useRef(null);
+    const leftImgRef = useRef(null);
+    const rightImgRef = useRef(null);
 
-  const seamRef = useRef(null);
+    const seamRef = useRef(null);
 
-  const eyebrowRef = useRef(null);
-  const leftContentRef = useRef(null);
-  const rightContentRef = useRef(null);
-  const ctaRef = useRef(null);
+    const eyebrowRef = useRef(null);
+    const leftContentRef = useRef(null);
+    const rightContentRef = useRef(null);
+    const ctaRef = useRef(null);
 
-  const DESTINATIONS = [
-    {
-      name: ["Raja", "Ampat"],
-      sub: "West Papua · Coral reefs and limestone passages",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
-    },
-    {
-      name: ["Labuan", "Bajo"],
-      sub: "East Nusa Tenggara · Volcanic islands and open sea",
-      img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
-    },
-  ];
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    const mm = gsap.matchMedia();
-
-    mm.add(
+    const DESTINATIONS = [
       {
-        mobile: "(max-width: 767px)",
-        desktop: "(min-width: 768px)",
+        name: ["Raja", "Ampat"],
+        sub: "West Papua · Coral reefs and limestone passages",
+        img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
       },
-      (context) => {
-        const { mobile } = context.conditions;
+      {
+        name: ["Labuan", "Bajo"],
+        sub: "East Nusa Tenggara · Volcanic islands and open sea",
+        img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
+      },
+    ];
 
-        const SEAM_TOP = mobile ? 63 : 53.5;
-        const SEAM_BOTTOM = mobile ? 49 : 49.5;
+    useEffect(() => {
+      if (!sectionRef.current) return;
 
-        const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
-        const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
+      const mm = gsap.matchMedia();
 
-        const setSeamCoordinates = () => {
-          if (!seamRef.current) return;
+      mm.add(
+        {
+          mobile: "(max-width: 767px)",
+          desktop: "(min-width: 768px)",
+        },
+        (context) => {
+          const { mobile } = context.conditions;
 
-          seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
-          seamRef.current.setAttribute("y1", "0%");
-          seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
-          seamRef.current.setAttribute("y2", "100%");
-        };
+          const SEAM_TOP = mobile ? 63 : 53.5;
+          const SEAM_BOTTOM = mobile ? 49 : 49.5;
 
-        setSeamCoordinates();
+          const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
 
-        if (reduceMotion) {
-          gsap.set(leftClipRef.current, {
-            clipPath: LEFT_CLIP,
-          });
+          const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
 
-          gsap.set(rightClipRef.current, {
-            clipPath: RIGHT_CLIP,
-          });
+          const setSeamCoordinates = () => {
+            if (!seamRef.current) return;
 
-          gsap.set([leftImgRef.current, rightImgRef.current], {
-            scale: 1,
-            y: 0,
-          });
+            seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
+            seamRef.current.setAttribute("y1", "0%");
+            seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
+            seamRef.current.setAttribute("y2", "100%");
+          };
 
-          gsap.set(seamRef.current, {
-            opacity: mobile ? 0.08 : 0.065,
-            scaleY: 1,
-            transformOrigin: "center center",
-          });
+          setSeamCoordinates();
 
-          gsap.set(
-            [
-              eyebrowRef.current,
-              leftContentRef.current,
-              rightContentRef.current,
-              ctaRef.current,
-            ].filter(Boolean),
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-            }
-          );
-
-          return;
-        }
-
-        const ctx = gsap.context(() => {
-          gsap.set(leftClipRef.current, {
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-          });
-
-          gsap.set(rightClipRef.current, {
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
-          });
-
-          gsap.set([leftImgRef.current, rightImgRef.current], {
-            scale: mobile ? 1.12 : 1.085,
-            y: 0,
-            force3D: true,
-          });
-
-          gsap.set(seamRef.current, {
-            opacity: 0,
-            scaleY: 0,
-            transformOrigin: "center center",
-          });
-
-          gsap.set(eyebrowRef.current, {
-            opacity: 0,
-            y: 10,
-          });
-
-          gsap.set(leftContentRef.current, {
-            opacity: 0,
-            x: mobile ? -18 : -28,
-            y: mobile ? 10 : 0,
-          });
-
-          gsap.set(rightContentRef.current, {
-            opacity: 0,
-            x: mobile ? 18 : 28,
-            y: mobile ? 14 : 0,
-          });
-
-          gsap.set(ctaRef.current, {
-            opacity: 0,
-            y: 12,
-          });
-
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: mobile ? "+=125%" : "+=155%",
-              scrub: mobile ? 0.85 : 1.1,
-              pin: true,
-              pinSpacing: true,
-            },
-          });
-
-          /*
-            PHASE 1 — SPLIT REVEAL
-          */
-
-          tl.to(
-            leftClipRef.current,
-            {
+          if (reduceMotion) {
+            gsap.set(leftClipRef.current, {
               clipPath: LEFT_CLIP,
-              duration: 1,
-              ease: "power2.out",
-            },
-            0
-          );
+            });
 
-          tl.to(
-            rightClipRef.current,
-            {
+            gsap.set(rightClipRef.current, {
               clipPath: RIGHT_CLIP,
-              duration: 1,
-              ease: "power2.out",
-            },
-            mobile ? 0.16 : 0.025
-          );
+            });
 
-          tl.to(
-            leftImgRef.current,
-            {
-              scale: mobile ? 1.035 : 1.012,
-              duration: 1.15,
-              ease: "power1.out",
-            },
-            0
-          );
+            gsap.set([leftImgRef.current, rightImgRef.current], {
+              scale: 1,
+              y: 0,
+            });
 
-          tl.to(
-            rightImgRef.current,
-            {
-              scale: mobile ? 1.04 : 1.02,
-              duration: 1.18,
-              ease: "power1.out",
-            },
-            mobile ? 0.08 : 0
-          );
-
-          /*
-            PHASE 2 — SEAM + EYEBROW
-          */
-
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.1 : 0.085,
+            gsap.set(seamRef.current, {
+              opacity: mobile ? 0.08 : 0.065,
               scaleY: 1,
-              duration: 0.72,
-              ease: "sine.inOut",
-            },
-            mobile ? 0.4 : 0.44
-          );
+              transformOrigin: "center center",
+            });
 
-          tl.to(
-            eyebrowRef.current,
-            {
-              opacity: 1,
+            gsap.set(
+              [
+                eyebrowRef.current,
+                leftContentRef.current,
+                rightContentRef.current,
+                ctaRef.current,
+              ].filter(Boolean),
+              {
+                opacity: 1,
+                x: 0,
+                y: 0,
+              }
+            );
+
+            return;
+          }
+
+          const ctx = gsap.context(() => {
+            gsap.set(leftClipRef.current, {
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            });
+
+            gsap.set(rightClipRef.current, {
+              clipPath:
+                "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+            });
+
+            gsap.set([leftImgRef.current, rightImgRef.current], {
+              scale: mobile ? 1.12 : 1.085,
               y: 0,
-              duration: 0.65,
-              ease: "power2.out",
-            },
-            0.52
-          );
+              force3D: true,
+            });
 
-          /*
-            PHASE 3 — DESTINATION CONTENT
-          */
+            gsap.set(seamRef.current, {
+              opacity: 0,
+              scaleY: 0,
+              transformOrigin: "center center",
+            });
 
-          tl.to(
-            leftContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            mobile ? 0.58 : 0.76
-          );
+            gsap.set(eyebrowRef.current, {
+              opacity: 0,
+              y: 10,
+            });
 
-          tl.to(
-            rightContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            mobile ? 0.72 : 0.81
-          );
+            gsap.set(leftContentRef.current, {
+              opacity: 0,
+              x: mobile ? -18 : -28,
+              y: mobile ? 10 : 0,
+            });
 
-          /*
-            PHASE 4 — CTA
-          */
+            gsap.set(rightContentRef.current, {
+              opacity: 0,
+              x: mobile ? 18 : 28,
+              y: mobile ? 14 : 0,
+            });
 
-          tl.to(
-            ctaRef.current,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.65,
-              ease: "power3.out",
-            },
-            mobile ? 0.9 : 1.12
-          );
+            gsap.set(ctaRef.current, {
+              opacity: 0,
+              y: 12,
+            });
 
-          /*
-            PHASE 5 — ENVIRONMENTAL DRIFT
-            integrated into the pinned timeline
-          */
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top top",
+                end: mobile ? "+=125%" : "+=155%",
+                scrub: mobile ? 0.85 : 1.1,
+                pin: true,
+                pinSpacing: true,
+              },
+            });
 
-          tl.to(
-            leftImgRef.current,
-            {
-              y: mobile ? -18 : -26,
-              duration: 0.95,
-              ease: "none",
-            },
-            mobile ? 0.98 : 1.12
-          );
+            /*
+              PHASE 1 — SPLIT REVEAL
+            */
 
-          tl.to(
-            rightImgRef.current,
-            {
-              y: mobile ? -24 : -38,
-              duration: 0.95,
-              ease: "none",
-            },
-            mobile ? 1.02 : 1.12
-          );
+            tl.to(
+              leftClipRef.current,
+              {
+                clipPath: LEFT_CLIP,
+                duration: 1,
+                ease: "power2.out",
+              },
+              0
+            );
 
-          /*
-            PHASE 6 — SEAM RELEASE
-          */
+            tl.to(
+              rightClipRef.current,
+              {
+                clipPath: RIGHT_CLIP,
+                duration: 1,
+                ease: "power2.out",
+              },
+              mobile ? 0.16 : 0.025
+            );
 
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.055 : 0.04,
-              duration: 0.75,
-              ease: "sine.out",
-            },
-            mobile ? 1.08 : 1.2
-          );
-        }, sectionRef);
+            tl.to(
+              leftImgRef.current,
+              {
+                scale: mobile ? 1.035 : 1.012,
+                duration: 1.15,
+                ease: "power1.out",
+              },
+              0
+            );
 
-        return () => ctx.revert();
-      }
-    );
+            tl.to(
+              rightImgRef.current,
+              {
+                scale: mobile ? 1.04 : 1.02,
+                duration: 1.18,
+                ease: "power1.out",
+              },
+              mobile ? 0.08 : 0
+            );
 
-    return () => mm.revert();
-  }, []);
+            /*
+              PHASE 2 — SEAM + EYEBROW
+            */
 
-  return (
-    <section
-      ref={sectionRef}
-      className="
-        relative
-        w-full
-        overflow-hidden
-        bg-[#0B1322]
-      "
-    >
-      <div
+            tl.to(
+              seamRef.current,
+              {
+                opacity: mobile ? 0.1 : 0.085,
+                scaleY: 1,
+                duration: 0.72,
+                ease: "sine.inOut",
+              },
+              mobile ? 0.4 : 0.44
+            );
+
+            tl.to(
+              eyebrowRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.65,
+                ease: "power2.out",
+              },
+              0.52
+            );
+
+            /*
+              PHASE 3 — DESTINATION CONTENT
+            */
+
+            tl.to(
+              leftContentRef.current,
+              {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                duration: 0.9,
+                ease: "power3.out",
+              },
+              mobile ? 0.58 : 0.76
+            );
+
+            tl.to(
+              rightContentRef.current,
+              {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                duration: 0.9,
+                ease: "power3.out",
+              },
+              mobile ? 0.72 : 0.81
+            );
+
+            /*
+              PHASE 4 — CTA
+            */
+
+            tl.to(
+              ctaRef.current,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.65,
+                ease: "power3.out",
+              },
+              mobile ? 0.9 : 1.12
+            );
+
+            /*
+              PHASE 5 — ENVIRONMENTAL DRIFT
+              integrated into the pinned timeline
+            */
+
+            tl.to(
+              leftImgRef.current,
+              {
+                y: mobile ? -18 : -26,
+                duration: 0.95,
+                ease: "none",
+              },
+              mobile ? 0.98 : 1.12
+            );
+
+            tl.to(
+              rightImgRef.current,
+              {
+                y: mobile ? -24 : -38,
+                duration: 0.95,
+                ease: "none",
+              },
+              mobile ? 1.02 : 1.12
+            );
+
+            /*
+              PHASE 6 — SEAM RELEASE
+            */
+
+            tl.to(
+              seamRef.current,
+              {
+                opacity: mobile ? 0.055 : 0.04,
+                duration: 0.75,
+                ease: "sine.out",
+              },
+              mobile ? 1.08 : 1.2
+            );
+          }, sectionRef);
+
+          return () => ctx.revert();
+        }
+      );
+
+      return () => mm.revert();
+    }, []);
+
+    return (
+      <section
+        ref={sectionRef}
         className="
           relative
-          h-[100svh]
-          min-h-[620px]
+          w-full
           overflow-hidden
-          md:h-screen
-          md:min-h-[720px]
+          bg-[#0B1322]
         "
       >
-        {/* GLOBAL ATMOSPHERE */}
         <div
           className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[3]
-            bg-gradient-to-t
-            from-[#0B1322]/54
-            via-[#0B1322]/[0.06]
-            to-[#0B1322]/14
-            md:from-[#0B1322]/46
-            md:via-transparent
-            md:to-[#0B1322]/16
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — IN */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            top-0
-            z-[4]
-            h-[220px]
-            bg-gradient-to-b
-            from-[#F4F5F2]/10
-            via-[#F4F5F2]/[0.025]
-            to-transparent
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — OUT */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            bottom-0
-            z-[4]
-            h-[180px]
-            bg-gradient-to-b
-            from-transparent
-            via-[#F4F5F2]/[0.035]
-            to-[#F4F5F2]/10
-          "
-        />
-
-        {/* MOBILE RADIAL DEPTH */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[5]
-            md:hidden
+            relative
+            h-[100svh]
+            min-h-[620px]
+            overflow-hidden
+            md:h-screen
+            md:min-h-[720px]
           "
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
-        </div>
-
-        {/* LEFT CLIP */}
-        <div
-          ref={leftClipRef}
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-            willChange: "clip-path",
-          }}
-        >
+          {/* GLOBAL ATMOSPHERE */}
           <div
-            ref={leftImgRef}
-            className="absolute inset-0"
-            style={{
-              willChange: "transform",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <div className="absolute inset-x-0 -top-[10%] h-[120%]">
-              <Image
-                src={DESTINATIONS[0].img}
-                alt={DESTINATIONS[0].name.join(" ")}
-                fill
-                sizes="100vw"
-                draggable={false}
-                className="
-                  select-none
-                  object-cover
-                  object-center
-                "
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
-
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-r
-                from-[#0B1322]/22
-                via-[#0B1322]/[0.035]
-                to-transparent
-                md:from-[#0B1322]/14
-                md:via-transparent
-              "
-            />
-          </div>
-        </div>
-
-        {/* RIGHT CLIP */}
-        <div
-          ref={rightClipRef}
-          className="absolute inset-0 overflow-hidden"
-          style={{
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
-            willChange: "clip-path",
-          }}
-        >
-          <div
-            ref={rightImgRef}
-            className="absolute inset-0"
-            style={{
-              willChange: "transform",
-              backfaceVisibility: "hidden",
-            }}
-          >
-            <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
-              <Image
-                src={DESTINATIONS[1].img}
-                alt={DESTINATIONS[1].name.join(" ")}
-                fill
-                sizes="100vw"
-                draggable={false}
-                className="
-                  select-none
-                  object-cover
-                  object-center
-                "
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
-
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-l
-                from-[#0B1322]/24
-                via-[#0B1322]/[0.04]
-                to-transparent
-                md:from-[#0B1322]/16
-                md:via-transparent
-              "
-            />
-          </div>
-        </div>
-
-        {/* SEAM — SVG LINE MATCHES CLIP PATH */}
-        <svg
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-20
-            h-full
-            w-full
-          "
-          aria-hidden="true"
-          preserveAspectRatio="none"
-        >
-          <line
-            ref={seamRef}
-            x1="53.5%"
-            y1="0%"
-            x2="49.5%"
-            y2="100%"
-            stroke="rgba(244,245,242,0.24)"
-            strokeWidth="1"
-            vectorEffect="non-scaling-stroke"
-            style={{
-              opacity: 0,
-              filter: "blur(0.1px)",
-              transformOrigin: "center center",
-              willChange: "transform, opacity",
-            }}
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              z-[3]
+              bg-gradient-to-t
+              from-[#0B1322]/54
+              via-[#0B1322]/[0.06]
+              to-[#0B1322]/14
+              md:from-[#0B1322]/46
+              md:via-transparent
+              md:to-[#0B1322]/16
+            "
           />
-        </svg>
 
-        {/* CONTENT */}
-        <div
-          className="
-            absolute
-            inset-0
-            z-30
-            flex
-            flex-col
-            justify-end
-            px-6
-            pb-[max(36px,env(safe-area-inset-bottom))]
-            md:px-10
-            md:pb-16
-          "
-        >
-          {/* EYEBROW */}
+          {/* ATMOSPHERIC BRIDGE — IN */}
           <div
-            ref={eyebrowRef}
             className="
               pointer-events-none
               absolute
               inset-x-0
-              top-[13.5%]
-              flex
-              justify-center
-              md:top-[15%]
+              top-0
+              z-[4]
+              h-[220px]
+              bg-gradient-to-b
+              from-[#F4F5F2]/10
+              via-[#F4F5F2]/[0.025]
+              to-transparent
             "
-          >
-            <span
-              className="
-                whitespace-nowrap
-                text-[10px]
-                uppercase
-                tracking-[0.34em]
-                text-[#F4F5F2]/26
-              "
-            >
-              Indonesian Archipelago
-            </span>
-          </div>
+          />
 
-          {/* DESTINATIONS ROW */}
+          {/* ATMOSPHERIC BRIDGE — OUT */}
           <div
             className="
-              flex
-              items-end
-              justify-between
-              gap-3
-              md:gap-4
+              pointer-events-none
+              absolute
+              inset-x-0
+              bottom-0
+              z-[4]
+              h-[180px]
+              bg-gradient-to-b
+              from-transparent
+              via-[#F4F5F2]/[0.035]
+              to-[#F4F5F2]/10
+            "
+          />
+
+          {/* MOBILE RADIAL DEPTH */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              z-[5]
+              md:hidden
             "
           >
-            {/* LEFT */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
+          </div>
+
+          {/* LEFT CLIP */}
+          <div
+            ref={leftClipRef}
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              clipPath:
+                "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+              willChange: "clip-path",
+            }}
+          >
             <div
-              ref={leftContentRef}
-              className="
-                relative
-                z-10
-                max-w-[190px]
-                md:max-w-[420px]
-              "
+              ref={leftImgRef}
+              className="absolute inset-0"
+              style={{
+                willChange: "transform",
+                backfaceVisibility: "hidden",
+              }}
             >
-              <h2
-                className="
-                  font-[Gambarino]
-                  text-[42px]
-                  leading-[0.88]
-                  tracking-[-0.055em]
-                  text-[#F4F5F2]
-                  md:text-[76px]
-                "
-              >
-                {DESTINATIONS[0].name[0]}
-                <br />
-                {DESTINATIONS[0].name[1]}
-              </h2>
+              <div className="absolute inset-x-0 -top-[10%] h-[120%]">
+                <Image
+                  src={DESTINATIONS[0].img}
+                  alt={DESTINATIONS[0].name.join(" ")}
+                  fill
+                  sizes="100vw"
+                  draggable={false}
+                  className="
+                    select-none
+                    object-cover
+                    object-center
+                  "
+                />
+              </div>
 
-              <p
-                className="
-                  mt-4
-                  max-w-[185px]
-                  text-[11px]
-                  leading-[1.82]
-                  tracking-[0.04em]
-                  text-[#F4F5F2]/52
-                  md:max-w-[300px]
-                  md:text-[12px]
-                  md:leading-[1.88]
-                  md:tracking-[0.045em]
-                "
-              >
-                {DESTINATIONS[0].sub}
-              </p>
-            </div>
+              <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
 
-            {/* RIGHT */}
-            <div
-              ref={rightContentRef}
-              className="
-                relative
-                z-10
-                max-w-[180px]
-                text-right
-                md:mb-[-2vh]
-                md:mr-[5vw]
-                md:max-w-[390px]
-              "
-            >
-              <h2
+              <div
                 className="
-                  font-[Gambarino]
-                  text-[38px]
-                  leading-[0.88]
-                  tracking-[-0.055em]
-                  text-[#F4F5F2]
-                  md:text-[64px]
+                  absolute
+                  inset-0
+                  bg-gradient-to-r
+                  from-[#0B1322]/22
+                  via-[#0B1322]/[0.035]
+                  to-transparent
+                  md:from-[#0B1322]/14
+                  md:via-transparent
                 "
-              >
-                {DESTINATIONS[1].name[0]}
-                <br />
-                {DESTINATIONS[1].name[1]}
-              </h2>
-
-              <p
-                className="
-                  ml-auto
-                  mt-3
-                  max-w-[170px]
-                  text-[11px]
-                  leading-[1.82]
-                  tracking-[0.04em]
-                  text-[#F4F5F2]/50
-                  md:max-w-[270px]
-                  md:text-[12px]
-                  md:leading-[1.85]
-                "
-              >
-                {DESTINATIONS[1].sub}
-              </p>
+              />
             </div>
           </div>
 
-          {/* CTA */}
+          {/* RIGHT CLIP */}
           <div
-            ref={ctaRef}
+            ref={rightClipRef}
+            className="absolute inset-0 overflow-hidden"
+            style={{
+              clipPath:
+                "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+              willChange: "clip-path",
+            }}
+          >
+            <div
+              ref={rightImgRef}
+              className="absolute inset-0"
+              style={{
+                willChange: "transform",
+                backfaceVisibility: "hidden",
+              }}
+            >
+              <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
+                <Image
+                  src={DESTINATIONS[1].img}
+                  alt={DESTINATIONS[1].name.join(" ")}
+                  fill
+                  sizes="100vw"
+                  draggable={false}
+                  className="
+                    select-none
+                    object-cover
+                    object-center
+                  "
+                />
+              </div>
+
+              <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  bg-gradient-to-l
+                  from-[#0B1322]/24
+                  via-[#0B1322]/[0.04]
+                  to-transparent
+                  md:from-[#0B1322]/16
+                  md:via-transparent
+                "
+              />
+            </div>
+          </div>
+
+          {/* SEAM — SVG LINE MATCHES CLIP PATH */}
+          <svg
             className="
-              mt-8
+              pointer-events-none
+              absolute
+              inset-0
+              z-20
+              h-full
+              w-full
+            "
+            aria-hidden="true"
+            preserveAspectRatio="none"
+          >
+            <line
+              ref={seamRef}
+              x1="53.5%"
+              y1="0%"
+              x2="49.5%"
+              y2="100%"
+              stroke="rgba(244,245,242,0.24)"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+              style={{
+                opacity: 0,
+                filter: "blur(0.1px)",
+                transformOrigin: "center center",
+                willChange: "transform, opacity",
+              }}
+            />
+          </svg>
+
+          {/* CONTENT */}
+          <div
+            className="
+              absolute
+              inset-0
+              z-30
               flex
-              justify-center
-              md:absolute
-              md:inset-x-0
-              md:bottom-12
+              flex-col
+              justify-end
+              px-6
+              pb-[max(36px,env(safe-area-inset-bottom))]
+              md:px-10
+              md:pb-16
             "
           >
-            <TransitionLink
-              href="/destinations"
+            {/* EYEBROW */}
+            <div
+              ref={eyebrowRef}
               className="
-                group
-                inline-flex
-                items-center
-                gap-4
-                border-b
-                border-[#F4F5F2]/28
-                pb-[10px]
-                text-[11px]
-                uppercase
-                tracking-[0.24em]
-                text-[#F4F5F2]/80
-                transition-colors
-                duration-500
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-                hover:border-[#F4F5F2]/72
-                hover:text-[#F4F5F2]
-                focus-visible:outline
-                focus-visible:outline-2
-                focus-visible:outline-offset-4
-                focus-visible:outline-[#B08D57]
+                pointer-events-none
+                absolute
+                inset-x-0
+                top-[13.5%]
+                flex
+                justify-center
+                md:top-[15%]
               "
             >
-              Explore the Routes
-              <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
-                →
+              <span
+                className="
+                  whitespace-nowrap
+                  text-[10px]
+                  uppercase
+                  tracking-[0.34em]
+                  text-[#F4F5F2]/26
+                "
+              >
+                Indonesian Archipelago
               </span>
-            </TransitionLink>
+            </div>
+
+            {/* DESTINATIONS ROW */}
+            <div
+              className="
+                flex
+                items-end
+                justify-between
+                gap-3
+                md:gap-4
+              "
+            >
+              {/* LEFT */}
+              <div
+                ref={leftContentRef}
+                className="
+                  relative
+                  z-10
+                  max-w-[190px]
+                  md:max-w-[420px]
+                "
+              >
+                <h2
+                  className="
+                    font-[Gambarino]
+                    text-[42px]
+                    leading-[0.88]
+                    tracking-[-0.055em]
+                    text-[#F4F5F2]
+                    md:text-[76px]
+                  "
+                >
+                  {DESTINATIONS[0].name[0]}
+                  <br />
+                  {DESTINATIONS[0].name[1]}
+                </h2>
+
+                <p
+                  className="
+                    mt-4
+                    max-w-[185px]
+                    text-[11px]
+                    leading-[1.82]
+                    tracking-[0.04em]
+                    text-[#F4F5F2]/52
+                    md:max-w-[300px]
+                    md:text-[12px]
+                    md:leading-[1.88]
+                    md:tracking-[0.045em]
+                  "
+                >
+                  {DESTINATIONS[0].sub}
+                </p>
+              </div>
+
+              {/* RIGHT */}
+              <div
+                ref={rightContentRef}
+                className="
+                  relative
+                  z-10
+                  max-w-[180px]
+                  text-right
+                  md:mb-[-2vh]
+                  md:mr-[5vw]
+                  md:max-w-[390px]
+                "
+              >
+                <h2
+                  className="
+                    font-[Gambarino]
+                    text-[38px]
+                    leading-[0.88]
+                    tracking-[-0.055em]
+                    text-[#F4F5F2]
+                    md:text-[64px]
+                  "
+                >
+                  {DESTINATIONS[1].name[0]}
+                  <br />
+                  {DESTINATIONS[1].name[1]}
+                </h2>
+
+                <p
+                  className="
+                    ml-auto
+                    mt-3
+                    max-w-[170px]
+                    text-[11px]
+                    leading-[1.82]
+                    tracking-[0.04em]
+                    text-[#F4F5F2]/50
+                    md:max-w-[270px]
+                    md:text-[12px]
+                    md:leading-[1.85]
+                  "
+                >
+                  {DESTINATIONS[1].sub}
+                </p>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div
+              ref={ctaRef}
+              className="
+                mt-8
+                flex
+                justify-center
+                md:absolute
+                md:inset-x-0
+                md:bottom-12
+              "
+            >
+              <TransitionLink
+                href="/destinations"
+                className="
+                  group
+                  inline-flex
+                  items-center
+                  gap-4
+                  border-b
+                  border-[#F4F5F2]/28
+                  pb-[10px]
+                  text-[11px]
+                  uppercase
+                  tracking-[0.24em]
+                  text-[#F4F5F2]/80
+                  transition-colors
+                  duration-500
+                  ease-[cubic-bezier(0.22,1,0.36,1)]
+                  hover:border-[#F4F5F2]/72
+                  hover:text-[#F4F5F2]
+                  focus-visible:outline
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-4
+                  focus-visible:outline-[#B08D57]
+                "
+              >
+                Explore the Routes
+                <span className="transition-transform duration-500 group-hover:translate-x-[4px]">
+                  →
+                </span>
+              </TransitionLink>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-} 
+      </section>
+    );
+  } 
 
 function Yacht() {
   const configRef = useRef(null);
@@ -2471,93 +2471,94 @@ function Yacht() {
       images: {
         yacht:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1777394633/e75ce606-c6fd-4eae-8739-12516236bfec_1_ohoghl.png",
-
+    
         upperDeck:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
-
+    
         cabins:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp",
-
+    
         crew:
           "https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp",
       },
-
+    
       text: {
         label: "The Yacht",
-
+    
         headlineLine1: "Designed for the way",
-
-        headlineLine2: "people live at sea",
-
+    
+        headlineLine2: "you live at sea",
+    
         description:
-          "Open decks, quiet cabins, shared spaces, and enough room for twelve people to move through the day without ever feeling crowded.",
-
+          "Open decks, indoor living spaces, private cabins, and shared areas shaped for slow days aboard Serenity.",
+    
         upperDeckTitle: "Upper Deck",
-
+    
         upperDeckDesc:
-          "Sunbeds, open sky, and the full width of the sea on every side.",
-
+          "Sunbeds, bar seating, lounge space, and open sea on every side.",
+    
         cabinsTitle: "Four Cabins",
-
+    
         cabinsDesc:
-          "Private rooms designed for calm, rest, and time entirely your own.",
-
-        crewTitle: "Crew",
-
-        crewDesc: "Ten crew who know every current by name.",
-
-        microLabel: "Vessel",
-
-        microNumber: "40.75m",
-
+          "Private guest cabins with ensuite bathrooms for quiet rest between days on the water.",
+    
+        crewTitle: "Indoor Living",
+    
+        crewDesc:
+          "A calm living room, dining space, and bar for time between the open decks.",
+    
+        microLabel: "Outdoor Spaces",
+    
+        microNumber: "2 Decks",
+    
         microMobileDesc:
-          "Handcrafted phinisi, built 2025 in South Sulawesi.",
-
+          "Upper deck and main outdoor deck for lounging, dining, and sea-facing days.",
+    
         microDesktopDesc:
-          "Handcrafted phinisi, built 2025 in Tanah Beru, South Sulawesi.",
-
+          "Upper deck and main outdoor deck shaped for lounging, dining, and sea-facing days.",
+    
         primaryCta: "Explore The Yacht",
-
+    
         utilityDeckPlan: "View Deck Plan",
-
+    
         utilityBrochure: "Download Brochure",
-
+    
         utilitySpecs: "View Specifications",
       },
-
+    
       routes: {
         yacht: "/yacht",
-
+    
         deckPlan: "/yacht#deck-plan",
-
+    
         brochure: SITE_DOCUMENTS.brochurePath,
-
+    
         specifications: "/yacht#specifications",
       },
-
+    
       animation: {
         ease: "power3.out",
-
+    
         label: {
           from: {
             opacity: 0,
             y: 10,
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
             duration: 1.05,
           },
         },
-
+    
         headline: {
           from: {
             opacity: 0,
             y: 24,
             filter: "blur(7px)",
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
@@ -2565,14 +2566,14 @@ function Yacht() {
             duration: 1.36,
           },
         },
-
+    
         description: {
           from: {
             opacity: 0,
             y: 18,
             filter: "blur(5px)",
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
@@ -2580,14 +2581,14 @@ function Yacht() {
             duration: 1.28,
           },
         },
-
+    
         mobileCards: {
           from: {
             opacity: 0,
             y: 28,
             filter: "blur(7px)",
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
@@ -2596,7 +2597,7 @@ function Yacht() {
             stagger: 0.12,
           },
         },
-
+    
         desktopYacht: {
           from: {
             opacity: 0,
@@ -2604,7 +2605,7 @@ function Yacht() {
             y: 36,
             filter: "blur(12px)",
           },
-
+    
           to: {
             opacity: 1,
             scale: 1,
@@ -2613,14 +2614,14 @@ function Yacht() {
             duration: 1.7,
           },
         },
-
+    
         desktopCards: {
           from: {
             opacity: 0,
             y: 34,
             filter: "blur(8px)",
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
@@ -2629,13 +2630,13 @@ function Yacht() {
             stagger: 0.13,
           },
         },
-
+    
         cta: {
           from: {
             opacity: 0,
             y: 18,
           },
-
+    
           to: {
             opacity: 1,
             y: 0,
@@ -2643,182 +2644,182 @@ function Yacht() {
           },
         },
       },
-
+    
       classes: {
         section:
           "relative w-full overflow-hidden bg-[#F4F5F2] px-5 pb-[120px] pt-[88px] text-[#2D3C68] md:px-6 md:pb-[130px] md:pt-[120px]",
-
+    
         topBridge:
           "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.07] via-[#2D3C68]/[0.025] to-transparent",
-
+    
         bottomBridge:
           "pointer-events-none absolute bottom-0 left-0 h-[130px] w-full bg-gradient-to-b from-transparent to-[#2D3C68]/[0.05]",
-
+    
         coolAtmosphere:
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,60,104,0.05),transparent_48%)]",
-
+    
         warmAtmosphere:
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(176,141,87,0.05),transparent_38%)]",
-
+    
         container: "relative mx-auto max-w-[1440px]",
-
+    
         header:
           "mx-auto mb-14 max-w-[680px] text-center md:mb-32",
-
+    
         label:
           "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/56",
-
+    
         headline:
           "mt-6 font-[Gambarino] text-[42px] leading-[0.96] tracking-[-0.03em] text-[#2D3C68] md:text-[66px]",
-
+    
         description:
           "mx-auto mt-5 max-w-[520px] text-[15px] leading-[1.86] text-[#2D3C68]/72 md:leading-[1.9]",
-
+    
         mobileStack: "mx-auto max-w-[390px] md:hidden",
-
+    
         mobileYachtPanel:
           "relative mx-auto flex justify-center pt-2",
-
+    
         mobileYachtGlow:
           "pointer-events-none absolute left-1/2 top-[9%] h-[360px] w-[150px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/18 blur-[72px]",
-
+    
         mobileYachtFrame:
           "relative h-[430px] w-[122px]",
-
+    
         mobileYachtShadow:
           "absolute inset-0 translate-y-[16px] scale-[0.92] rounded-full bg-[#2D3C68]/[0.075] blur-[24px]",
-
+    
         mobileYachtHaze:
           "absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_58%)]",
-
+    
         mobileYachtImageWrap:
           "relative h-full w-full opacity-[0.985] saturate-[0.95]",
-
+    
         mobileYachtImage:
           "object-contain drop-shadow-[0_26px_42px_rgba(18,28,48,0.12)]",
-
+    
         mobileSpecCard:
           "relative mt-9 overflow-hidden border border-[#2D3C68]/[0.08] bg-[#F4F5F2]/82 px-6 py-6 shadow-[0_26px_70px_rgba(20,30,50,0.06)] backdrop-blur-md",
-
+    
         mobileSpecWarm:
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_56%)]",
-
+    
         mobileSpecShine:
           "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.16] to-transparent",
-
+    
         mobileSpecLabel:
           "relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50",
-
+    
         mobileSpecNumber:
           "relative mt-2 font-[Gambarino] text-[40px] leading-none tracking-[-0.03em] text-[#2D3C68]",
-
+    
         mobileSpecDesc:
           "relative mt-3 max-w-[280px] text-[13px] leading-[1.72] text-[#2D3C68]/68",
-
+    
         mobileFeatureList:
           "mt-10 divide-y divide-[#2D3C68]/10 border-y border-[#2D3C68]/10",
-
+    
         mobileFeatureRow:
           "grid grid-cols-[96px_1fr] items-center gap-5 py-5",
-
+    
         mobileFeatureThumb:
           "relative aspect-[4/5] overflow-hidden shadow-[0_18px_42px_rgba(45,60,104,0.075)]",
-
+    
         mobileFeatureImage:
           "object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
-
+    
         mobileFeatureOverlay:
           "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent",
-
+    
         mobileFeatureTitle:
           "font-[Gambarino] text-[26px] leading-[1.06] tracking-[-0.02em] text-[#2D3C68]",
-
+    
         mobileFeatureDesc:
           "mt-2 text-[13px] leading-[1.7] text-[#2D3C68]/68",
-
+    
         microCard:
           "relative overflow-hidden border border-[#2D3C68]/[0.06] bg-[#F4F5F2]/80 px-5 py-5 shadow-[0_28px_70px_rgba(20,30,50,0.05)] backdrop-blur-md md:px-7 md:py-7 md:shadow-[0_30px_80px_rgba(20,30,50,0.05)]",
-
+    
         microWarm:
           "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_54%)] md:bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.08),transparent_58%)]",
-
+    
         microShine:
           "pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent",
-
+    
         microLabel:
           "relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50",
-
+    
         microNumber:
           "relative mt-2 font-[Gambarino] text-[36px] leading-none text-[#2D3C68] md:mt-3 md:text-[44px]",
-
+    
         microDesc:
           "relative mt-2 text-[12px] leading-[1.75] text-[#2D3C68]/68 md:mt-3 md:text-[13px] md:leading-[1.8]",
-
+    
         desktop: "hidden md:block",
-
+    
         desktopStage: "relative h-[clamp(1180px,92vw,1320px)]",
-
+    
         yachtGlow:
           "pointer-events-none absolute left-1/2 top-[18%] z-10 h-[560px] w-[240px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/15 opacity-0 blur-[92px]",
-
+    
         svg:
           "pointer-events-none absolute inset-0 z-20 h-full w-full",
-
+    
         yachtParallax:
           "pointer-events-none absolute left-1/2 top-[-3%] z-20 -translate-x-1/2",
-
+    
         yachtSize:
           "relative h-[clamp(900px,72vw,1020px)] w-[clamp(224px,17.5vw,252px)]",
-
+    
         yachtShadow:
           "absolute inset-0 translate-y-[22px] scale-[0.94] rounded-full bg-black/[0.07] blur-[36px]",
-
+    
         yachtHaze:
           "absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_58%)]",
-
+    
         yachtImageWrap:
           "relative h-full w-full opacity-[0.985] saturate-[0.95]",
-
+    
         yachtImage:
           "object-contain drop-shadow-[0_34px_56px_rgba(18,28,48,0.10)]",
-
+    
         desktopCardA:
           "absolute left-[6.25%] top-[12.9%] z-30 w-[clamp(300px,25vw,360px)]",
-
+    
         desktopCardB:
           "absolute right-[8.33%] top-[25%] z-30 w-[clamp(248px,20.1vw,290px)]",
-
+    
         desktopCardC:
           "absolute left-[8.33%] top-[62.9%] z-30 w-[clamp(265px,21.5vw,310px)]",
-
+    
         desktopMicro:
           "absolute right-[10.42%] top-[70.5%] z-30 w-[clamp(220px,17.3vw,250px)]",
-
+    
         ctaWrapMobile:
           "flex flex-col items-center gap-5 pt-10",
-
+    
         ctaWrapDesktop:
           "mt-10 flex justify-center",
-
+    
         ctaInner: "flex flex-col items-center gap-6",
-
+    
         ctaDivider:
           "h-px w-[140px] bg-gradient-to-r from-transparent via-[#B08D57]/40 to-transparent md:w-[150px]",
-
+    
         primaryCta:
           "group inline-flex items-center gap-3 rounded-full border border-[#2D3C68]/18 px-7 py-3 text-[12px] uppercase tracking-[0.22em] text-[#2D3C68] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:bg-[#2D3C68] hover:text-[#F4F5F2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
-
+    
         primaryArrow:
           "transition-transform duration-500 group-hover:translate-x-[3px] md:group-hover:translate-x-[4px]",
-
+    
         utilityMobile:
           "flex flex-col items-center gap-3 pt-1",
-
+    
         utilityDesktop: "flex items-center gap-7",
-
+    
         utilityLink:
           "text-[11px] uppercase tracking-[0.18em] text-[#2D3C68]/44 transition-colors duration-300 hover:text-[#2D3C68]/72 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
-
+    
         utilityDivider: "h-3 w-px bg-[#2D3C68]/14",
       },
     };
