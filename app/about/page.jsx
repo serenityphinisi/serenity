@@ -752,7 +752,7 @@ function OurStory() {
                 "
               >
                 <img
-                  src="https://celestiayacht.com/api/media/file/VESSEL_CELESTIA-4(1).webp"
+                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1780411493/ChatGPT_Image_Jun_2_2026_08_35_01_PM_kpp8co.png"
                   alt="Serenity phinisi sailing through Indonesian waters"
                   loading="lazy"
                   decoding="async"

@@ -1762,7 +1762,7 @@ function Experiences() {
       {
         name: ["Raja", "Ampat"],
         sub: "West Papua · Coral reefs and limestone passages",
-        img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511762/ChatGPT_Image_May_11_2026_09_55_36_PM_a2mixz.png",
+        img: "https://res.cloudinary.com/dombq6plz/image/upload/v1780331037/ChatGPT_Image_Jun_1_2026_08_27_00_PM_st80e6.png",
       },
       {
         name: ["Labuan", "Bajo"],
@@ -3995,7 +3995,7 @@ function RatesSnapshot() {
         headline: "Your voyage awaits.",
         intro: "Private charter. Per vessel.",
         minimumLabel: "Minimum",
-        minimum: "5 nights",
+        minimum: "2 nights",
         includedLabel: "Included",
         cta: "View Rates & Schedule",
       },
@@ -5912,7 +5912,7 @@ function Rates() {
               {[
                 { label: "Guests", value: "Up to 12" },
                 { label: "Crew", value: "10 dedicated" },
-                { label: "Minimum", value: "5 nights" },
+                { label: "Minimum", value: "2 nights" },
                 { label: "Vessel", value: "Serenity, 40.75m" },
               ].map((item) => (
                 <div

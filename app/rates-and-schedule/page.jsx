@@ -754,7 +754,7 @@ function WhatsIncluded() {
                 style={{ aspectRatio: '4 / 5' }}
               >
                 <Image
-                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1778534687/ChatGPT_Image_May_12_2026_04_07_19_AM_lu1htz.png"
+                  src="https://res.cloudinary.com/dombq6plz/image/upload/v1780319406/ChatGPT_Image_Jun_1_2026_08_01_41_PM_m367tr.png"
                   alt="Guests on Serenity's deck"
                   fill
                   className="object-cover"
@@ -884,7 +884,6 @@ function WhatsIncluded() {
 }
 
 function Rate() {
- 
   const rates = [
     {
       destination: 'Labuan Bajo',
@@ -897,119 +896,154 @@ function Rate() {
       price: '$10,500',
     },
   ]
- 
-  const notes = [
-    'Minimum 5 nights',
-    'Rates quoted in USD',
-    'Custom durations available on inquiry',
+
+  const commercialTerms = [
+    'Minimum 2 nights',
+    'Private full-vessel charter',
+    '50% non-refundable deposit',
+    'Balance due 90 days before departure',
   ]
- 
-  const sectionRef  = useRef(null)
-  const headerRef   = useRef(null)
-  const rulesRef    = useRef([])
-  const rowsRef     = useRef([])
-  const ctaRef      = useRef(null)
- 
+
+  const sectionRef = useRef(null)
+  const headerRef = useRef(null)
+  const rulesRef = useRef([])
+  const rowsRef = useRef([])
+  const footerRef = useRef(null)
+
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
- 
+
+    const rules = rulesRef.current.filter(Boolean)
+    const rows = rowsRef.current.filter(Boolean)
+
     if (reduce) {
-      gsap.set(
-        [headerRef.current, ctaRef.current, ...rowsRef.current.filter(Boolean)],
-        { opacity: 1, y: 0 }
-      )
-      gsap.set(rulesRef.current.filter(Boolean), { scaleX: 1 })
+      gsap.set([headerRef.current, footerRef.current, ...rows], {
+        opacity: 1,
+        y: 0,
+      })
+      gsap.set(rules, { scaleX: 1 })
       return
     }
- 
+
     const ctx = gsap.context(() => {
- 
-      // Header
-      gsap.set(headerRef.current, { opacity: 0, y: 24 })
+      gsap.set(headerRef.current, { opacity: 0, y: 22 })
+      gsap.set(rules, { scaleX: 0, transformOrigin: 'left center' })
+      gsap.set(rows, { opacity: 0, y: 14 })
+      gsap.set(footerRef.current, { opacity: 0, y: 18 })
+
       gsap.to(headerRef.current, {
-        opacity: 1, y: 0,
-        duration: 1.0,
+        opacity: 1,
+        y: 0,
+        duration: 0.95,
         ease: [0.22, 1, 0.36, 1],
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 72%',
+          start: 'top 74%',
         },
       })
- 
-      // Rules + rows — sequential reveal
-      const rules = rulesRef.current.filter(Boolean)
-      const rows  = rowsRef.current.filter(Boolean)
- 
-      gsap.set(rules, { scaleX: 0, transformOrigin: 'left center' })
-      gsap.set(rows,  { opacity: 0, y: 14 })
- 
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 65%',
+          start: 'top 66%',
         },
       })
- 
+
       tl
-        .to(rules[0], { scaleX: 1, duration: 0.7, ease: 'power2.out' })
-        .to(rows[0],  { opacity: 1, y: 0, duration: 0.75, ease: [0.22, 1, 0.36, 1] }, '-=0.25')
-        .to(rules[1], { scaleX: 1, duration: 0.7, ease: 'power2.out' }, '-=0.15')
-        .to(rows[1],  { opacity: 1, y: 0, duration: 0.75, ease: [0.22, 1, 0.36, 1] }, '-=0.25')
-        .to(rules[2], { scaleX: 1, duration: 0.7, ease: 'power2.out' }, '-=0.15')
- 
-      // CTA
-      gsap.set(ctaRef.current, { opacity: 0, y: 20 })
-      gsap.to(ctaRef.current, {
-        opacity: 1, y: 0,
-        duration: 0.9,
+        .to(rules[0], {
+          scaleX: 1,
+          duration: 0.65,
+          ease: 'power2.out',
+        })
+        .to(
+          rows[0],
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.72,
+            ease: [0.22, 1, 0.36, 1],
+          },
+          '-=0.24'
+        )
+        .to(
+          rules[1],
+          {
+            scaleX: 1,
+            duration: 0.65,
+            ease: 'power2.out',
+          },
+          '-=0.16'
+        )
+        .to(
+          rows[1],
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.72,
+            ease: [0.22, 1, 0.36, 1],
+          },
+          '-=0.24'
+        )
+        .to(
+          rules[2],
+          {
+            scaleX: 1,
+            duration: 0.65,
+            ease: 'power2.out',
+          },
+          '-=0.16'
+        )
+
+      gsap.to(footerRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.85,
         ease: [0.22, 1, 0.36, 1],
         scrollTrigger: {
-          trigger: ctaRef.current,
+          trigger: footerRef.current,
           start: 'top 88%',
         },
       })
- 
     }, sectionRef)
- 
+
     return () => ctx.revert()
   }, [])
- 
+
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden"
-      style={{ backgroundColor: '#2D3C68' }}
+      className="relative overflow-hidden bg-[#2D3C68]"
     >
- 
-      {/* ── Atmospheric bridge — sail-white memory dissolving in ── */}
+      {/* ── Entry bridge — sail-white memory dissolving in ── */}
       <div
         className="absolute top-0 left-0 right-0 pointer-events-none"
         style={{
-          height: '90px',
-          background: 'linear-gradient(to bottom, rgba(244,245,242,0.05) 0%, transparent 100%)',
+          height: '64px',
+          background:
+            'linear-gradient(to bottom, rgba(244,245,242,0.045) 0%, transparent 100%)',
         }}
       />
- 
-      {/* ── Atmospheric layer ── */}
+
+      {/* ── Global atmosphere only — no panel boxes ── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.03), transparent 55%)',
+          background:
+            'radial-gradient(circle at 35% 45%, rgba(255,255,255,0.03), transparent 55%)',
         }}
       />
- 
+
       <div
-        className="relative max-w-[1200px] mx-auto px-6 md:px-10"
-        style={{
-          paddingTop: 'clamp(88px, 11vh, 120px)',
-          paddingBottom: 'clamp(88px, 11vh, 120px)',
-        }}
+        className="
+          relative mx-auto max-w-[1200px]
+          px-6 md:px-10
+          py-[72px] md:py-[clamp(76px,8.8vh,104px)]
+        "
       >
- 
         {/* ── Header ── */}
         <div
           ref={headerRef}
-          style={{ marginBottom: 'clamp(48px, 7vh, 72px)' }}
+          style={{ marginBottom: 'clamp(42px, 6vh, 60px)' }}
         >
           <p
             className="uppercase mb-5"
@@ -1023,50 +1057,54 @@ function Rate() {
           >
             Charter Rates
           </p>
- 
+
           <p
             style={{
               fontFamily: 'Switzer, sans-serif',
               fontWeight: 300,
-              fontSize: '15px',
-              lineHeight: 1.8,
+              fontSize: '14px',
+              lineHeight: 1.75,
               color: 'rgba(244,245,242,0.58)',
               maxWidth: '400px',
             }}
           >
-            Exclusive full vessel charter. Rates vary
-            by destination and season.
+            Exclusive full vessel charter. Rates vary by destination and season.
           </p>
         </div>
- 
-        {/* ── Rate rows ── */}
+
+        {/* ── Rate ledger ── */}
         <div>
           {rates.map((rate, i) => (
             <div key={rate.destination}>
- 
-              {/* Rule */}
               <div
-                ref={el => rulesRef.current[i] = el}
+                ref={(el) => {
+                  rulesRef.current[i] = el
+                }}
                 style={{
                   height: '1px',
-                  background: 'rgba(244,245,242,0.14)',
                   width: '100%',
+                  background: 'rgba(244,245,242,0.14)',
                 }}
               />
- 
-              {/* Row */}
+
               <div
-                ref={el => rowsRef.current[i] = el}
-                className="flex items-center justify-between"
-                style={{ padding: 'clamp(22px, 3.2vh, 34px) 0' }}
+                ref={(el) => {
+                  rowsRef.current[i] = el
+                }}
+                className="
+                  flex flex-col gap-5
+                  sm:flex-row sm:items-center sm:justify-between sm:gap-10
+                "
+                style={{
+                  padding: 'clamp(24px, 3vh, 32px) 0',
+                }}
               >
- 
                 {/* Left — destination + season */}
                 <div>
                   <p
                     style={{
                       fontFamily: 'Gambarino, serif',
-                      fontSize: 'clamp(34px, 4vw, 52px)',
+                      fontSize: 'clamp(36px, 4vw, 52px)',
                       lineHeight: 0.95,
                       letterSpacing: '-0.02em',
                       color: '#F4F5F2',
@@ -1075,6 +1113,7 @@ function Rate() {
                   >
                     {rate.destination}
                   </p>
+
                   <p
                     className="uppercase"
                     style={{
@@ -1088,13 +1127,13 @@ function Rate() {
                     {rate.season}
                   </p>
                 </div>
- 
+
                 {/* Right — price */}
-                <div style={{ textAlign: 'right' }}>
+                <div className="sm:text-right">
                   <p
                     style={{
                       fontFamily: 'Gambarino, serif',
-                      fontSize: 'clamp(34px, 4vw, 52px)',
+                      fontSize: 'clamp(36px, 4vw, 52px)',
                       lineHeight: 0.95,
                       letterSpacing: '-0.02em',
                       color: '#F4F5F2',
@@ -1103,8 +1142,10 @@ function Rate() {
                   >
                     {rate.price}
                   </p>
+
+                  {/* Desktop price meta */}
                   <p
-                    className="uppercase"
+                    className="uppercase hidden md:block"
                     style={{
                       fontFamily: 'Switzer, sans-serif',
                       fontWeight: 300,
@@ -1115,60 +1156,124 @@ function Rate() {
                   >
                     per night · USD
                   </p>
+
+                  <p
+                    className="uppercase hidden md:block"
+                    style={{
+                      fontFamily: 'Switzer, sans-serif',
+                      fontWeight: 300,
+                      fontSize: '10px',
+                      letterSpacing: '0.22em',
+                      color: 'rgba(176,141,87,0.78)',
+                      marginTop: '8px',
+                    }}
+                  >
+                    +11% VAT applies
+                  </p>
+
+                  {/* Mobile compact price meta */}
+                  <p
+                    className="uppercase md:hidden"
+                    style={{
+                      fontFamily: 'Switzer, sans-serif',
+                      fontWeight: 300,
+                      fontSize: '10px',
+                      lineHeight: 1.7,
+                      letterSpacing: '0.20em',
+                      color: 'rgba(176,141,87,0.76)',
+                      marginTop: '8px',
+                    }}
+                  >
+                    per night · USD · +11% VAT
+                  </p>
                 </div>
- 
               </div>
             </div>
           ))}
- 
-          {/* Bottom rule */}
+
           <div
-            ref={el => rulesRef.current[2] = el}
+            ref={(el) => {
+              rulesRef.current[2] = el
+            }}
             style={{
               height: '1px',
-              background: 'rgba(244,245,242,0.14)',
               width: '100%',
+              background: 'rgba(244,245,242,0.14)',
             }}
           />
         </div>
- 
-        {/* ── CTA + Notes ── */}
+
+        {/* ── Commercial basis + CTA ── */}
         <div
-          ref={ctaRef}
-          className="flex flex-col md:flex-row md:items-center md:justify-between"
+          ref={footerRef}
+          className="
+            flex flex-col gap-8
+            md:flex-row md:items-end md:justify-between md:gap-14
+          "
           style={{
-            marginTop: 'clamp(44px, 6vh, 64px)',
-            gap: '32px',
+            marginTop: 'clamp(36px, 5.2vh, 52px)',
           }}
         >
- 
-          {/* Notes */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {notes.map(note => (
-              <div key={note} className="flex items-center gap-3">
-                <span
-                  style={{
-                    width: '3px',
-                    height: '3px',
-                    borderRadius: '50%',
-                    background: 'rgba(244,245,242,0.22)',
-                    flexShrink: 0,
-                  }}
-                />
-                <span
+          {/* Commercial basis */}
+          <div style={{ maxWidth: '720px' }}>
+            <div
+              className="
+                flex flex-col gap-3
+                md:flex-row md:items-baseline md:gap-6
+              "
+            >
+              <p
+                className="uppercase"
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 400,
+                  fontSize: '10px',
+                  letterSpacing: '0.30em',
+                  color: 'rgba(176,141,87,0.82)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Payment Terms
+              </p>
+
+              {/* Desktop inline terms */}
+              <p
+                className="hidden md:block"
+                style={{
+                  fontFamily: 'Switzer, sans-serif',
+                  fontWeight: 300,
+                  fontSize: '13px',
+                  lineHeight: 1.75,
+                  letterSpacing: '0.01em',
+                  color: 'rgba(244,245,242,0.68)',
+                }}
+              >
+                {commercialTerms.join('  ·  ')}
+              </p>
+            </div>
+
+            {/* Mobile stacked terms */}
+            <div
+              className="flex flex-col gap-[9px] md:hidden"
+              style={{ marginTop: '14px' }}
+            >
+              {commercialTerms.map((term) => (
+                <p
+                  key={term}
                   style={{
                     fontFamily: 'Switzer, sans-serif',
                     fontWeight: 300,
                     fontSize: '13px',
-                    color: 'rgba(244,245,242,0.36)',
+                    lineHeight: 1.65,
+                    color: 'rgba(244,245,242,0.68)',
                   }}
                 >
-                  {note}
-                </span>
-              </div>
-            ))}
+                  {term}
+                </p>
+              ))}
+            </div>
           </div>
- 
+
           {/* CTA */}
           <div
             className="flex flex-col items-start md:items-end"
@@ -1176,6 +1281,7 @@ function Rate() {
           >
             <TransitionLink
               href="/contact"
+              className="w-full justify-center md:w-auto"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1186,43 +1292,48 @@ function Rate() {
                 fontWeight: 400,
                 fontSize: '13px',
                 letterSpacing: '0.04em',
-                padding: '14px 36px',
+                padding: '14px 38px',
                 borderRadius: '9999px',
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
                 transition: 'background 500ms ease, transform 500ms ease',
               }}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#E8E9E6'
                 e.currentTarget.style.transform = 'translateY(-2px)'
               }}
-              onMouseLeave={e => {
+              onMouseLeave={(e) => {
                 e.currentTarget.style.background = '#F4F5F2'
                 e.currentTarget.style.transform = 'translateY(0)'
               }}
             >
               Begin Your Voyage
             </TransitionLink>
+
             <span
+              className="w-full text-center md:w-auto md:text-right"
               style={{
                 fontFamily: 'Switzer, sans-serif',
                 fontWeight: 300,
                 fontSize: '12px',
-                color: 'rgba(244,245,242,0.30)',
+                color: 'rgba(244,245,242,0.32)',
               }}
             >
               Response within 24 hours
             </span>
           </div>
- 
         </div>
- 
       </div>
- 
-      {/* ── Sumba Ikat — titik di halaman ini ── */}
+
+      {/* ── Sumba Ikat — subtle watermark ── */}
       <div
-        className="absolute bottom-0 right-0 pointer-events-none overflow-hidden"
-        style={{ width: '220px', height: '220px' }}
+        className="absolute pointer-events-none overflow-hidden"
+        style={{
+          width: '240px',
+          height: '240px',
+          right: '-66px',
+          bottom: '-66px',
+        }}
       >
         <img
           src="https://res.cloudinary.com/dombq6plz/image/upload/v1778486588/ChatGPT_Image_May_11_2026_03_01_56_PM_1_v2exmt.png"
@@ -1231,28 +1342,28 @@ function Rate() {
             width: '100%',
             height: '100%',
             objectFit: 'contain',
-            opacity: 0.05,
-            animation: 'ikatRotate 120s linear infinite',
+            opacity: 0.04,
+            animation: 'ikatRotate 200s linear infinite',
           }}
         />
       </div>
- 
+
       <style>{`
         @keyframes ikatRotate {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
       `}</style>
- 
+
       {/* ── Exit bridge — carries darkness into Destinations ── */}
       <div
         className="absolute bottom-0 left-0 right-0 pointer-events-none"
         style={{
-          height: '80px',
-          background: 'linear-gradient(to bottom, transparent, rgba(45,60,104,0.5))',
+          height: '56px',
+          background:
+            'linear-gradient(to bottom, transparent, rgba(45,60,104,0.5))',
         }}
       />
- 
     </section>
   )
 }

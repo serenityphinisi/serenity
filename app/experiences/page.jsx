@@ -920,7 +920,7 @@ function ExperienceActivities() {
         {
           name: "Wakeboarding",
           desc: "Glide across calm seas surrounding Serenity.",
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_03_32_29_PM_yhqlyg.png",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1780411491/ChatGPT_Image_Jun_2_2026_09_36_40_PM_is1dge.png",
           alt: "Wakeboarding across calm water during a Serenity voyage",
           position: "50% 50%",
         },
@@ -983,7 +983,7 @@ function ExperienceActivities() {
         {
           name: "Island Exploration",
           desc: "Step ashore on remote islands.",
-          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922406/ChatGPT_Image_May_16_2026_04_00_38_PM_zneayx.png",
+          img: "https://res.cloudinary.com/dombq6plz/image/upload/v1780411492/ChatGPT_Image_Jun_2_2026_09_42_24_PM_arca6a.png",
           alt: "Remote island exploration during a Serenity voyage",
           position: "50% 50%",
         },
@@ -3138,7 +3138,7 @@ function ExperienceDayOnBoard() {
       time: "Morning",
       label: "Before the day has a plan.",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1775031029/ChatGPT_Image_Apr_1_2026_03_07_35_PM_ci1xyi.png",
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1778424753/ChatGPT_Image_May_10_2026_09_51_05_PM_dwoj1n.png",
       alt: "Quiet morning atmosphere aboard Serenity",
       position: "40% 30%",
     },
@@ -3147,7 +3147,7 @@ function ExperienceDayOnBoard() {
       time: "Midday",
       label: "Into the reef.",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776152590/Phinisi_yacht_and_vibrant_coral_reef_1_i59pqn.png",
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1780411492/ChatGPT_Image_Jun_2_2026_09_36_21_PM_mxm9fr.png",
       alt: "Reef and water experience during a Serenity voyage",
       position: "50% 60%",
     },
@@ -3156,7 +3156,7 @@ function ExperienceDayOnBoard() {
       time: "Afternoon",
       label: "Lunch finds you on deck.",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776157584/Golden_hour_on_the_phinisi_yacht_1_h8pycj.png",
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1780319408/ChatGPT_Image_Jun_1_2026_08_07_55_PM_cgzblf.png",
       alt: "Afternoon meal and deck life aboard Serenity",
       position: "50% 40%",
     },

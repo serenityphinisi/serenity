@@ -224,7 +224,7 @@ function Hero() {
           }}
         >
           <img
-            src="https://res.cloudinary.com/dombq6plz/image/upload/v1780071039/ChatGPT_Image_May_29_2026_11_10_05_PM_1_kgiuxg.png"
+            src="https://res.cloudinary.com/dombq6plz/image/upload/v1780411491/ChatGPT_Image_Jun_2_2026_08_35_12_PM_h6df6a.png"
             alt="Serenity phinisi at sea"
             className="h-full w-full object-cover object-center"
           />
@@ -1156,104 +1156,70 @@ function Cabins() {
 
   const CABINS = [
     {
-      id: "forward",
-      tab: "Forward",
-      name: "Forward Cabin",
-      location: "Bow Section",
+      id: "tide",
+      tab: "Tide",
+      name: "Tide Suite",
+      location: "Twin Cabin",
       size: "15.74 sqm",
-      deck: "Main Deck",
-      units: "1 Cabin",
-      beds: "Twin Setup",
+      deck: "Below Deck",
+      units: "3 Cabins",
+      beds: "Twin Beds",
       desc:
-        "Closest to the bow, with morning light and a stronger sense of the sea. It sits nearer to the water’s rhythm while remaining private.",
+        "Twin beds, an ensuite bath, and a desk by the window. Set up for the quiet hours between long days on the water.",
       images: [
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068960/34_nlkpdq.webp",
-          alt: "Forward cabin aboard Serenity",
+          alt: "Tide Suite aboard Serenity",
         },
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068958/28_csbw7z.webp",
-          alt: "Forward cabin material detail aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/38_1_cx1idm.webp",
-          alt: "Forward cabin bathroom detail aboard Serenity",
+          alt: "Tide Suite material detail aboard Serenity",
         },
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/39_t9ofoe.webp",
-          alt: "Forward cabin interior angle aboard Serenity",
+          alt: "Tide Suite interior angle aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/38_1_cx1idm.webp",
+          alt: "Tide Suite ensuite bathroom aboard Serenity",
         },
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068959/26_uyo84o.webp",
-          alt: "Forward cabin atmosphere aboard Serenity",
+          alt: "Tide Suite atmosphere aboard Serenity",
         },
       ],
     },
     {
-      id: "mid",
-      tab: "Mid",
-      name: "Mid Cabins",
-      location: "Center of Vessel",
-      size: "15.74 sqm",
-      deck: "Main Deck",
-      units: "2 Cabins",
-      beds: "Twin Setup",
-      desc:
-        "Two matching cabins near the center of the vessel, placed where the rhythm settles. Close to shared spaces, but set back enough to stay quiet.",
-      images: [
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068959/26_uyo84o.webp",
-          alt: "Mid cabin aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/39_t9ofoe.webp",
-          alt: "Mid cabin interior detail aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068958/28_csbw7z.webp",
-          alt: "Mid cabin material detail aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068960/34_nlkpdq.webp",
-          alt: "Mid cabin sleeping area aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/38_1_cx1idm.webp",
-          alt: "Mid cabin bathroom detail aboard Serenity",
-        },
-      ],
-    },
-    {
-      id: "lower",
-      tab: "Lower",
-      name: "Lower Cabin",
-      location: "Lower Deck",
+      id: "horizon",
+      tab: "Horizon",
+      name: "Horizon Suite",
+      location: "Master Cabin",
       size: "18.48 sqm",
-      deck: "Lower Deck",
+      deck: "Below Deck",
       units: "1 Cabin",
-      beds: "Twin Setup",
+      beds: "King Bed",
       desc:
-        "Set below the main deck, quieter and more contained. Light is softer here, and the sound above fades into the background.",
+        "King bed framed by sea-facing windows that hold the horizon from morning to dusk. The largest of the four cabins.",
       images: [
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068955/23_1_gcmciz.webp",
-          alt: "Lower cabin aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/38_1_cx1idm.webp",
-          alt: "Lower cabin bathroom detail aboard Serenity",
+          alt: "Horizon Suite aboard Serenity",
         },
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068960/34_nlkpdq.webp",
-          alt: "Lower cabin sleeping detail aboard Serenity",
-        },
-        {
-          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068958/28_csbw7z.webp",
-          alt: "Lower cabin material detail aboard Serenity",
+          alt: "Horizon Suite sleeping area aboard Serenity",
         },
         {
           src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/39_t9ofoe.webp",
-          alt: "Lower cabin interior angle aboard Serenity",
+          alt: "Horizon Suite sea-facing window aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068958/28_csbw7z.webp",
+          alt: "Horizon Suite material detail aboard Serenity",
+        },
+        {
+          src: "https://res.cloudinary.com/dombq6plz/image/upload/v1776068966/38_1_cx1idm.webp",
+          alt: "Horizon Suite ensuite bathroom aboard Serenity",
         },
       ],
     },
@@ -2491,7 +2457,7 @@ function LivingSpaces() {
 function DeckAndSpecs() {
   const shouldReduceMotion = useReducedMotion();
 
-  const [deck, setDeck] = useState("main");
+  const [deck, setDeck] = useState("sun");
   const [expanded, setExpanded] = useState(false);
 
   const [visible, setVisible] = useState({
@@ -2509,11 +2475,11 @@ function DeckAndSpecs() {
   const specsRef = useRef(null);
 
   const decks = {
-    main: {
-      label: "Main",
-      fullLabel: "Main Deck",
+    sun: {
+      label: "Sun",
+      fullLabel: "Sun Deck",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068978/Layout_01_-_Main_Deck_yztnzb.webp",
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068975/Layout_-_03_Top_Deck_yvyisz.webp",
     },
     upper: {
       label: "Upper",
@@ -2521,11 +2487,11 @@ function DeckAndSpecs() {
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068974/Layout_-_02_Upper_Deck_pouo1p.webp",
     },
-    top: {
-      label: "Top",
-      fullLabel: "Top Deck",
+    main: {
+      label: "Main",
+      fullLabel: "Main Deck",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068975/Layout_-_03_Top_Deck_yvyisz.webp",
+        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068978/Layout_01_-_Main_Deck_yztnzb.webp",
     },
     lower: {
       label: "Lower",
@@ -2535,7 +2501,7 @@ function DeckAndSpecs() {
     },
   };
 
-  const deckList = ["main", "upper", "top", "lower"];
+  const deckList = ["sun", "upper", "main", "lower"];
 
   const specs = [
     ["Vessel Type", "Phinisi Sailing Yacht"],
@@ -2937,32 +2903,36 @@ function DeckAndSpecs() {
                   md:aspect-[16/9]
                 "
               >
-                {Object.entries(decks).map(([key, item], index) => (
-                  <img
-                    key={key}
-                    src={item.image}
-                    alt={`${item.fullLabel} layout`}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    className={`
-                      absolute
-                      inset-0
-                      h-full
-                      w-full
-                      object-contain
-                      p-2
-                      transition-all
-                      duration-[800ms]
-                      ease-[cubic-bezier(0.22,1,0.36,1)]
-                      md:p-5
-                      ${
-                        deck === key
-                          ? "scale-100 opacity-100"
-                          : "pointer-events-none scale-[1.01] opacity-0"
-                      }
-                    `}
-                  />
-                ))}
+                {deckList.map((key, index) => {
+                  const item = decks[key];
+
+                  return (
+                    <img
+                      key={key}
+                      src={item.image}
+                      alt={`${item.fullLabel} layout`}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      className={`
+                        absolute
+                        inset-0
+                        h-full
+                        w-full
+                        object-contain
+                        p-2
+                        transition-all
+                        duration-[800ms]
+                        ease-[cubic-bezier(0.22,1,0.36,1)]
+                        md:p-5
+                        ${
+                          deck === key
+                            ? "scale-100 opacity-100"
+                            : "pointer-events-none scale-[1.01] opacity-0"
+                        }
+                      `}
+                    />
+                  );
+                })}
               </div>
             </div>
 
