@@ -2479,19 +2479,19 @@ function DeckAndSpecs() {
       label: "Main",
       fullLabel: "Main Deck",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068975/Layout_-_03_Top_Deck_yvyisz.webp",
+        "https://res.cloudinary.com/dcycvvbr4/image/upload/v1781193047/SERENITY_BOAT_DECK_MAIN_DECK_hq2rel.jpg",
     },
     upper: {
       label: "Upper",
       fullLabel: "Upper Deck",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068974/Layout_-_02_Upper_Deck_pouo1p.webp",
+        "https://res.cloudinary.com/dcycvvbr4/image/upload/v1781193041/SERENITY_BOAT_DECK_UPPER_DECK_t5balj.jpg",
     },
     top: {
       label: "Top",
       fullLabel: "Top Deck",
       image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068978/Layout_01_-_Main_Deck_yztnzb.webp",
+        "https://res.cloudinary.com/dcycvvbr4/image/upload/v1781193042/SERENITY_BOAT_DECK_TOP_DECK_lyd87o.jpg",
     } 
   };
 
