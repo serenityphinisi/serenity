@@ -2457,7 +2457,7 @@ function LivingSpaces() {
 function DeckAndSpecs() {
   const shouldReduceMotion = useReducedMotion();
 
-  const [deck, setDeck] = useState("sun");
+  const [deck, setDeck] = useState("main");
   const [expanded, setExpanded] = useState(false);
 
   const [visible, setVisible] = useState({
@@ -2475,9 +2475,9 @@ function DeckAndSpecs() {
   const specsRef = useRef(null);
 
   const decks = {
-    sun: {
-      label: "Sun",
-      fullLabel: "Sun Deck",
+    main: {
+      label: "Main",
+      fullLabel: "Main Deck",
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068975/Layout_-_03_Top_Deck_yvyisz.webp",
     },
@@ -2487,21 +2487,15 @@ function DeckAndSpecs() {
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068974/Layout_-_02_Upper_Deck_pouo1p.webp",
     },
-    main: {
-      label: "Main",
-      fullLabel: "Main Deck",
+    top: {
+      label: "Top",
+      fullLabel: "Top Deck",
       image:
         "https://res.cloudinary.com/dombq6plz/image/upload/v1776068978/Layout_01_-_Main_Deck_yztnzb.webp",
-    },
-    lower: {
-      label: "Lower",
-      fullLabel: "Lower Deck",
-      image:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068975/Layout_00_-_Lower_Deck_m92vvk.webp",
-    },
+    } 
   };
 
-  const deckList = ["sun", "upper", "main", "lower"];
+  const deckList = ["main", "upper", "top"];
 
   const specs = [
     ["Vessel Type", "Phinisi Sailing Yacht"],
