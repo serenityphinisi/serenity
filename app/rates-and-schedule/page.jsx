@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence,useInView, useReducedMotion } from "framer-motion";
+import { FiArrowDown, FiArrowRight, FiX } from "react-icons/fi";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
 import { SITE_CONTACT } from "@/lib/siteConfig";
@@ -308,9 +309,9 @@ function Hero() {
  
               <h1
                 ref={headlineRef}
+                className="text-[52px] sm:text-[58px] md:text-[68px] lg:text-[74px] xl:text-[78px] 2xl:text-[84px]"
                 style={{
                   fontFamily: 'Gambarino, serif',
-                  fontSize: 'clamp(52px, 7vw, 84px)',
                   lineHeight: 1.0,
                   letterSpacing: '-0.03em',
                   color: '#F4F5F2',
@@ -356,7 +357,7 @@ function Hero() {
                   onMouseLeave={e => e.currentTarget.style.color = 'rgba(244,245,242,0.44)'}
                 >
                   View charter rates
-                  <span style={{ color: '#B08D57' }}>↓</span>
+                  <FiArrowDown aria-hidden="true" className="h-[14px] w-[14px]" style={{ color: '#B08D57' }} />
                 </a>
               </div>
  
@@ -1011,8 +1012,9 @@ function Rate() {
 
   return (
     <section
+      id="charter"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[#2D3C68]"
+      className="relative scroll-mt-24 overflow-hidden bg-[#2D3C68] md:scroll-mt-28"
     >
       {/* ── Entry bridge — sail-white memory dissolving in ── */}
       <div
@@ -1878,7 +1880,8 @@ function SailingCalendar() {
               md:mt-0
             "
           >
-            Inquire About a Window →
+            Inquire About a Window
+            <FiArrowRight aria-hidden="true" className="ml-2 h-[14px] w-[14px] shrink-0" />
           </a>
 
         </motion.div>
@@ -2229,10 +2232,9 @@ function StepCard({ stepRef, step, index }) {
     >
       {/* Ghost number */}
       <div
-        className="pointer-events-none select-none absolute right-3 top-2"
+        className="pointer-events-none select-none absolute right-3 top-2 text-[72px] xl:text-[76px] 2xl:text-[92px]"
         style={{
           fontFamily: 'Gambarino, serif',
-          fontSize: '100px',
           lineHeight: 1,
           letterSpacing: '-0.06em',
           color: 'rgba(45,60,104,0.04)',
@@ -2446,7 +2448,7 @@ function RateOverview() {
             Rates
           </p>
 
-          <h2 className="mt-6 font-[Gambarino] text-[54px] md:text-[72px] leading-[1] tracking-[-0.035em] text-[#2D3C68]">
+          <h2 className="mt-6 font-[Gambarino] text-[54px] md:text-[58px] xl:text-[62px] 2xl:text-[72px] leading-[1] tracking-[-0.035em] text-[#2D3C68]">
             Private charter rates,
             <br />
             made clear
@@ -2480,7 +2482,7 @@ function RateOverview() {
                   USD
                 </span>
 
-                <span className="font-[Gambarino] text-[74px] md:text-[96px] leading-none tracking-[-0.04em] text-[#1A1A1A]">
+                <span className="font-[Gambarino] text-[74px] md:text-[72px] xl:text-[76px] 2xl:text-[96px] leading-none tracking-[-0.04em] text-[#1A1A1A]">
                   8,500
                 </span>
               </div>
@@ -2507,7 +2509,7 @@ function RateOverview() {
                   USD
                 </span>
 
-                <span className="font-[Gambarino] text-[58px] md:text-[74px] leading-none tracking-[-0.04em] text-[#1A1A1A]">
+                <span className="font-[Gambarino] text-[58px] md:text-[64px] xl:text-[68px] 2xl:text-[74px] leading-none tracking-[-0.04em] text-[#1A1A1A]">
                   6,500
                 </span>
               </div>
@@ -3663,7 +3665,7 @@ function InclusionsExclusions() {
                 "Additional massage treatments"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4">
-                  <span className="text-white/40 text-[14px] mt-[2px]">×</span>
+                  <FiX aria-hidden="true" className="mt-[2px] h-[14px] w-[14px] shrink-0 text-white/40" />
                   <span className="text-[14px] text-white/60">{item}</span>
                 </li>
               ))}

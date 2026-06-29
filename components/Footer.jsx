@@ -7,6 +7,7 @@ import { SITE_BRAND, SITE_CONTACT, SITE_SOCIAL } from "@/lib/siteConfig";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -553,7 +554,11 @@ export default function ClosingSuite() {
             tracking-[-0.045em]
             text-[#F4F5F2]
             sm:text-[52px]
-            md:text-[clamp(62px,6.6vw,84px)]
+            md:text-[58px]
+            lg:text-[62px]
+            xl:text-[68px]
+            2xl:text-[78px]
+            min-[1728px]:text-[84px]
           "
         >
           <span className="headline-line block">
@@ -602,9 +607,10 @@ export default function ClosingSuite() {
           >
             {config.text.cta}
 
-            <span className="transition-transform duration-500 group-hover:translate-x-[3px]">
-              →
-            </span>
+            <FiArrowRight
+              aria-hidden="true"
+              className="h-[14px] w-[14px] transition-transform duration-500 group-hover:translate-x-[3px]"
+            />
           </TransitionLink>
         </div>
       </div>

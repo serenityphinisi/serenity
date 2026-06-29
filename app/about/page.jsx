@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
 import { SITE_CONTACT } from "@/lib/siteConfig";
@@ -1952,7 +1952,7 @@ function Conversion() {
             }}
           >
             Begin Your Voyage
-            <span style={{ fontSize: '16px', lineHeight: 1 }}>↗</span>
+            <FiArrowUpRight aria-hidden="true" className="h-[14px] w-[14px]" />
           </TransitionLink>
  
           {/* Email — secondary */}
@@ -5383,8 +5383,9 @@ function ExperienceSummary() {
             Start planning your time on board
           </p>
 
-          <button className="mt-6 text-[13px] tracking-[0.18em] uppercase text-[#2D3C68]/80 border-b border-[#2D3C68]/40 hover:border-[#2D3C68] hover:text-[#2D3C68] transition">
-            Explore Options →
+          <button className="mt-6 inline-flex items-center gap-2 text-[13px] tracking-[0.18em] uppercase text-[#2D3C68]/80 border-b border-[#2D3C68]/40 hover:border-[#2D3C68] hover:text-[#2D3C68] transition">
+            Explore Options
+            <FiArrowRight aria-hidden="true" className="h-[14px] w-[14px] shrink-0" />
           </button>
 
         </div>

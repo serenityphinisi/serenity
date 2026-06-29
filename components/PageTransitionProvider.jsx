@@ -272,15 +272,18 @@ function scheduleHashScrollWithRetry(hash, options = {}) {
   let count = 0;
   let timer = null;
   let cancelled = false;
+  let hasScrolled = false;
 
   const run = () => {
     if (cancelled) return;
 
     const didScroll = scrollToHash(hash, {
-      behavior,
+      behavior: hasScrolled ? "auto" : behavior,
     });
 
-    if (didScroll) return;
+    if (didScroll) {
+      hasScrolled = true;
+    }
 
     count += 1;
 

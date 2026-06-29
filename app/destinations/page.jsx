@@ -5,6 +5,7 @@ import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FiArrowRight } from "react-icons/fi";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
 
@@ -197,7 +198,8 @@ function Hero() {
                   md:hover:text-[#2D3C68]
                 "
               >
-                Explore Destinations →
+                Explore Destinations
+                <FiArrowRight aria-hidden="true" className="ml-2 h-[14px] w-[14px]" />
               </button>
             </div>
  

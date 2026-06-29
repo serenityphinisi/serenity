@@ -5,7 +5,7 @@ import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { ArrowUpRight } from "lucide-react";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import TransitionLink from "@/components/TransitionLink";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import { SITE_CONTACT } from "@/lib/siteConfig";
@@ -4133,15 +4133,17 @@ function SampleJourney() {
           <div className="flex gap-3">
             <button
               onClick={() => scroll("prev")}
+              aria-label="Previous day card"
               className="w-[40px] h-[40px] border border-[#2D3C68]/30 flex items-center justify-center hover:bg-[#2D3C68]/10 transition"
             >
-              ←
+              <FiArrowLeft aria-hidden="true" className="h-[16px] w-[16px]" />
             </button>
             <button
               onClick={() => scroll("next")}
+              aria-label="Next day card"
               className="w-[40px] h-[40px] border border-[#2D3C68]/30 flex items-center justify-center hover:bg-[#2D3C68]/10 transition"
             >
-              →
+              <FiArrowRight aria-hidden="true" className="h-[16px] w-[16px]" />
             </button>
           </div>
 
@@ -5013,9 +5015,10 @@ function RateAnchor() {
             <div className="mt-10">
               <TransitionLink
                 href="/rates-and-schedule"
-                className="text-[13px] tracking-[0.18em] uppercase text-[#2D3C68] border-b border-[#2D3C68]/30 hover:border-[#2D3C68] transition"
+                className="inline-flex items-center gap-2 text-[13px] tracking-[0.18em] uppercase text-[#2D3C68] border-b border-[#2D3C68]/30 hover:border-[#2D3C68] transition"
               >
-                View full rates →
+                View full rates
+                <FiArrowRight aria-hidden="true" className="h-[14px] w-[14px] shrink-0" />
               </TransitionLink>
             </div>
 
@@ -5374,8 +5377,9 @@ function SocialExperience() {
 
         {/* CTA */}
         <div className="mt-24">
-          <button className="px-6 py-3 bg-[#2D3C68] text-white text-[14px] rounded-full hover:bg-[#1f2c4f] transition">
-            See full journey →
+          <button className="inline-flex items-center gap-2 px-6 py-3 bg-[#2D3C68] text-white text-[14px] rounded-full hover:bg-[#1f2c4f] transition">
+            See full journey
+            <FiArrowRight aria-hidden="true" className="h-[14px] w-[14px] shrink-0" />
           </button>
         </div>
 
@@ -5487,12 +5491,18 @@ function ExperienceModes() {
           <div className="absolute inset-0 bg-black/5" />
 
           {/* arrows (refined, smaller, less loud) */}
-          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/70 backdrop-blur flex items-center justify-center text-[#0F172A] text-sm hover:bg-white transition">
-            ←
+          <button
+            aria-label="Previous image"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/70 backdrop-blur flex items-center justify-center text-[#0F172A] text-sm hover:bg-white transition"
+          >
+            <FiArrowLeft aria-hidden="true" className="h-[15px] w-[15px]" />
           </button>
 
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/70 backdrop-blur flex items-center justify-center text-[#0F172A] text-sm hover:bg-white transition">
-            →
+          <button
+            aria-label="Next image"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/70 backdrop-blur flex items-center justify-center text-[#0F172A] text-sm hover:bg-white transition"
+          >
+            <FiArrowRight aria-hidden="true" className="h-[15px] w-[15px]" />
           </button>
 
         </div>
@@ -5596,8 +5606,9 @@ function Culinary() {
                 Chef Roniawan Putra
               </h3>
 
-              <button className="mt-6 text-[12px] tracking-[0.25em] uppercase text-[#0F172A] border-b border-[#0F172A]/30 hover:border-[#0F172A] transition">
-                Learn More →
+              <button className="mt-6 inline-flex items-center gap-2 text-[12px] tracking-[0.25em] uppercase text-[#0F172A] border-b border-[#0F172A]/30 hover:border-[#0F172A] transition">
+                Learn More
+                <FiArrowRight aria-hidden="true" className="h-[14px] w-[14px] shrink-0" />
               </button>
 
             </div>

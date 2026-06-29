@@ -101,6 +101,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [hovered, setHovered]   = useState(null); // item.label | null
   const pathname = usePathname();
+  const isHome = pathname === "/";
 
   const lastScroll = useRef(0);
   const menuRouteRef = useRef(pathname);
@@ -239,12 +240,12 @@ export default function Navbar() {
           opacity: show ? 1   : 0,
         }}
         transition={{ duration: 0.45, ease }}
-        className="
+        className={`
           fixed left-1/2 top-4 z-50
           w-[94%] max-w-[1240px]
           -translate-x-1/2
-          md:top-5
-        "
+          ${isHome ? "md:top-4 2xl:top-5" : "md:top-5"}
+        `}
       >
         <div
           className={`
@@ -287,7 +288,7 @@ export default function Navbar() {
               grid grid-cols-3 items-center
               px-4 py-[10px]
               transition-all duration-500
-              md:px-7 md:py-4
+              ${isHome ? "md:px-6 md:py-3 2xl:px-7 2xl:py-4" : "md:px-7 md:py-4"}
               ${scrolled ? "text-[#2D3C68]" : "text-[#F4F5F2]"}
             `}
           >
@@ -295,13 +296,19 @@ export default function Navbar() {
             <div className="flex items-center justify-start">
               <button
                 onClick={() => setOpen(true)}
-                className="group inline-flex items-center gap-2.5 transition-all duration-300 md:gap-3"
+                className={`group inline-flex items-center gap-2.5 transition-all duration-300 ${
+                  isHome ? "md:gap-2.5 2xl:gap-3" : "md:gap-3"
+                }`}
               >
                 <Menu
                   strokeWidth={1.5}
-                  className="h-[15px] w-[15px] opacity-[0.86]"
+                  className={`opacity-[0.86] ${
+                    isHome ? "h-[15px] w-[15px] md:h-[14px] md:w-[14px] 2xl:h-[15px] 2xl:w-[15px]" : "h-[15px] w-[15px]"
+                  }`}
                 />
-                <span className="hidden text-[11px] uppercase tracking-[0.32em] opacity-[0.88] sm:block">
+                <span className={`hidden uppercase opacity-[0.88] sm:block ${
+                  isHome ? "text-[11px] tracking-[0.32em] md:text-[10px] md:tracking-[0.28em] 2xl:text-[11px] 2xl:tracking-[0.32em]" : "text-[11px] tracking-[0.32em]"
+                }`}>
                   Menu
                 </span>
               </button>
@@ -313,7 +320,9 @@ export default function Navbar() {
                 href="/"
                 transitionImage={NAV_ITEMS.find((item) => item.href === "/")?.image}
                 transitionLabel="Home"
-                className="relative block h-[28px] w-[122px] md:h-[40px] md:w-[180px]"
+                className={`relative block h-[28px] w-[122px] ${
+                  isHome ? "md:h-[34px] md:w-[154px] 2xl:h-[40px] 2xl:w-[180px]" : "md:h-[40px] md:w-[180px]"
+                }`}
               >
                 <Image
                   src={LOGO}
@@ -363,8 +372,9 @@ export default function Navbar() {
                 transitionLabel="Contact"
                 className={`
                   group hidden items-center gap-2 rounded-full border
-                  px-5 py-2 text-[12px] uppercase tracking-[0.28em]
+                  uppercase
                   transition-all duration-300 md:inline-flex
+                  ${isHome ? "px-4 py-1.5 text-[11px] tracking-[0.24em] 2xl:px-5 2xl:py-2 2xl:text-[12px] 2xl:tracking-[0.28em]" : "px-5 py-2 text-[12px] tracking-[0.28em]"}
                   ${scrolled
                     ? "border-[#2D3C68]/14 bg-[#2D3C68] text-[#F4F5F2]"
                     : "border-[#F4F5F2]/32 text-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#2D3C68]"
@@ -372,7 +382,7 @@ export default function Navbar() {
                 `}
               >
                 <span>Reserve</span>
-                <ArrowUpRight strokeWidth={1.5} className="h-[13px] w-[13px]" />
+                <ArrowUpRight strokeWidth={1.5} className={isHome ? "h-[12px] w-[12px] 2xl:h-[13px] 2xl:w-[13px]" : "h-[13px] w-[13px]"} />
               </TransitionLink>
             </div>
           </div>
@@ -517,13 +527,17 @@ export default function Navbar() {
 
                 {/* ── LEFT COLUMN — navigation ─────────────────── */}
 
-                <div className="relative flex flex-col justify-between border-r border-white/[0.06] px-12 py-10">
+                <div className={`relative flex flex-col justify-between border-r border-white/[0.06] ${
+                  isHome ? "px-10 py-8 2xl:px-12 2xl:py-10" : "px-12 py-10"
+                }`}>
 
                   {/* desktop top bar */}
                   <div className="relative flex items-center justify-between">
 
                     {/* logo */}
-                    <div className="relative h-[26px] w-[120px]">
+                    <div className={`relative ${
+                      isHome ? "h-[23px] w-[106px] 2xl:h-[26px] 2xl:w-[120px]" : "h-[26px] w-[120px]"
+                    }`}>
                       <Image
                         src={LOGO}
                         alt="Serenity"
@@ -606,7 +620,9 @@ export default function Navbar() {
                               transitionLabel={item.label}
                               onClick={() => handleFullscreenMenuLinkClick(item.href)}
                               onMouseEnter={() => setHovered(item.label)}
-                              className="group flex items-center border-b border-white/[0.05] py-[18px]"
+                              className={`group flex items-center border-b border-white/[0.05] ${
+                                isHome ? "py-[14px] 2xl:py-[18px]" : "py-[18px]"
+                              }`}
                             >
                               {/*
                                 ── LABEL ───────────────────────────
@@ -618,16 +634,16 @@ export default function Navbar() {
                                 — specific, performant.
                               */}
                               <span
-                                className="
+                                className={`
                                   font-[Gambarino]
-                                  text-[46px]
+                                  ${isHome ? "text-[40px] 2xl:text-[46px]" : "text-[46px]"}
                                   leading-[0.88]
                                   tracking-[-0.05em]
                                   text-[#E9E5DD]
                                   transition-colors
                                   duration-600
                                   group-hover:text-[#C7A36A]
-                                "
+                                `}
                               >
                                 {item.label}
                               </span>
@@ -639,7 +655,9 @@ export default function Navbar() {
                   </nav>
 
                   {/* desktop bottom — single label */}
-                  <div className="border-t border-white/[0.08] pt-6 text-[10px] uppercase tracking-[0.2em] text-white/34">
+                  <div className={`border-t border-white/[0.08] text-[10px] uppercase tracking-[0.2em] text-white/34 ${
+                    isHome ? "pt-5 2xl:pt-6" : "pt-6"
+                  }`}>
                     Indonesia Archipelago
                   </div>
 

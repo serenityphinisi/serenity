@@ -9,72 +9,272 @@ export default function Error({ error, reset }) {
   }, [error]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#2D3C68] text-[#F4F5F2]">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,rgba(244,245,242,0.055),transparent_45%),radial-gradient(circle_at_88%_84%,rgba(176,141,87,0.08),transparent_44%)]" />
-        <div className="absolute inset-0 bg-[rgba(26,26,26,0.28)]" />
+    <main className="relative min-h-[100svh] overflow-hidden bg-[#2D3C68] text-[#F4F5F2]">
+      {/* QUIET BACKGROUND */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[#07101f]/20" />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 28%, rgba(244,245,242,0.06) 0%, rgba(244,245,242,0) 38%), radial-gradient(circle at 50% 100%, rgba(11,19,34,0.36) 0%, rgba(11,19,34,0) 54%)",
+          }}
+        />
       </div>
 
-      <div className="relative z-[1] flex min-h-screen items-center px-6 py-16 sm:px-10 lg:px-16">
-        <section className="w-full max-w-[720px]">
-          <p
-            className="text-[10px] uppercase tracking-[0.32em]"
-            style={{
-              fontFamily: "Switzer, Arial, sans-serif",
-              color: "rgba(244,245,242,0.62)",
-            }}
+      {/* VERY SUBTLE CHART TEXTURE */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.11]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(244,245,242,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(244,245,242,0.055) 1px, transparent 1px)",
+          backgroundSize: "84px 84px",
+          maskImage:
+            "radial-gradient(circle at 50% 50%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 48%, transparent 82%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 50% 50%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.28) 48%, transparent 82%)",
+        }}
+      />
+
+      {/* CONTENT */}
+      <div
+        className="
+          relative
+          z-[1]
+          flex
+          min-h-[100svh]
+          items-center
+          justify-center
+          px-6
+          py-16
+          sm:px-10
+          lg:px-16
+        "
+      >
+        <section
+          aria-labelledby="error-title"
+          className="
+            relative
+            w-full
+            max-w-[760px]
+            overflow-hidden
+            border-y
+            border-[#F4F5F2]/12
+            px-1
+            py-10
+            text-center
+            sm:px-8
+            sm:py-12
+            md:px-10
+          "
+        >
+          {/* PAUSED ROUTE TRACE INSIDE THE NOTICE ONLY */}
+          <svg
+            aria-hidden="true"
+            className="
+              pointer-events-none
+              absolute
+              left-1/2
+              top-1/2
+              h-[210px]
+              w-[760px]
+              -translate-x-1/2
+              -translate-y-1/2
+              opacity-45
+            "
+            viewBox="0 0 760 210"
+            fill="none"
           >
-            Something went wrong
-          </p>
+            <path
+              d="M62 144 C164 70 244 94 322 74"
+              stroke="rgba(244,245,242,0.13)"
+              strokeWidth="1"
+              strokeDasharray="6 11"
+              strokeLinecap="round"
+            />
 
-          <div className="mt-5 h-px w-16 bg-[#B08D57]" />
+            <path
+              d="M438 68 C520 32 608 42 698 24"
+              stroke="rgba(244,245,242,0.13)"
+              strokeWidth="1"
+              strokeDasharray="6 11"
+              strokeLinecap="round"
+            />
 
-          <h1
-            className="mt-7 text-[clamp(44px,7vw,78px)] leading-[1.03]"
-            style={{ fontFamily: "Gambarino, Georgia, serif" }}
-          >
-            The voyage paused unexpectedly.
-          </h1>
+            <circle cx="62" cy="144" r="3" fill="rgba(244,245,242,0.2)" />
+            <circle cx="322" cy="74" r="2.5" fill="rgba(244,245,242,0.13)" />
+            <circle cx="438" cy="68" r="2.5" fill="rgba(244,245,242,0.13)" />
+            <circle cx="698" cy="24" r="3" fill="rgba(244,245,242,0.1)" />
+          </svg>
 
-          <p
-            className="mt-6 max-w-[640px] text-[14px] leading-[1.8] sm:text-[15px]"
-            style={{
-              fontFamily: "Switzer, Arial, sans-serif",
-              color: "rgba(244,245,242,0.62)",
-            }}
-          >
-            Something interrupted this page. You can try again, return home, or
-            contact Serenity directly.
-          </p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <button
-              type="button"
-              onClick={reset}
-              className="inline-flex w-fit items-center justify-center rounded-full border border-[#B08D57] px-5 py-2.5 text-[12px] uppercase tracking-[0.14em] text-[#F4F5F2] transition-colors duration-300 hover:bg-[#B08D57]/10"
-              style={{ fontFamily: "Switzer, Arial, sans-serif" }}
+          <div className="relative z-[1]">
+            <p
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.34em]
+                text-[#F4F5F2]/56
+                md:text-[11px]
+              "
+              style={{
+                fontFamily: "Switzer, Arial, sans-serif",
+              }}
             >
-              Try Again
-            </button>
+              Page Error / Interrupted
+            </p>
 
-            <Link
-              href="/"
-              className="inline-flex w-fit items-center justify-center px-1 py-2 text-[12px] uppercase tracking-[0.14em] text-[#F4F5F2] transition-colors duration-300 hover:text-[#B08D57]"
-              style={{ fontFamily: "Switzer, Arial, sans-serif" }}
+            <h1
+              id="error-title"
+              className="
+                mx-auto
+                mt-6
+                max-w-[760px]
+                text-[clamp(30px,3vw,40px)]
+                leading-[1.08]
+                tracking-[-0.045em]
+                text-[#F4F5F2]
+                md:whitespace-nowrap
+              "
+              style={{
+                fontFamily: "Gambarino, Georgia, serif",
+              }}
             >
-              Return Home
-            </Link>
+              The voyage paused unexpectedly.
+            </h1>
 
-            <Link
-              href="/contact"
-              className="inline-flex w-fit items-center justify-center px-1 py-2 text-[12px] uppercase tracking-[0.14em] text-[#F4F5F2] transition-colors duration-300 hover:text-[#B08D57]"
-              style={{ fontFamily: "Switzer, Arial, sans-serif" }}
+            <p
+              className="
+                mx-auto
+                mt-5
+                max-w-[520px]
+                text-[14px]
+                leading-[1.82]
+                text-[#F4F5F2]/62
+                sm:text-[15px]
+              "
+              style={{
+                fontFamily: "Switzer, Arial, sans-serif",
+              }}
             >
-              Contact Serenity
-            </Link>
+              Something interrupted this page. Try again, return home, or
+              contact Serenity directly.
+            </p>
+
+            <div
+              className="
+                mt-8
+                flex
+                flex-col
+                items-center
+                justify-center
+                gap-3
+                sm:flex-row
+                sm:flex-wrap
+                sm:gap-x-6
+              "
+            >
+              <button
+                type="button"
+                onClick={reset}
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-[#F4F5F2]
+                  px-5
+                  py-2.5
+                  text-[12px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-[#2D3C68]
+                  transition
+                  duration-300
+                  hover:bg-white
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#F4F5F2]/70
+                  focus-visible:ring-offset-2
+                  focus-visible:ring-offset-[#2D3C68]
+                "
+                style={{
+                  fontFamily: "Switzer, Arial, sans-serif",
+                }}
+              >
+                Try Again
+              </button>
+
+              <Link
+                href="/"
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  px-1
+                  py-2
+                  text-[12px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-[#F4F5F2]/68
+                  transition
+                  duration-300
+                  hover:text-[#F4F5F2]
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#F4F5F2]/45
+                  focus-visible:ring-offset-2
+                  focus-visible:ring-offset-[#2D3C68]
+                "
+                style={{
+                  fontFamily: "Switzer, Arial, sans-serif",
+                }}
+              >
+                Return Home
+              </Link>
+
+              <Link
+                href="/contact"
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  px-1
+                  py-2
+                  text-[12px]
+                  uppercase
+                  tracking-[0.14em]
+                  text-[#F4F5F2]/68
+                  transition
+                  duration-300
+                  hover:text-[#F4F5F2]
+                  focus:outline-none
+                  focus-visible:ring-2
+                  focus-visible:ring-[#F4F5F2]/45
+                  focus-visible:ring-offset-2
+                  focus-visible:ring-offset-[#2D3C68]
+                "
+                style={{
+                  fontFamily: "Switzer, Arial, sans-serif",
+                }}
+              >
+                Contact Serenity
+              </Link>
+            </div>
           </div>
         </section>
       </div>
+
+      {/* BOTTOM DEPTH */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[26svh]"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(11,19,34,0) 0%, rgba(11,19,34,0.28) 100%)",
+        }}
+      />
     </main>
   );
 }

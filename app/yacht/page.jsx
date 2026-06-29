@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "../../lib/gsap"
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
 import { usePageTransition } from "@/components/PageTransitionProvider";
 import TransitionLink from "@/components/TransitionLink";
 import { SITE_CONTACT } from "@/lib/siteConfig";
@@ -2047,7 +2048,7 @@ function Cabins() {
               md:top-8
             "
           >
-            ×
+            <FiX aria-hidden="true" className="h-[18px] w-[18px]" />
           </button>
 
           <button
@@ -2179,7 +2180,7 @@ function Cabins() {
                   md:left-5
                 "
               >
-                ←
+                <FiArrowLeft aria-hidden="true" className="h-[18px] w-[18px]" />
               </button>
 
               <button
@@ -2213,7 +2214,7 @@ function Cabins() {
                   md:right-5
                 "
               >
-                →
+                <FiArrowRight aria-hidden="true" className="h-[18px] w-[18px]" />
               </button>
             </div>
 
@@ -2355,8 +2356,13 @@ function Gallery() {
             CLOSE
           </button>
 
-          <button onClick={prev} className="absolute left-6 text-white text-[28px] opacity-40 hover:opacity-100">
-            ←
+          <button
+            type="button"
+            aria-label="Previous image"
+            onClick={prev}
+            className="absolute left-6 text-white text-[28px] opacity-40 hover:opacity-100"
+          >
+            <FiArrowLeft aria-hidden="true" className="h-[22px] w-[22px]" />
           </button>
 
           <img
@@ -2365,8 +2371,13 @@ function Gallery() {
             className="max-h-[85vh] max-w-[90vw] object-contain animate-fade"
           />
 
-          <button onClick={next} className="absolute right-6 text-white text-[28px] opacity-40 hover:opacity-100">
-            →
+          <button
+            type="button"
+            aria-label="Next image"
+            onClick={next}
+            className="absolute right-6 text-white text-[28px] opacity-40 hover:opacity-100"
+          >
+            <FiArrowRight aria-hidden="true" className="h-[22px] w-[22px]" />
           </button>
         </div>
       )}
@@ -2623,6 +2634,7 @@ function DeckAndSpecs() {
 
   return (
     <section
+      id="deck-plan"
       aria-labelledby="deck-specs-title"
       className="
         relative
@@ -3094,12 +3106,15 @@ function DeckAndSpecs() {
 
         {/* ================= SPECS ================= */}
         <div
+          id="specifications"
           ref={specsRef}
           className={`
             mx-auto
+            scroll-mt-24
             max-w-[900px]
             transition-all
             duration-[1000ms]
+            md:scroll-mt-28
             ease-[cubic-bezier(0.22,1,0.36,1)]
             ${
               visible.specs
@@ -3224,7 +3239,7 @@ function DeckAndSpecs() {
               md:top-8
             "
           >
-            ×
+            <FiX aria-hidden="true" className="h-[18px] w-[18px]" />
           </button>
 
           <button
