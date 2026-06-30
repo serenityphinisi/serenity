@@ -421,7 +421,7 @@ function ContactHero() {
  
    const ease = [0.22, 1, 0.36, 1];
  
-   const DESTINATIONS = ["Labuan Bajo", "Raja Ampat", "Both", "Not sure yet"];
+   const DESTINATIONS = ["Komodo Island", "Raja Ampat", "Both", "Not sure yet"];
    const DURATIONS    = ["5–7 nights", "7–10 nights", "10+ nights", "Not sure yet"];
    const GUESTS_OPTS  = ["1–4 guests", "5–8 guests", "9–12 guests"];
     
@@ -542,7 +542,10 @@ function isValidEmail(value) {
          : "rgba(45,60,104,0.42)";
     
      return (
-       <div ref={containerRef} className="relative flex flex-col">
+       <div
+         ref={containerRef}
+         className={`relative flex flex-col ${open ? "z-[80]" : "z-0"}`}
+       >
          {/* label */}
          <span className="text-[10px] uppercase tracking-[0.28em] text-[#5C5C5C] font-[Switzer] font-light mb-2">
            {label}
@@ -591,11 +594,15 @@ function isValidEmail(value) {
                animate={{ opacity: 1, y: 0,  scaleY: 1    }}
                exit={{    opacity: 0, y: -6, scaleY: 0.96 }}
                transition={{ duration: 0.18, ease }}
-               style={{ transformOrigin: "top center" }}
+               style={{
+                 transformOrigin: "top center",
+                 backgroundColor: "#F4F5F2",
+               }}
                className="
                  absolute top-[calc(100%+6px)] left-0
-                 z-[200] w-full min-w-[180px]
+                 z-[500] w-full min-w-[180px]
                  bg-[#F4F5F2]
+                 overflow-hidden
                  border border-[#2D3C68]/10
                  shadow-[0_24px_60px_rgba(22,32,55,0.08)]
                  py-1.5
@@ -609,12 +616,22 @@ function isValidEmail(value) {
                      className="
                        block w-full text-left
                        px-5 py-[10px]
+                       bg-[#F4F5F2]
                        text-[13px] font-[Switzer] font-light tracking-[0.02em]
                        transition-colors duration-150
                      "
-                     style={{ color: value === opt ? "#B08D57" : "#2D3C68" }}
-                     onMouseEnter={(e) => { e.currentTarget.style.color = "#B08D57"; }}
-                     onMouseLeave={(e) => { e.currentTarget.style.color = value === opt ? "#B08D57" : "#2D3C68"; }}
+                     style={{
+                       color: value === opt ? "#B08D57" : "#2D3C68",
+                       backgroundColor: value === opt ? "rgba(45,60,104,0.045)" : "#F4F5F2",
+                     }}
+                     onMouseEnter={(e) => {
+                       e.currentTarget.style.color = "#B08D57";
+                       e.currentTarget.style.backgroundColor = "rgba(45,60,104,0.055)";
+                     }}
+                     onMouseLeave={(e) => {
+                       e.currentTarget.style.color = value === opt ? "#B08D57" : "#2D3C68";
+                       e.currentTarget.style.backgroundColor = value === opt ? "rgba(45,60,104,0.045)" : "#F4F5F2";
+                     }}
                    >
                      {opt}
                    </button>
@@ -1009,7 +1026,7 @@ function isValidEmail(value) {
                      {/* ROW 3 — Destination + Duration */}
                      <div
                        ref={addRef(3)}
-                       className="grid grid-cols-1 gap-8 sm:grid-cols-2"
+                       className="relative z-30 grid grid-cols-1 gap-8 sm:grid-cols-2"
                      >
                        <SelectInput
                          label="Destination"
@@ -1030,7 +1047,7 @@ function isValidEmail(value) {
                      {/* ROW 4 — Guests + Preferred Dates */}
                      <div
                        ref={addRef(4)}
-                       className="grid grid-cols-1 gap-8 sm:grid-cols-2"
+                       className="relative z-20 grid grid-cols-1 gap-8 sm:grid-cols-2"
                      >
                        <SelectInput
                          label="Number of Guests"
@@ -1048,7 +1065,7 @@ function isValidEmail(value) {
                      </div>
     
                      {/* ROW 5 — Message */}
-                     <div ref={addRef(5)}>
+                     <div ref={addRef(5)} className="relative z-10">
                        <TextareaInput
                          label="Message"
                          value={fields.message}

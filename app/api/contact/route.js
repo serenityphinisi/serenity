@@ -4,7 +4,7 @@ import { Resend } from "resend";
 export const runtime = "nodejs";
 
 const DESTINATIONS = new Set([
-  "Labuan Bajo",
+  "Komodo Island",
   "Raja Ampat",
   "Both",
   "Not sure yet",

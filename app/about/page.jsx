@@ -2473,7 +2473,7 @@ function BeforeYouSail() {
     {
       question: "Where does Serenity sail?",
       answer:
-        "Serenity sails through Indonesian waters including Raja Ampat and Labuan Bajo, depending on season, route, and sea conditions.",
+        "Serenity sails through Indonesian waters including Raja Ampat and Komodo Island, depending on season, route, and sea conditions.",
     },
     {
       question: "Is the itinerary fixed?",
@@ -2936,7 +2936,7 @@ function AboutOrigin() {
               >
                 Every journey felt too crowded, too scheduled, too far from
                 the water itself. The archipelago was there — Raja Ampat,
-                Komodo, Labuan Bajo — but the way people accessed it kept
+                Komodo, Komodo Island — but the way people accessed it kept
                 getting in the way.
               </p>
  

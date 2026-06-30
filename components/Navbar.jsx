@@ -50,7 +50,7 @@ const NAV_ITEMS = [
     href: "/destinations",
     image:
       "https://res.cloudinary.com/dombq6plz/image/upload/v1780331033/ChatGPT_Image_Jun_1_2026_09_10_09_PM_jyycnr.png",
-    // REPLACE → aerial Labuan Bajo or Raja Ampat landscape
+    // REPLACE → aerial Komodo Island or Raja Ampat landscape
   },
 
   {

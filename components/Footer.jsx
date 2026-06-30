@@ -732,7 +732,7 @@ export default function ClosingSuite() {
           className="
             grid
             gap-10
-            border-y
+            border-t
             border-[#F4F5F2]/[0.075]
             py-9
             text-center

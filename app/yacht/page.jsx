@@ -1163,7 +1163,7 @@ function Cabins() {
       location: "Twin Cabin",
       size: "15.74 sqm",
       deck: "Below Deck",
-      units: "3 Cabins",
+      units: "2 Cabins",
       beds: "Twin Beds",
       desc:
         "Twin beds, an ensuite bath, and a desk by the window. Set up for the quiet hours between long days on the water.",
@@ -1197,7 +1197,7 @@ function Cabins() {
       location: "Master Cabin",
       size: "18.48 sqm",
       deck: "Below Deck",
-      units: "1 Cabin",
+      units: "2 Cabin",
       beds: "King Bed",
       desc:
         "King bed framed by sea-facing windows that hold the horizon from morning to dusk. The largest of the four cabins.",

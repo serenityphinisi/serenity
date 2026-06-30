@@ -56,6 +56,48 @@ export default function Home() {
 
 const DISABLE_ANIMATION = false; // ubah ke false kalau mau animasi aktif
 
+const SERENITY_MOTION_EASE = [0.22, 1, 0.36, 1];
+
+const SERENITY_GSAP_EASE = (progress) => {
+  const x1 = 0.22;
+  const y1 = 1;
+  const x2 = 0.36;
+  const y2 = 1;
+
+  const sampleCurveX = (t) => {
+    const invT = 1 - t;
+    return 3 * invT * invT * t * x1 + 3 * invT * t * t * x2 + t * t * t;
+  };
+
+  const sampleCurveY = (t) => {
+    const invT = 1 - t;
+    return 3 * invT * invT * t * y1 + 3 * invT * t * t * y2 + t * t * t;
+  };
+
+  const sampleDerivativeX = (t) => {
+    const invT = 1 - t;
+    return (
+      3 * invT * invT * x1 +
+      6 * invT * t * (x2 - x1) +
+      3 * t * t * (1 - x2)
+    );
+  };
+
+  let t = progress;
+
+  for (let i = 0; i < 6; i += 1) {
+    const x = sampleCurveX(t) - progress;
+    const derivative = sampleDerivativeX(t);
+
+    if (Math.abs(x) < 0.0001 || derivative === 0) break;
+
+    t -= x / derivative;
+    t = Math.max(0, Math.min(1, t));
+  }
+
+  return sampleCurveY(t);
+};
+
 
 /* =========================
    HERO SECTION
@@ -100,7 +142,7 @@ function Hero() {
     src: "https://res.cloudinary.com/dombq6plz/video/upload/v1780307478/13763834_3840_2160_30fps_1_odhftg.mp4",
   };
 
-  const ease = [0.22, 1, 0.36, 1];
+  const ease = SERENITY_MOTION_EASE;
 
   // =========================================================
   // VIDEO SAFETY LAYER
@@ -419,13 +461,13 @@ function Hero() {
                 : {
                     opacity: 0,
                     y: 24,
-                    filter: "blur(6px)",
+                    filter: "blur(4px)",
                   }
             }
             animate={{
               opacity: heroEntranceReady ? 1 : 0,
               y: heroEntranceReady ? 0 : 24,
-              filter: heroEntranceReady ? "blur(0px)" : "blur(8px)",
+              filter: heroEntranceReady ? "blur(0px)" : "blur(4px)",
             }}
             transition={{
               duration: 1.2,
@@ -471,13 +513,13 @@ function Hero() {
                   : {
                       opacity: 0,
                       y: 56,
-                      filter: "blur(10px)",
+                      filter: "blur(6px)",
                     }
               }
               animate={{
                 opacity: heroEntranceReady ? 1 : 0,
                 y: heroEntranceReady ? 0 : 56,
-                filter: heroEntranceReady ? "blur(0px)" : "blur(10px)",
+                filter: heroEntranceReady ? "blur(0px)" : "blur(6px)",
               }}
               transition={{
                 duration: 1.45,
@@ -496,13 +538,13 @@ function Hero() {
                   : {
                       opacity: 0,
                       y: 56,
-                      filter: "blur(10px)",
+                      filter: "blur(6px)",
                     }
               }
               animate={{
                 opacity: heroEntranceReady ? 1 : 0,
                 y: heroEntranceReady ? 0 : 56,
-                filter: heroEntranceReady ? "blur(0px)" : "blur(10px)",
+                filter: heroEntranceReady ? "blur(0px)" : "blur(6px)",
               }}
               transition={{
                 duration: 1.45,
@@ -523,13 +565,13 @@ function Hero() {
                 : {
                     opacity: 0,
                     y: 30,
-                    filter: "blur(8px)",
+                    filter: "blur(4px)",
                   }
             }
             animate={{
               opacity: heroEntranceReady ? 1 : 0,
               y: heroEntranceReady ? 0 : 30,
-              filter: heroEntranceReady ? "blur(0px)" : "blur(8px)",
+              filter: heroEntranceReady ? "blur(0px)" : "blur(4px)",
             }}
             transition={{
               duration: 1.3,
@@ -655,9 +697,42 @@ function Introduction() {
       },
 
       animation: {
-        ease: "power3.out",
+        ease: SERENITY_GSAP_EASE,
 
         label: {
+          from: {
+            opacity: 0,
+            y: 8,
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            duration: 1.05,
+          },
+
+          start: "top 76%",
+        },
+
+        headline: {
+          from: {
+            opacity: 0,
+            y: 16,
+            filter: "blur(4px)",
+          },
+
+          to: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.18,
+            stagger: 0.14,
+          },
+
+          start: "top 70%",
+        },
+
+        description: {
           from: {
             opacity: 0,
             y: 10,
@@ -667,52 +742,17 @@ function Introduction() {
             opacity: 1,
             y: 0,
             duration: 1.05,
+            delay: 0.14,
           },
 
-          start: "top 88%",
-        },
-
-        headline: {
-          from: {
-            opacity: 0,
-            y: 24,
-            filter: "blur(7px)",
-          },
-
-          to: {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.28,
-            stagger: 0.14,
-          },
-
-          start: "top 84%",
-        },
-
-        description: {
-          from: {
-            opacity: 0,
-            y: 18,
-            filter: "blur(5px)",
-          },
-
-          to: {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.18,
-            delay: 0.1,
-          },
-
-          start: "top 88%",
+          start: "top 68%",
         },
 
         mobileImage: {
           from: {
             opacity: 0,
             scale: 1.025,
-            y: 24,
+            y: 14,
           },
 
           to: {
@@ -722,23 +762,23 @@ function Introduction() {
             duration: 1.35,
           },
 
-          start: "top 90%",
+          start: "top 92%",
         },
 
         desktopGrid: {
           from: {
             opacity: 0,
-            y: 26,
+            y: 14,
           },
 
           to: {
             opacity: 1,
             y: 0,
-            duration: 1.22,
+            duration: 1.12,
             stagger: 0.12,
           },
 
-          start: "top 88%",
+          start: "top 92%",
         },
       },
 
@@ -1376,12 +1416,12 @@ function Experiences() {
       },
 
       animation: {
-        ease: "power3.out",
+        ease: SERENITY_GSAP_EASE,
 
         label: {
           from: {
             opacity: 0,
-            y: 10,
+            y: 8,
           },
 
           to: {
@@ -1390,48 +1430,46 @@ function Experiences() {
             duration: 1.05,
           },
 
-          start: "top 88%",
+          start: "top 80%",
         },
 
         headline: {
           from: {
             opacity: 0,
-            y: 24,
-            filter: "blur(7px)",
+            y: 18,
+            filter: "blur(4px)",
           },
 
           to: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.38,
+            duration: 1.24,
           },
 
-          start: "top 84%",
+          start: "top 78%",
         },
 
         description: {
           from: {
             opacity: 0,
-            y: 18,
-            filter: "blur(5px)",
+            y: 10,
           },
 
           to: {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
-            duration: 1.28,
-            delay: 0.08,
+            duration: 1.08,
+            delay: 0.1,
           },
 
-          start: "top 88%",
+          start: "top 78%",
         },
 
         card: {
           from: {
             opacity: 0,
-            y: 26,
+            y: 16,
             scale: 1.01,
           },
 
@@ -1439,11 +1477,11 @@ function Experiences() {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 1.32,
+            duration: 1.18,
             stagger: 0.12,
           },
 
-          start: "top 86%",
+          start: "top 92%",
         },
 
         cta: {
@@ -1455,11 +1493,11 @@ function Experiences() {
           to: {
             opacity: 1,
             y: 0,
-            duration: 0.95,
-            delay: 0.05,
+            duration: 0.9,
+            delay: 0.16,
           },
 
-          start: "top 92%",
+          start: "top 96%",
         },
       },
 
@@ -1781,7 +1819,7 @@ function Destinations() {
       img: "https://res.cloudinary.com/dombq6plz/image/upload/v1780331037/ChatGPT_Image_Jun_1_2026_08_27_00_PM_st80e6.png",
     },
     {
-      name: ["Labuan", "Bajo"],
+      name: ["Komodo", "Island"],
       location: "East Nusa Tenggara",
       note: "Komodo waters and open sea",
       img: "https://res.cloudinary.com/dombq6plz/image/upload/v1778511669/ChatGPT_Image_May_11_2026_09_55_36_PM_1_utqtyq.png",
@@ -2633,12 +2671,12 @@ function Destinations() {
       if (!sectionRef.current) return;
   
       const animation = {
-        ease: "power3.out",
+        ease: SERENITY_GSAP_EASE,
   
         label: {
           from: {
             opacity: 0,
-            y: 10,
+            y: 8,
           },
   
           to: {
@@ -2651,45 +2689,41 @@ function Destinations() {
         headline: {
           from: {
             opacity: 0,
-            y: 24,
-            filter: "blur(7px)",
+            y: 18,
+            filter: "blur(4px)",
           },
   
           to: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.36,
+            duration: 1.22,
           },
         },
   
         description: {
           from: {
             opacity: 0,
-            y: 18,
-            filter: "blur(5px)",
+            y: 10,
           },
   
           to: {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
-            duration: 1.28,
+            duration: 1.06,
           },
         },
   
         mobileCards: {
           from: {
             opacity: 0,
-            y: 28,
-            filter: "blur(7px)",
+            y: 16,
           },
   
           to: {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
-            duration: 1.04,
+            duration: 0.98,
             stagger: 0.12,
           },
         },
@@ -2697,9 +2731,9 @@ function Destinations() {
         desktopYacht: {
           from: {
             opacity: 0,
-            scale: 0.965,
-            y: 36,
-            filter: "blur(12px)",
+            scale: 0.982,
+            y: 18,
+            filter: "blur(5px)",
           },
   
           to: {
@@ -2707,22 +2741,20 @@ function Destinations() {
             scale: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.7,
+            duration: 1.5,
           },
         },
   
         desktopCards: {
           from: {
             opacity: 0,
-            y: 34,
-            filter: "blur(8px)",
+            y: 16,
           },
   
           to: {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
-            duration: 1,
+            duration: 0.92,
             stagger: 0.13,
           },
         },
@@ -2820,7 +2852,7 @@ function Destinations() {
               TEXT — SEA-BREATH SYSTEM
             */
   
-            if (labelRef.current) {
+            if (mobile && labelRef.current) {
               tl.fromTo(
                 labelRef.current,
                 animation.label.from,
@@ -2832,7 +2864,7 @@ function Destinations() {
               );
             }
   
-            if (headlineRef.current) {
+            if (mobile && headlineRef.current) {
               tl.fromTo(
                 headlineRef.current,
                 animation.headline.from,
@@ -2844,7 +2876,7 @@ function Destinations() {
               );
             }
   
-            if (descRef.current) {
+            if (mobile && descRef.current) {
               tl.fromTo(
                 descRef.current,
                 animation.description.from,
@@ -2904,12 +2936,12 @@ function Destinations() {
                   scale: 0.98,
                 },
                 {
-                  opacity: 1,
+                  opacity: 0.92,
                   scale: 1,
-                  duration: 1.5,
+                  duration: 1.3,
                   ease,
                 },
-                0.34
+                0
               );
             }
   
@@ -2921,7 +2953,43 @@ function Destinations() {
                   ...animation.desktopYacht.to,
                   ease,
                 },
-                0.42
+                0.04
+              );
+            }
+
+            if (labelRef.current) {
+              tl.fromTo(
+                labelRef.current,
+                animation.label.from,
+                {
+                  ...animation.label.to,
+                  ease,
+                },
+                0.14
+              );
+            }
+  
+            if (headlineRef.current) {
+              tl.fromTo(
+                headlineRef.current,
+                animation.headline.from,
+                {
+                  ...animation.headline.to,
+                  ease,
+                },
+                0.22
+              );
+            }
+  
+            if (descRef.current) {
+              tl.fromTo(
+                descRef.current,
+                animation.description.from,
+                {
+                  ...animation.description.to,
+                  ease,
+                },
+                0.38
               );
             }
   
@@ -2937,7 +3005,7 @@ function Destinations() {
                 ...animation.desktopCards.to,
                 ease,
               },
-              0.9
+              0.76
             );
   
             if (desktopCtaRef.current) {
@@ -2948,7 +3016,7 @@ function Destinations() {
                   ...animation.cta.to,
                   ease,
                 },
-                1.15
+                1.12
               );
             }
   
@@ -2974,11 +3042,11 @@ function Destinations() {
                 opacity: 0.16,
                 duration: 2,
                 stagger: 0.24,
-                ease: "power2.out",
+                ease,
   
                 scrollTrigger: {
                   trigger: sectionRef.current,
-                  start: "top 60%",
+                  start: "top 68%",
                   once: true,
                 },
               });
@@ -3008,8 +3076,8 @@ function Destinations() {
   
             if (yachtFloatRef.current) {
               gsap.to(yachtFloatRef.current, {
-                y: "+=10",
-                duration: 5.4,
+                y: "+=4",
+                duration: 7.2,
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut",
@@ -3558,12 +3626,12 @@ function OnboardCare() {
       },
 
       animation: {
-        ease: "power3.out",
+        ease: SERENITY_GSAP_EASE,
 
         label: {
           from: {
             opacity: 0,
-            y: 10,
+            y: 8,
           },
 
           to: {
@@ -3576,15 +3644,15 @@ function OnboardCare() {
         headline: {
           from: {
             opacity: 0,
-            y: 24,
-            filter: "blur(7px)",
+            y: 18,
+            filter: "blur(4px)",
           },
 
           to: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            duration: 1.38,
+            duration: 1.22,
             stagger: 0.14,
           },
         },
@@ -3592,37 +3660,35 @@ function OnboardCare() {
         description: {
           from: {
             opacity: 0,
-            y: 18,
-            filter: "blur(5px)",
+            y: 8,
           },
 
           to: {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
-            duration: 1.28,
+            duration: 1.05,
           },
         },
 
         detail: {
           from: {
             opacity: 0,
-            y: 14,
+            y: 6,
           },
 
           to: {
             opacity: 1,
             y: 0,
-            duration: 1,
+            duration: 0.88,
           },
         },
 
         image: {
           from: {
             opacity: 0,
-            y: 30,
+            y: 16,
             scale: 1.018,
-            filter: "blur(7px)",
+            filter: "blur(4px)",
           },
 
           to: {
@@ -3630,7 +3696,7 @@ function OnboardCare() {
             y: 0,
             scale: 1,
             filter: "blur(0px)",
-            duration: 1.45,
+            duration: 1.32,
           },
         },
       },
@@ -3817,7 +3883,7 @@ function OnboardCare() {
                 ...config.animation.image.to,
                 ease,
               },
-              mobile ? 0.56 : 0.12
+              mobile ? 0.46 : 0.04
             );
           }
 
@@ -3953,7 +4019,7 @@ function RatesSnapshot() {
 
       destinations: [
         {
-          name: "Labuan Bajo",
+          name: "Komodo Island",
           season: "May – Sep",
           rate: "$9,500",
           unit: "per night",
@@ -4081,14 +4147,12 @@ function RatesSnapshot() {
               headerRef.current,
               {
                 opacity: 0,
-                y: mobile ? 14 : 18,
-                filter: "blur(5px)",
+                y: mobile ? 10 : 12,
               },
               {
                 opacity: 1,
                 y: 0,
-                filter: "blur(0px)",
-                duration: 1,
+                duration: 0.92,
                 ease: serenityEase,
               },
               0
@@ -4100,14 +4164,12 @@ function RatesSnapshot() {
               ratePanels,
               {
                 opacity: 0,
-                y: mobile ? 16 : 20,
-                filter: "blur(5px)",
+                y: mobile ? 10 : 12,
               },
               {
                 opacity: 1,
                 y: 0,
-                filter: "blur(0px)",
-                duration: 1,
+                duration: 0.92,
                 stagger: mobile ? 0.07 : 0.09,
                 ease: serenityEase,
               },
@@ -4562,16 +4624,14 @@ function FramesAtSea() {
       animation: {
         from: {
           opacity: 0,
-          y: 14,
-          filter: "blur(5px)",
+          y: 4,
         },
 
         to: {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
-          duration: 0.95,
-          stagger: 0.055,
+          duration: 0.82,
+          stagger: 0.045,
         },
       },
 
@@ -7089,7 +7149,7 @@ const TESTIMONIALS = [
       "The crew knew when to disappear and when to appear. That balance is almost impossible to find. Serenity has it.",
     name: "Marcus L.",
     origin: "Sydney, AU",
-    trip: "Labuan Bajo · 5 nights",
+    trip: "Komodo Island · 5 nights",
   },
   {
     id: 3,

@@ -235,7 +235,7 @@ function WorldDefinition() {
           </h2>
         </div>
 
-        {/* ===== LABUAN BAJO (STABLE) ===== */}
+        {/* ===== KOMODO ISLAND (STABLE) ===== */}
         <div className="grid grid-cols-12 items-center mb-[160px]">
 
           {/* IMAGE */}
@@ -243,7 +243,7 @@ function WorldDefinition() {
             <div className="aspect-[4/5] overflow-hidden">
               <img
                 src="https://res.cloudinary.com/dombq6plz/image/upload/v1776068973/49_ph3xr3.webp"
-                alt="Labuan Bajo"
+                alt="Komodo Island"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -253,7 +253,7 @@ function WorldDefinition() {
           <div className="col-span-5 col-start-8">
 
             <p className="text-[11px] tracking-[0.28em] text-[#2D3C68]/50 mb-6">
-              LABUAN BAJO
+              KOMODO ISLAND
             </p>
 
             <h3 className="font-[Gambarino] text-[34px] leading-[1.1] text-[#2D3C68] mb-6">
@@ -567,11 +567,11 @@ function RegionFragment() {
             {/* ================= REGION BLOCKS ================= */}
             <div className="space-y-8">
 
-              {/* LABUAN BAJO */}
+              {/* KOMODO ISLAND */}
               <div className="relative p-5 rounded-[5px] bg-[#2D3C68]/[0.04]">
 
                 <p className="text-[11px] tracking-[0.28em] text-[#2D3C68]/50 mb-3">
-                  LABUAN BAJO
+                  KOMODO ISLAND
                 </p>
 
                 <p className="text-[14px] leading-[1.7] text-[#2D3C68]/80">
@@ -637,7 +637,7 @@ function RegionFragment() {
               </h3>
 
               <p className="text-[15px] leading-[1.8] text-[#2D3C68]/75 mb-5">
-                Labuan Bajo sits at the edge of the Lesser Sundas — dry season runs
+                Komodo Island sits at the edge of the Lesser Sundas — dry season runs
                 April to November, with underwater visibility reaching 20–30 meters.
                 Terrain shifts from volcanic ridgelines to dense coral within a short
                 distance.
@@ -862,7 +862,7 @@ function IndonesiaKosmik() {
       {/* MAIN GRID */}
       <div className="relative w-full h-full flex" style={{ minHeight: "100svh" }}>
 
-        {/* ── LEFT: LABUAN BAJO ── */}
+        {/* ── LEFT: KOMODO ISLAND ── */}
         <div
           ref={leftRef}
           className="sr-left relative flex-1 flex flex-col justify-between overflow-hidden"
@@ -874,7 +874,7 @@ function IndonesiaKosmik() {
           {/* top content */}
           <div className="relative z-10 flex flex-col gap-6" style={{ marginTop: "clamp(32px, 5vh, 64px)" }}>
             <div className="flex items-center gap-4">
-              <span className="sr-col-label">Labuan Bajo</span>
+              <span className="sr-col-label">Komodo Island</span>
               <span className="sr-tag">West Nusa Tenggara</span>
             </div>
 
@@ -997,7 +997,7 @@ function ExperienceStructure() {
 const DESTINATIONS = [
   {
     id: "labuan-bajo",
-    name: "Labuan Bajo",
+    name: "Komodo Island",
     dark: false,
     atmosphere:
       "radial-gradient(circle at 68% 22%, rgba(176,141,87,0.05), transparent 54%)",
@@ -1306,7 +1306,7 @@ const DESTINATIONS = [
               style={{ background: dest.atmosphere }}
             />
  
-            {/* Sumba Ikat — Labuan Bajo only */}
+            {/* Sumba Ikat — Komodo Island only */}
             {dest.sumbaIkat && (
               <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute -right-[24%] top-[18%] w-[82vw] max-w-[1200px] opacity-[0.028]">

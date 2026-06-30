@@ -887,7 +887,7 @@ function WhatsIncluded() {
 function Rate() {
   const rates = [
     {
-      destination: 'Labuan Bajo',
+      destination: 'Komodo Island',
       season: 'May — September',
       price: '$9,500',
     },
@@ -1915,14 +1915,14 @@ function HowItWorks() {
     {
       id: '03',
       title: 'Confirm with Deposit',
-      duration: '30% of charter rate',
-      desc: 'A deposit secures your window. Balance is due 60 days before departure. Full refund if we cancel on our end.',
+      duration: '50% of charter rate',
+      desc: 'A deposit secures your window. Balance is due 60 days before departure.',
       primary: false,
     },
     {
       id: '04',
       title: 'Board Serenity',
-      duration: 'From Labuan Bajo or Sorong',
+      duration: 'From Komodo Island or Sorong',
       desc: 'Arrive at the departure port. The crew handles everything from there — provisions, route, and the pace of each day.',
       primary: false,
     },
