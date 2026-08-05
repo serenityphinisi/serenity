@@ -1503,85 +1503,71 @@ function Experiences() {
 
       classes: {
         section:
-          "relative overflow-hidden bg-[#F4F5F2] px-6 pb-24 pt-24 text-[#2D3C68] md:px-10 md:pb-24 md:pt-24 2xl:pb-32 2xl:pt-32",
+          "relative -mb-20 w-full overflow-hidden bg-[#F4F5F2] px-6 pb-[128px] pt-20 text-[#2D3C68] sm:px-8 md:-mb-28 md:px-10 md:pb-[160px] md:pt-24 2xl:-mb-36 2xl:pb-[192px] 2xl:pt-32",
 
         topBridge:
-          "pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.06] via-[#2D3C68]/[0.025] to-transparent",
+          "pointer-events-none absolute left-0 top-0 z-[2] h-[150px] w-full bg-gradient-to-b from-[#2D3C68]/[0.10] via-[#2D3C68]/[0.04] to-transparent",
 
-        coolTexture:
-          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_64%)] opacity-[0.025] mix-blend-multiply",
+        radialTexture:
+          "pointer-events-none absolute inset-0 z-[1] opacity-[0.025] mix-blend-multiply bg-[radial-gradient(circle_at_center,#2D3C68_0%,transparent_62%)]",
 
         warmAtmosphere:
-          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(176,141,87,0.06)_0%,transparent_48%)]",
+          "pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_68%_22%,rgba(176,141,87,0.055),transparent_50%)]",
 
         bottomBridge:
-          "pointer-events-none absolute bottom-0 left-0 h-[170px] w-full bg-gradient-to-b from-transparent via-[#2D3C68]/[0.025] to-[#2D3C68]/[0.08]",
+          "pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[96px] bg-gradient-to-b from-[#F4F5F2] via-[#F4F5F2]/[0.74] to-transparent md:h-[128px] 2xl:h-[160px]",
 
-        inner: "relative mx-auto max-w-[1240px]",
+        inner: "relative z-10 mx-auto w-full max-w-6xl",
 
-        header:
-          "mx-auto mb-16 max-w-[720px] text-center md:mb-16 2xl:mb-24 2xl:max-w-[760px]",
+        header: "mx-auto max-w-[720px] text-center",
 
         label:
-          "text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/[0.58]",
+          "mb-5 text-[10px] uppercase tracking-[0.38em] text-[#2D3C68]/[0.58]",
 
         headline:
-          "mx-auto mt-5 max-w-[700px] font-[Gambarino] text-[42px] leading-[1.02] tracking-[-0.03em] text-[#2D3C68] sm:text-[54px] md:text-[58px] 2xl:max-w-[760px] 2xl:text-[68px]",
+          "mx-auto max-w-[700px] font-[Gambarino] text-[42px] leading-[1.02] tracking-[-0.03em] text-[#2D3C68] sm:text-[54px] md:text-[58px] 2xl:max-w-[760px] 2xl:text-[68px]",
 
         description:
-          "mx-auto mt-5 max-w-[580px] text-[15px] leading-[1.76] text-[#2D3C68]/[0.72] md:text-[15px] 2xl:mt-6 2xl:max-w-[620px] 2xl:text-[16px]",
+          "mx-auto mt-5 max-w-[520px] text-[15px] leading-[1.74] text-[#2D3C68]/[0.78] md:leading-[1.78] 2xl:mt-6 2xl:max-w-[560px] 2xl:text-[16px] 2xl:leading-[1.82]",
 
-        grid:
-          "grid items-start gap-14 md:grid-cols-2 md:gap-10 xl:gap-12 2xl:gap-16",
+        stage:
+          "mx-auto mt-12 grid w-full grid-cols-1 gap-12 md:mt-16 md:grid-cols-2 md:items-start md:gap-5 lg:gap-6 2xl:mt-20",
 
-        card:
-          "mx-auto w-full max-w-[480px] md:max-w-[410px] xl:max-w-[430px] 2xl:max-w-[480px]",
-
-        rightCard:
-          "mx-auto w-full max-w-[480px] md:max-w-[410px] md:pt-9 xl:max-w-[430px] 2xl:max-w-[480px] 2xl:pt-14",
+        panel:
+          "group mx-auto flex w-full max-w-[360px] min-w-0 flex-col md:max-w-none",
 
         imageFrame:
-          "relative aspect-[4/5] overflow-visible",
+          "relative w-full border border-[#2D3C68]/[0.12] bg-[#F4F5F2] p-[7px] shadow-[0_18px_40px_rgba(45,60,104,0.06)] ring-1 ring-inset ring-white/[0.35] md:p-[6px]",
 
-        imageAura:
-          "pointer-events-none absolute -inset-6 z-0 bg-[radial-gradient(circle_at_50%_46%,rgba(176,141,87,0.20)_0%,rgba(176,141,87,0.10)_32%,rgba(45,60,104,0.045)_52%,transparent_72%)] blur-[3px]",
-
-        imageAuraRight:
-          "pointer-events-none absolute -inset-6 z-0 bg-[radial-gradient(circle_at_50%_48%,rgba(45,60,104,0.13)_0%,rgba(176,141,87,0.095)_36%,rgba(45,60,104,0.045)_54%,transparent_74%)] blur-[3px]",
-
-        imageSurface:
-          "relative z-10 h-full w-full overflow-hidden bg-[#ECEDE9] shadow-[0_34px_86px_rgba(45,60,104,0.12)]",
+        imageInner:
+          "relative aspect-[4/5] w-full overflow-hidden bg-[#ECEDE9]",
 
         image:
-          "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]",
+          "object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:group-hover:scale-[1.018]",
 
-        overlayLeft:
-          "pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(45,60,104,0.17),transparent_48%),radial-gradient(circle_at_50%_36%,transparent_0%,rgba(45,60,104,0.08)_100%)]",
+        imageOverlay:
+          "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/[0.08] via-transparent to-transparent",
 
-        overlayRight:
-          "pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(45,60,104,0.18),transparent_48%),radial-gradient(circle_at_50%_38%,transparent_0%,rgba(45,60,104,0.09)_100%)]",
+        innerLight:
+          "pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.24]",
 
-        imageFocusLine:
-          "pointer-events-none absolute inset-x-0 bottom-0 h-[32%] bg-gradient-to-t from-[#2D3C68]/[0.10] to-transparent",
-
-        imageEdgeLight:
-          "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,transparent_0%,transparent_54%,rgba(244,245,242,0.12)_100%)] mix-blend-screen",
-
-        cardText: "mt-6 2xl:mt-8",
+        caption:
+          "flex flex-col items-center px-2 pt-6 text-center sm:px-4 md:min-h-[136px] md:px-6 md:pt-7 2xl:min-h-[148px]",
 
         cardTitle:
-          "font-[Gambarino] text-[30px] leading-[1.08] tracking-[-0.02em] text-[#2D3C68]",
+          "max-w-[420px] font-[Gambarino] text-[30px] leading-[1.08] tracking-[-0.02em] text-[#2D3C68]",
 
         cardBody:
-          "mt-3 max-w-[460px] text-[15px] leading-[1.82] text-[#2D3C68]/[0.68]",
+          "mx-auto mt-3 max-w-[430px] text-[15px] leading-[1.82] text-[#2D3C68]/[0.68]",
 
-        cardBodyRight:
-          "mt-3 max-w-[450px] text-[15px] leading-[1.82] text-[#2D3C68]/[0.68]",
-
-        ctaWrap: "mt-14 flex justify-center md:mt-12 2xl:mt-20",
+        ctaWrap:
+          "relative z-10 mt-8 flex justify-center md:mt-9 2xl:mt-10",
 
         cta:
-          "inline-flex items-center justify-center rounded-full border border-[#2D3C68]/[0.24] px-7 py-3 text-[12px] uppercase tracking-[0.14em] text-[#2D3C68]/[0.72] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[#2D3C68] hover:text-[#2D3C68] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57]",
+          "group/cta inline-flex min-h-[48px] w-full max-w-[320px] items-center justify-center gap-3 rounded-full bg-[#2D3C68] px-7 py-3 text-[11px] uppercase tracking-[0.15em] text-[#F4F5F2] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#1A2844] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B08D57] sm:text-[12px] md:w-auto md:max-w-none",
+
+        ctaIcon:
+          "h-[14px] w-[14px] shrink-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/cta:translate-x-[3px]",
       },
     }),
     []
@@ -1596,7 +1582,7 @@ function Experiences() {
   const ctaRef = useRef(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current) return undefined;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -1623,7 +1609,7 @@ function Experiences() {
         }
       );
 
-      return;
+      return undefined;
     }
 
     const ctx = gsap.context(() => {
@@ -1694,53 +1680,73 @@ function Experiences() {
   }, [config]);
 
   return (
-    <section ref={sectionRef} className={config.classes.section}>
-      <div className={config.classes.topBridge} />
+    <section
+      ref={sectionRef}
+      aria-labelledby="experiences-heading"
+      className={config.classes.section}
+      style={{
+        backgroundColor: "#F4F5F2",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        className={config.classes.topBridge}
+      />
 
-      <div className={config.classes.coolTexture} />
+      <div
+        aria-hidden="true"
+        className={config.classes.radialTexture}
+      />
 
-      <div className={config.classes.warmAtmosphere} />
-
-      <div className={config.classes.bottomBridge} />
+      <div
+        aria-hidden="true"
+        className={config.classes.warmAtmosphere}
+      />
 
       <div className={config.classes.inner}>
-        <div className={config.classes.header}>
+        <header className={config.classes.header}>
           <p ref={labelRef} className={config.classes.label}>
             {config.text.label}
           </p>
 
-          <h2 ref={headlineRef} className={config.classes.headline}>
+          <h2
+            id="experiences-heading"
+            ref={headlineRef}
+            className={config.classes.headline}
+          >
             {config.text.headline}
           </h2>
 
           <p ref={descRef} className={config.classes.description}>
             {config.text.description}
           </p>
-        </div>
+        </header>
 
-        <div className={config.classes.grid}>
-          <div ref={leftRef} className={config.classes.card}>
+        <div className={config.classes.stage}>
+          <figure ref={leftRef} className={config.classes.panel}>
             <div className={config.classes.imageFrame}>
-              <div className={config.classes.imageAura} />
-
-              <div className={config.classes.imageSurface}>
+              <div className={config.classes.imageInner}>
                 <Image
                   src={config.images.left}
-                  alt="Gathering on the deck of Serenity"
+                  alt="Guests sharing a meal on Serenity's open deck"
                   fill
-                  sizes="(max-width: 767px) 100vw, 40vw"
+                  sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1279px) 46vw, 560px"
                   className={config.classes.image}
                 />
 
-                <div className={config.classes.overlayLeft} />
+                <div
+                  aria-hidden="true"
+                  className={config.classes.imageOverlay}
+                />
 
-                <div className={config.classes.imageFocusLine} />
-
-                <div className={config.classes.imageEdgeLight} />
+                <div
+                  aria-hidden="true"
+                  className={config.classes.innerLight}
+                />
               </div>
             </div>
 
-            <div className={config.classes.cardText}>
+            <figcaption className={config.classes.caption}>
               <h3 className={config.classes.cardTitle}>
                 {config.text.leftTitle}
               </h3>
@@ -1748,65 +1754,75 @@ function Experiences() {
               <p className={config.classes.cardBody}>
                 {config.text.leftDescription}
               </p>
-            </div>
-          </div>
+            </figcaption>
+          </figure>
 
-          <div ref={rightRef} className={config.classes.rightCard}>
+          <figure ref={rightRef} className={config.classes.panel}>
             <div className={config.classes.imageFrame}>
-              <div className={config.classes.imageAuraRight} />
-
-              <div className={config.classes.imageSurface}>
+              <div className={config.classes.imageInner}>
                 <Image
                   src={config.images.right}
-                  alt="Quiet moment on board Serenity"
+                  alt="A guest reading quietly on Serenity's open deck"
                   fill
-                  sizes="(max-width: 767px) 100vw, 40vw"
+                  sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1279px) 46vw, 560px"
                   className={config.classes.image}
                 />
 
-                <div className={config.classes.overlayRight} />
+                <div
+                  aria-hidden="true"
+                  className={config.classes.imageOverlay}
+                />
 
-                <div className={config.classes.imageFocusLine} />
-
-                <div className={config.classes.imageEdgeLight} />
+                <div
+                  aria-hidden="true"
+                  className={config.classes.innerLight}
+                />
               </div>
             </div>
 
-            <div className={config.classes.cardText}>
+            <figcaption className={config.classes.caption}>
               <h3 className={config.classes.cardTitle}>
                 {config.text.rightTitle}
               </h3>
 
-              <p className={config.classes.cardBodyRight}>
+              <p className={config.classes.cardBody}>
                 {config.text.rightDescription}
               </p>
-            </div>
-          </div>
+            </figcaption>
+          </figure>
         </div>
 
         <div ref={ctaRef} className={config.classes.ctaWrap}>
-          <TransitionLink href="/yacht" className={config.classes.cta}>
-            {config.text.cta}
-            <FiArrowRight aria-hidden="true" className="h-[14px] w-[14px]" />
+          <TransitionLink
+            href="/yacht"
+            className={config.classes.cta}
+          >
+            <span>{config.text.cta}</span>
+
+            <FiArrowRight
+              aria-hidden="true"
+              className={config.classes.ctaIcon}
+            />
           </TransitionLink>
         </div>
       </div>
+
+      <div
+        aria-hidden="true"
+        className={config.classes.bottomBridge}
+      />
     </section>
   );
 }
 
 function Destinations() {
-  const sectionRef = useRef(null);
+  const ENABLE_DESTINATIONS_STICKY_ANIMATION = true;
 
+  const sectionRef = useRef(null);
   const leftClipRef = useRef(null);
   const rightClipRef = useRef(null);
-
   const leftImgRef = useRef(null);
   const rightImgRef = useRef(null);
-
-  const seamRef = useRef(null);
-
-  const eyebrowRef = useRef(null);
   const leftContentRef = useRef(null);
   const rightContentRef = useRef(null);
   const ctaRef = useRef(null);
@@ -1827,7 +1843,7 @@ function Destinations() {
   ];
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current) return undefined;
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -1843,23 +1859,53 @@ function Destinations() {
       (context) => {
         const { mobile } = context.conditions;
 
-        const SEAM_TOP = mobile ? 63 : 53.5;
-        const SEAM_BOTTOM = mobile ? 49 : 49.5;
+        const SEAM_TOP = mobile ? 55 : 52;
+        const SEAM_BOTTOM = mobile ? 47 : 48;
 
         const LEFT_CLIP = `polygon(0 0, ${SEAM_TOP}% 0, ${SEAM_BOTTOM}% 100%, 0 100%)`;
-
         const RIGHT_CLIP = `polygon(${SEAM_TOP}% 0, 100% 0, 100% 100%, ${SEAM_BOTTOM}% 100%)`;
 
-        const setSeamCoordinates = () => {
-          if (!seamRef.current) return;
+        const contentNodes = [
+          leftContentRef.current,
+          rightContentRef.current,
+        ].filter(Boolean);
 
-          seamRef.current.setAttribute("x1", `${SEAM_TOP}%`);
-          seamRef.current.setAttribute("y1", "0%");
-          seamRef.current.setAttribute("x2", `${SEAM_BOTTOM}%`);
-          seamRef.current.setAttribute("y2", "100%");
+        const setContentVisible = () => {
+          gsap.set([...contentNodes, ctaRef.current].filter(Boolean), {
+            opacity: 1,
+            x: 0,
+            y: 0,
+          });
         };
 
-        setSeamCoordinates();
+        const setFinalSettledState = () => {
+          gsap.set(leftClipRef.current, {
+            clipPath: LEFT_CLIP,
+          });
+
+          gsap.set(rightClipRef.current, {
+            clipPath: RIGHT_CLIP,
+          });
+
+          gsap.set(leftImgRef.current, {
+            scale: mobile ? 1.035 : 1.012,
+            y: mobile ? -16 : -26,
+            force3D: true,
+          });
+
+          gsap.set(rightImgRef.current, {
+            scale: mobile ? 1.04 : 1.02,
+            y: mobile ? -20 : -34,
+            force3D: true,
+          });
+
+          setContentVisible();
+        };
+
+        if (!ENABLE_DESTINATIONS_STICKY_ANIMATION) {
+          setFinalSettledState();
+          return undefined;
+        }
 
         if (reduceMotion) {
           gsap.set(leftClipRef.current, {
@@ -1875,67 +1921,29 @@ function Destinations() {
             y: 0,
           });
 
-          gsap.set(seamRef.current, {
-            opacity: mobile ? 0.08 : 0.065,
-            scaleY: 1,
-            transformOrigin: "center center",
-          });
+          setContentVisible();
 
-          gsap.set(
-            [
-              eyebrowRef.current,
-              leftContentRef.current,
-              rightContentRef.current,
-              ctaRef.current,
-            ].filter(Boolean),
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-            }
-          );
-
-          return;
+          return undefined;
         }
 
         const ctx = gsap.context(() => {
           gsap.set(leftClipRef.current, {
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
           });
 
           gsap.set(rightClipRef.current, {
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+            clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
           });
 
           gsap.set([leftImgRef.current, rightImgRef.current], {
-            scale: mobile ? 1.12 : 1.085,
+            scale: mobile ? 1.11 : 1.08,
             y: 0,
             force3D: true,
           });
 
-          gsap.set(seamRef.current, {
+          gsap.set(contentNodes, {
             opacity: 0,
-            scaleY: 0,
-            transformOrigin: "center center",
-          });
-
-          gsap.set(eyebrowRef.current, {
-            opacity: 0,
-            y: 10,
-          });
-
-          gsap.set(leftContentRef.current, {
-            opacity: 0,
-            x: mobile ? -18 : -28,
-            y: mobile ? 10 : 0,
-          });
-
-          gsap.set(rightContentRef.current, {
-            opacity: 0,
-            x: mobile ? 18 : 28,
-            y: mobile ? 14 : 0,
+            y: mobile ? 16 : 20,
           });
 
           gsap.set(ctaRef.current, {
@@ -1947,16 +1955,13 @@ function Destinations() {
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top top",
-              end: mobile ? "+=125%" : "+=118%",
-              scrub: mobile ? 0.85 : 1.1,
+              end: mobile ? "+=100%" : "+=110%",
+              scrub: mobile ? 0.8 : 1.05,
               pin: true,
               pinSpacing: true,
+              invalidateOnRefresh: true,
             },
           });
-
-          /*
-            PHASE 1 — SPLIT REVEAL
-          */
 
           tl.to(
             leftClipRef.current,
@@ -1975,14 +1980,14 @@ function Destinations() {
               duration: 1,
               ease: "power2.out",
             },
-            mobile ? 0.16 : 0.025
+            mobile ? 0.1 : 0.02
           );
 
           tl.to(
             leftImgRef.current,
             {
               scale: mobile ? 1.035 : 1.012,
-              duration: 1.15,
+              duration: 1.12,
               ease: "power1.out",
             },
             0
@@ -1992,118 +1997,53 @@ function Destinations() {
             rightImgRef.current,
             {
               scale: mobile ? 1.04 : 1.02,
-              duration: 1.18,
+              duration: 1.14,
               ease: "power1.out",
             },
-            mobile ? 0.08 : 0
-          );
-
-          /*
-            PHASE 2 — SEAM + EYEBROW
-          */
-
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.1 : 0.085,
-              scaleY: 1,
-              duration: 0.72,
-              ease: "sine.inOut",
-            },
-            mobile ? 0.4 : 0.44
+            mobile ? 0.05 : 0
           );
 
           tl.to(
-            eyebrowRef.current,
+            contentNodes,
             {
               opacity: 1,
               y: 0,
-              duration: 0.65,
-              ease: "power2.out",
-            },
-            0.52
-          );
-
-          /*
-            PHASE 3 — DESTINATION CONTENT
-          */
-
-          tl.to(
-            leftContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
+              duration: 0.82,
+              stagger: 0.04,
               ease: "power3.out",
             },
-            mobile ? 0.58 : 0.76
+            mobile ? 0.56 : 0.64
           );
-
-          tl.to(
-            rightContentRef.current,
-            {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              duration: 0.9,
-              ease: "power3.out",
-            },
-            mobile ? 0.72 : 0.81
-          );
-
-          /*
-            PHASE 4 — CTA
-          */
 
           tl.to(
             ctaRef.current,
             {
               opacity: 1,
               y: 0,
-              duration: 0.65,
+              duration: 0.62,
               ease: "power3.out",
             },
-            mobile ? 0.9 : 1.12
+            mobile ? 0.8 : 0.88
           );
-
-          /*
-            PHASE 5 — ENVIRONMENTAL DRIFT
-            integrated into the pinned timeline
-          */
 
           tl.to(
             leftImgRef.current,
             {
-              y: mobile ? -18 : -26,
-              duration: 0.95,
+              y: mobile ? -16 : -26,
+              duration: 0.9,
               ease: "none",
             },
-            mobile ? 0.98 : 1.12
+            mobile ? 0.9 : 0.96
           );
 
           tl.to(
             rightImgRef.current,
             {
-              y: mobile ? -24 : -38,
-              duration: 0.95,
+              y: mobile ? -20 : -34,
+              duration: 0.9,
               ease: "none",
             },
-            mobile ? 1.02 : 1.12
-          );
-
-          /*
-            PHASE 6 — SEAM RELEASE
-          */
-
-          tl.to(
-            seamRef.current,
-            {
-              opacity: mobile ? 0.055 : 0.04,
-              duration: 0.75,
-              ease: "sine.out",
-            },
-            mobile ? 1.08 : 1.2
+            mobile ? 0.9 : 0.96
           );
         }, sectionRef);
 
@@ -2119,6 +2059,7 @@ function Destinations() {
       ref={sectionRef}
       className="
         relative
+        z-20
         w-full
         overflow-hidden
         bg-[#0B1322]
@@ -2135,92 +2076,38 @@ function Destinations() {
           2xl:min-h-[720px]
         "
       >
-        {/* GLOBAL ATMOSPHERE */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[3]
-            bg-gradient-to-t
-            from-[#0B1322]/54
-            via-[#0B1322]/[0.06]
-            to-[#0B1322]/14
-            md:from-[#0B1322]/46
-            md:via-transparent
-            md:to-[#0B1322]/16
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — IN */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            top-0
-            z-[4]
-            h-[220px]
-            md:h-[180px]
-            2xl:h-[220px]
-            bg-gradient-to-b
-            from-[#F4F5F2]/10
-            via-[#F4F5F2]/[0.025]
-            to-transparent
-          "
-        />
-
-        {/* ATMOSPHERIC BRIDGE — OUT */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-x-0
-            bottom-0
-            z-[4]
-            h-[180px]
-            md:h-[144px]
-            2xl:h-[180px]
-            bg-gradient-to-b
-            from-transparent
-            via-[#F4F5F2]/[0.035]
-            to-[#F4F5F2]/10
-          "
-        />
-
-        {/* MOBILE RADIAL DEPTH */}
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            z-[5]
-            md:hidden
-          "
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]" />
-        </div>
-
-        {/* LEFT CLIP */}
+        {/* LEFT DESTINATION */}
         <div
           ref={leftClipRef}
-          className="absolute inset-0 overflow-hidden"
+          className="
+            absolute
+            inset-0
+            overflow-hidden
+          "
           style={{
-            clipPath:
-              "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
             willChange: "clip-path",
           }}
         >
           <div
             ref={leftImgRef}
-            className="absolute inset-0"
+            className="
+              absolute
+              inset-0
+            "
             style={{
               willChange: "transform",
               backfaceVisibility: "hidden",
             }}
           >
-            <div className="absolute inset-x-0 -top-[10%] h-[120%]">
+            <div
+              className="
+                absolute
+                inset-x-0
+                -top-[10%]
+                h-[120%]
+              "
+            >
               <Image
                 src={DESTINATIONS[0].img}
                 alt={DESTINATIONS[0].name.join(" ")}
@@ -2235,42 +2122,66 @@ function Destinations() {
               />
             </div>
 
-            <div className="absolute inset-0 bg-[#243657]/10 mix-blend-multiply" />
+            <div
+              aria-hidden="true"
+              className="
+                absolute
+                inset-0
+                bg-[#243657]/10
+                mix-blend-multiply
+              "
+            />
 
             <div
+              aria-hidden="true"
               className="
                 absolute
                 inset-0
                 bg-gradient-to-r
-                from-[#0B1322]/22
-                via-[#0B1322]/[0.035]
+                from-[#0B1322]/24
+                via-[#0B1322]/[0.04]
                 to-transparent
-                md:from-[#0B1322]/14
+                md:from-[#0B1322]/16
                 md:via-transparent
               "
             />
           </div>
         </div>
 
-        {/* RIGHT CLIP */}
+        {/* RIGHT DESTINATION */}
         <div
           ref={rightClipRef}
-          className="absolute inset-0 overflow-hidden"
+          className="
+            absolute
+            inset-0
+            overflow-hidden
+          "
           style={{
-            clipPath:
-              "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
+            clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)",
             willChange: "clip-path",
           }}
         >
           <div
             ref={rightImgRef}
-            className="absolute inset-0"
+            className="
+              absolute
+              inset-0
+            "
             style={{
               willChange: "transform",
               backfaceVisibility: "hidden",
             }}
           >
-            <div className="absolute inset-x-0 -top-[14%] h-[126%] md:-top-[12%] md:h-[124%]">
+            <div
+              className="
+                absolute
+                inset-x-0
+                -top-[14%]
+                h-[126%]
+                md:-top-[12%]
+                md:h-[124%]
+              "
+            >
               <Image
                 src={DESTINATIONS[1].img}
                 alt={DESTINATIONS[1].name.join(" ")}
@@ -2285,53 +2196,115 @@ function Destinations() {
               />
             </div>
 
-            <div className="absolute inset-0 bg-[#1F2533]/18 mix-blend-multiply" />
+            <div
+              aria-hidden="true"
+              className="
+                absolute
+                inset-0
+                bg-[#1F2533]/18
+                mix-blend-multiply
+              "
+            />
 
             <div
+              aria-hidden="true"
               className="
                 absolute
                 inset-0
                 bg-gradient-to-l
-                from-[#0B1322]/24
-                via-[#0B1322]/[0.04]
+                from-[#0B1322]/26
+                via-[#0B1322]/[0.045]
                 to-transparent
-                md:from-[#0B1322]/16
+                md:from-[#0B1322]/18
                 md:via-transparent
               "
             />
           </div>
         </div>
 
-        {/* SEAM — SVG LINE MATCHES CLIP PATH */}
-        <svg
+        {/* GLOBAL IMAGE CONTROL */}
+        <div
+          aria-hidden="true"
           className="
             pointer-events-none
             absolute
             inset-0
-            z-20
-            h-full
-            w-full
+            z-[3]
+            bg-gradient-to-t
+            from-[#0B1322]/58
+            via-[#0B1322]/[0.05]
+            to-[#0B1322]/16
+            md:from-[#0B1322]/48
+            md:via-transparent
+            md:to-[#0B1322]/16
           "
+        />
+
+        {/* TRANSITION FROM EXPERIENCES */}
+        <div
           aria-hidden="true"
-          preserveAspectRatio="none"
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            top-0
+            z-[12]
+            h-[72px]
+            bg-gradient-to-b
+            from-[#F4F5F2]
+            via-[#F4F5F2]/35
+            to-transparent
+            md:h-[96px]
+            2xl:h-[112px]
+          "
+        />
+
+        {/* BOTTOM ATMOSPHERE */}
+        <div
+          aria-hidden="true"
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            bottom-0
+            z-[4]
+            h-[180px]
+            bg-gradient-to-b
+            from-transparent
+            via-[#0B1322]/[0.08]
+            to-[#0B1322]/32
+            md:h-[160px]
+            2xl:h-[190px]
+          "
+        />
+
+        {/* MOBILE DEPTH */}
+        <div
+          aria-hidden="true"
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            z-[5]
+            md:hidden
+          "
         >
-          <line
-            ref={seamRef}
-            x1="53.5%"
-            y1="0%"
-            x2="49.5%"
-            y2="100%"
-            stroke="rgba(244,245,242,0.24)"
-            strokeWidth="1"
-            vectorEffect="non-scaling-stroke"
-            style={{
-              opacity: 0,
-              filter: "blur(0.1px)",
-              transformOrigin: "center center",
-              willChange: "transform, opacity",
-            }}
+          <div
+            className="
+              absolute
+              inset-0
+              bg-[radial-gradient(circle_at_22%_72%,rgba(11,19,34,0.28),transparent_44%)]
+            "
           />
-        </svg>
+
+          <div
+            className="
+              absolute
+              inset-0
+              bg-[radial-gradient(circle_at_78%_34%,rgba(11,19,34,0.20),transparent_38%)]
+            "
+          />
+        </div>
 
         {/* CONTENT */}
         <div
@@ -2343,54 +2316,40 @@ function Destinations() {
             flex-col
             justify-end
             px-6
-            pb-[max(36px,env(safe-area-inset-bottom))]
+            pb-[max(28px,env(safe-area-inset-bottom))]
             md:px-10
-            md:pb-11
-            2xl:pb-16
+            md:pb-10
+            2xl:pb-14
           "
         >
-          {/* EMPTY ANIMATION ANCHOR — DO NOT REMOVE */}
-          <div
-            ref={eyebrowRef}
-            aria-hidden="true"
-            className="
-              pointer-events-none
-              absolute
-              inset-x-0
-              top-[13.5%]
-              flex
-              justify-center
-              md:top-[15%]
-            "
-          />
-
-          {/* DESTINATIONS ROW */}
           <div
             className="
-              flex
+              grid
+              grid-cols-2
               items-end
-              justify-between
-              gap-3
-              md:gap-4
+              gap-4
+              md:gap-10
             "
           >
-            {/* LEFT */}
+            {/* RAJA AMPAT */}
             <div
               ref={leftContentRef}
               className="
-                relative
-                z-10
-                max-w-[190px]
-                md:max-w-[420px]
+                min-w-0
+                pr-1
+                text-left
+                sm:pr-3
+                md:pr-8
               "
             >
               <h2
                 className="
                   font-[Gambarino]
-                  text-[42px]
+                  text-[38px]
                   leading-[0.9]
                   tracking-[-0.04em]
                   text-[#F4F5F2]
+                  min-[390px]:text-[42px]
                   md:text-[62px]
                   2xl:text-[76px]
                 "
@@ -2403,11 +2362,13 @@ function Destinations() {
               <div className="mt-4 md:mt-5">
                 <p
                   className="
-                    text-[10px]
+                    text-[9px]
                     uppercase
                     leading-[1.6]
-                    tracking-[0.24em]
-                    text-[#F4F5F2]/62
+                    tracking-[0.2em]
+                    text-[#F4F5F2]/70
+                    min-[390px]:text-[10px]
+                    min-[390px]:tracking-[0.22em]
                     md:text-[11px]
                     md:tracking-[0.26em]
                   "
@@ -2418,11 +2379,13 @@ function Destinations() {
                 <p
                   className="
                     mt-2
-                    max-w-[176px]
-                    text-[11px]
-                    leading-[1.62]
-                    tracking-[0.025em]
-                    text-[#F4F5F2]/42
+                    max-w-[160px]
+                    text-[10px]
+                    leading-[1.58]
+                    tracking-[0.015em]
+                    text-[#F4F5F2]/52
+                    min-[390px]:max-w-[176px]
+                    min-[390px]:text-[11px]
                     md:max-w-[260px]
                     md:text-[12px]
                     md:leading-[1.7]
@@ -2433,28 +2396,27 @@ function Destinations() {
               </div>
             </div>
 
-            {/* RIGHT */}
+            {/* KOMODO */}
             <div
               ref={rightContentRef}
               className="
-                relative
-                z-10
-                max-w-[180px]
+                min-w-0
+                pl-1
                 text-right
-                md:mb-[-2vh]
-                md:mr-[5vw]
-                md:max-w-[390px]
+                sm:pl-3
+                md:pl-8
               "
             >
               <h2
                 className="
                   font-[Gambarino]
-                  text-[40px]
+                  text-[38px]
                   leading-[0.9]
                   tracking-[-0.04em]
                   text-[#F4F5F2]
-                  md:text-[58px]
-                  2xl:text-[70px]
+                  min-[390px]:text-[42px]
+                  md:text-[62px]
+                  2xl:text-[76px]
                 "
               >
                 {DESTINATIONS[1].name[0]}
@@ -2465,11 +2427,13 @@ function Destinations() {
               <div className="mt-4 md:mt-5">
                 <p
                   className="
-                    text-[10px]
+                    text-[9px]
                     uppercase
                     leading-[1.6]
-                    tracking-[0.24em]
-                    text-[#F4F5F2]/62
+                    tracking-[0.2em]
+                    text-[#F4F5F2]/70
+                    min-[390px]:text-[10px]
+                    min-[390px]:tracking-[0.22em]
                     md:text-[11px]
                     md:tracking-[0.26em]
                   "
@@ -2481,12 +2445,14 @@ function Destinations() {
                   className="
                     ml-auto
                     mt-2
-                    max-w-[170px]
-                    text-[11px]
-                    leading-[1.62]
-                    tracking-[0.025em]
-                    text-[#F4F5F2]/42
-                    md:max-w-[250px]
+                    max-w-[160px]
+                    text-[10px]
+                    leading-[1.58]
+                    tracking-[0.015em]
+                    text-[#F4F5F2]/52
+                    min-[390px]:max-w-[176px]
+                    min-[390px]:text-[11px]
+                    md:max-w-[260px]
                     md:text-[12px]
                     md:leading-[1.7]
                   "
@@ -2501,13 +2467,10 @@ function Destinations() {
           <div
             ref={ctaRef}
             className="
-              mt-8
+              mt-7
               flex
               justify-center
-              md:absolute
-              md:inset-x-0
-              md:bottom-8
-              2xl:bottom-12
+              md:mt-8
             "
           >
             <TransitionLink
@@ -2524,12 +2487,12 @@ function Destinations() {
                 py-2
                 pl-5
                 pr-2
-                text-[11px]
+                text-[10px]
                 uppercase
-                tracking-[0.2em]
+                tracking-[0.18em]
                 text-[#0B1322]
                 shadow-[0_18px_42px_rgba(0,0,0,0.22)]
-                transition-all
+                transition-colors
                 duration-500
                 ease-[cubic-bezier(0.22,1,0.36,1)]
                 hover:bg-white
@@ -2537,6 +2500,8 @@ function Destinations() {
                 focus-visible:outline-2
                 focus-visible:outline-offset-4
                 focus-visible:outline-[#B08D57]
+                min-[390px]:text-[11px]
+                min-[390px]:tracking-[0.2em]
               "
             >
               <span>Explore Routes</span>
@@ -2547,6 +2512,7 @@ function Destinations() {
                   grid
                   h-8
                   w-8
+                  shrink-0
                   place-items-center
                   rounded-full
                   bg-[#2D3C68]
@@ -2556,12 +2522,12 @@ function Destinations() {
                   ease-[cubic-bezier(0.22,1,0.36,1)]
                   group-hover:translate-x-[3px]
                 "
-          >
-            <FiArrowRight
-              aria-hidden="true"
-              className="
-                h-[14px]
-                w-[14px]
+              >
+                <FiArrowRight
+                  aria-hidden="true"
+                  className="
+                    h-[14px]
+                    w-[14px]
                     stroke-[1.8]
                   "
                 />
@@ -2574,938 +2540,938 @@ function Destinations() {
   );
 }
 
-  function Yacht() {
-    const images = {
-      yacht:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1777394633/e75ce606-c6fd-4eae-8739-12516236bfec_1_ohoghl.png",
-  
-      upperDeck:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
-  
-      cabins:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp",
-  
-      crew:
-        "https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp",
+function Yacht() {
+  const images = {
+    yacht:
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1777394633/e75ce606-c6fd-4eae-8739-12516236bfec_1_ohoghl.png",
+
+    upperDeck:
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776068967/40_oxbvdi.webp",
+
+    cabins:
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776068961/27_unvtvm.webp",
+
+    crew:
+      "https://res.cloudinary.com/dombq6plz/image/upload/v1776068893/07_iujxr6.webp",
+  };
+
+  const text = {
+    label: "The Yacht",
+
+    headlineLine1: "Designed for the way",
+
+    headlineLine2: "you live at sea",
+
+    description:
+      "Open decks, indoor living spaces, private cabins, and shared areas shaped for slow days aboard Serenity.",
+
+    upperDeckTitle: "Upper Deck",
+
+    upperDeckDesc:
+      "Sunbeds, bar seating, lounge space, and open sea on every side.",
+
+    cabinsTitle: "Four Cabins",
+
+    cabinsDesc:
+      "Private guest cabins with ensuite bathrooms for quiet rest between days on the water.",
+
+    crewTitle: "Indoor Living",
+
+    crewDesc:
+      "A calm living room, dining space, and bar for time between the open decks.",
+
+    microLabel: "Outdoor Spaces",
+
+    microNumber: "2 Decks",
+
+    microMobileDesc:
+      "Upper deck and main outdoor deck for lounging, dining, and sea-facing days.",
+
+    microDesktopDesc:
+      "Upper deck and main outdoor deck shaped for lounging, dining, and sea-facing days.",
+
+    primaryCta: "Explore The Yacht",
+
+    utilityDeckPlan: "View Deck Plan",
+
+    utilityBrochure: "Download Brochure",
+
+    utilitySpecs: "View Specifications",
+  };
+
+  const routes = {
+    yacht: "/yacht",
+
+    deckPlan: "/yacht#deck-plan",
+
+    brochure: SITE_DOCUMENTS.brochurePath,
+
+    specifications: "/yacht#specifications",
+  };
+
+  const sectionRef = useRef(null);
+
+  const labelRef = useRef(null);
+  const headlineRef = useRef(null);
+  const descRef = useRef(null);
+
+  const mobileYachtRef = useRef(null);
+  const mobileSpecRef = useRef(null);
+  const mobileFeatureARef = useRef(null);
+  const mobileFeatureBRef = useRef(null);
+  const mobileFeatureCRef = useRef(null);
+  const mobileCtaRef = useRef(null);
+
+  const yachtParallaxRef = useRef(null);
+  const yachtFloatRef = useRef(null);
+  const yachtGlowRef = useRef(null);
+  const svgRef = useRef(null);
+
+  const desktopCardARef = useRef(null);
+  const desktopCardBRef = useRef(null);
+  const desktopCardCRef = useRef(null);
+  const desktopMicroRef = useRef(null);
+  const desktopCtaRef = useRef(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const animation = {
+      ease: SERENITY_GSAP_EASE,
+
+      label: {
+        from: {
+          opacity: 0,
+          y: 8,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 1.05,
+        },
+      },
+
+      headline: {
+        from: {
+          opacity: 0,
+          y: 18,
+          filter: "blur(4px)",
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1.22,
+        },
+      },
+
+      description: {
+        from: {
+          opacity: 0,
+          y: 10,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 1.06,
+        },
+      },
+
+      mobileCards: {
+        from: {
+          opacity: 0,
+          y: 16,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 0.98,
+          stagger: 0.12,
+        },
+      },
+
+      desktopYacht: {
+        from: {
+          opacity: 0,
+          scale: 0.982,
+          y: 18,
+          filter: "blur(5px)",
+        },
+
+        to: {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 1.5,
+        },
+      },
+
+      desktopCards: {
+        from: {
+          opacity: 0,
+          y: 16,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 0.92,
+          stagger: 0.13,
+        },
+      },
+
+      cta: {
+        from: {
+          opacity: 0,
+          y: 18,
+        },
+
+        to: {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+        },
+      },
     };
-  
-    const text = {
-      label: "The Yacht",
-  
-      headlineLine1: "Designed for the way",
-  
-      headlineLine2: "you live at sea",
-  
-      description:
-        "Open decks, indoor living spaces, private cabins, and shared areas shaped for slow days aboard Serenity.",
-  
-      upperDeckTitle: "Upper Deck",
-  
-      upperDeckDesc:
-        "Sunbeds, bar seating, lounge space, and open sea on every side.",
-  
-      cabinsTitle: "Four Cabins",
-  
-      cabinsDesc:
-        "Private guest cabins with ensuite bathrooms for quiet rest between days on the water.",
-  
-      crewTitle: "Indoor Living",
-  
-      crewDesc:
-        "A calm living room, dining space, and bar for time between the open decks.",
-  
-      microLabel: "Outdoor Spaces",
-  
-      microNumber: "2 Decks",
-  
-      microMobileDesc:
-        "Upper deck and main outdoor deck for lounging, dining, and sea-facing days.",
-  
-      microDesktopDesc:
-        "Upper deck and main outdoor deck shaped for lounging, dining, and sea-facing days.",
-  
-      primaryCta: "Explore The Yacht",
-  
-      utilityDeckPlan: "View Deck Plan",
-  
-      utilityBrochure: "Download Brochure",
-  
-      utilitySpecs: "View Specifications",
-    };
-  
-    const routes = {
-      yacht: "/yacht",
-  
-      deckPlan: "/yacht#deck-plan",
-  
-      brochure: SITE_DOCUMENTS.brochurePath,
-  
-      specifications: "/yacht#specifications",
-    };
-  
-    const sectionRef = useRef(null);
-  
-    const labelRef = useRef(null);
-    const headlineRef = useRef(null);
-    const descRef = useRef(null);
-  
-    const mobileYachtRef = useRef(null);
-    const mobileSpecRef = useRef(null);
-    const mobileFeatureARef = useRef(null);
-    const mobileFeatureBRef = useRef(null);
-    const mobileFeatureCRef = useRef(null);
-    const mobileCtaRef = useRef(null);
-  
-    const yachtParallaxRef = useRef(null);
-    const yachtFloatRef = useRef(null);
-    const yachtGlowRef = useRef(null);
-    const svgRef = useRef(null);
-  
-    const desktopCardARef = useRef(null);
-    const desktopCardBRef = useRef(null);
-    const desktopCardCRef = useRef(null);
-    const desktopMicroRef = useRef(null);
-    const desktopCtaRef = useRef(null);
-  
-    useEffect(() => {
-      if (!sectionRef.current) return;
-  
-      const animation = {
-        ease: SERENITY_GSAP_EASE,
-  
-        label: {
-          from: {
-            opacity: 0,
-            y: 8,
-          },
-  
-          to: {
+
+    const mm = gsap.matchMedia();
+
+    mm.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const { mobile } = context.conditions;
+
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+        const headerNodes = [
+          labelRef.current,
+          headlineRef.current,
+          descRef.current,
+        ].filter(Boolean);
+
+        const mobileNodes = [
+          mobileYachtRef.current,
+          mobileSpecRef.current,
+          mobileFeatureARef.current,
+          mobileFeatureBRef.current,
+          mobileFeatureCRef.current,
+          mobileCtaRef.current,
+        ].filter(Boolean);
+
+        const desktopNodes = [
+          yachtGlowRef.current,
+          yachtParallaxRef.current,
+          desktopCardARef.current,
+          desktopCardBRef.current,
+          desktopCardCRef.current,
+          desktopMicroRef.current,
+          desktopCtaRef.current,
+        ].filter(Boolean);
+
+        if (reduce) {
+          gsap.set([...headerNodes, ...mobileNodes, ...desktopNodes], {
             opacity: 1,
+            x: 0,
             y: 0,
-            duration: 1.05,
-          },
-        },
-  
-        headline: {
-          from: {
-            opacity: 0,
-            y: 18,
-            filter: "blur(4px)",
-          },
-  
-          to: {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 1.22,
-          },
-        },
-  
-        description: {
-          from: {
-            opacity: 0,
-            y: 10,
-          },
-  
-          to: {
-            opacity: 1,
-            y: 0,
-            duration: 1.06,
-          },
-        },
-  
-        mobileCards: {
-          from: {
-            opacity: 0,
-            y: 16,
-          },
-  
-          to: {
-            opacity: 1,
-            y: 0,
-            duration: 0.98,
-            stagger: 0.12,
-          },
-        },
-  
-        desktopYacht: {
-          from: {
-            opacity: 0,
-            scale: 0.982,
-            y: 18,
-            filter: "blur(5px)",
-          },
-  
-          to: {
-            opacity: 1,
             scale: 1,
-            y: 0,
             filter: "blur(0px)",
-            duration: 1.5,
-          },
-        },
-  
-        desktopCards: {
-          from: {
-            opacity: 0,
-            y: 16,
-          },
-  
-          to: {
-            opacity: 1,
-            y: 0,
-            duration: 0.92,
-            stagger: 0.13,
-          },
-        },
-  
-        cta: {
-          from: {
-            opacity: 0,
-            y: 18,
-          },
-  
-          to: {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-          },
-        },
-      };
-  
-      const mm = gsap.matchMedia();
-  
-      mm.add(
-        {
-          mobile: "(max-width: 767px)",
-          desktop: "(min-width: 768px)",
-        },
-        (context) => {
-          const { mobile } = context.conditions;
-  
-          const reduce = window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-          ).matches;
-  
-          const headerNodes = [
-            labelRef.current,
-            headlineRef.current,
-            descRef.current,
-          ].filter(Boolean);
-  
-          const mobileNodes = [
-            mobileYachtRef.current,
-            mobileSpecRef.current,
-            mobileFeatureARef.current,
-            mobileFeatureBRef.current,
-            mobileFeatureCRef.current,
-            mobileCtaRef.current,
-          ].filter(Boolean);
-  
-          const desktopNodes = [
-            yachtGlowRef.current,
-            yachtParallaxRef.current,
-            desktopCardARef.current,
-            desktopCardBRef.current,
-            desktopCardCRef.current,
-            desktopMicroRef.current,
-            desktopCtaRef.current,
-          ].filter(Boolean);
-  
-          if (reduce) {
-            gsap.set([...headerNodes, ...mobileNodes, ...desktopNodes], {
-              opacity: 1,
-              x: 0,
-              y: 0,
-              scale: 1,
-              filter: "blur(0px)",
+          });
+
+          if (svgRef.current) {
+            const paths = svgRef.current.querySelectorAll("path");
+
+            gsap.set(paths, {
+              strokeDashoffset: 0,
+              opacity: 0.14,
             });
-  
-            if (svgRef.current) {
-              const paths = svgRef.current.querySelectorAll("path");
-  
-              gsap.set(paths, {
-                strokeDashoffset: 0,
-                opacity: 0.14,
-              });
-            }
-  
-            return;
           }
-  
-          const ctx = gsap.context(() => {
-            const ease = animation.ease;
-  
-            const tl = gsap.timeline({
-              defaults: {
+
+          return;
+        }
+
+        const ctx = gsap.context(() => {
+          const ease = animation.ease;
+
+          const tl = gsap.timeline({
+            defaults: {
+              ease,
+            },
+
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: mobile ? "top bottom-=40" : "top bottom-=100",
+              once: true,
+            },
+          });
+
+          /*
+            TEXT — SEA-BREATH SYSTEM
+          */
+
+          if (mobile && labelRef.current) {
+            tl.fromTo(
+              labelRef.current,
+              animation.label.from,
+              {
+                ...animation.label.to,
                 ease,
               },
-  
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: mobile ? "top bottom-=40" : "top bottom-=100",
-                once: true,
-              },
-            });
-  
-            /*
-              TEXT — SEA-BREATH SYSTEM
-            */
-  
-            if (mobile && labelRef.current) {
-              tl.fromTo(
-                labelRef.current,
-                animation.label.from,
-                {
-                  ...animation.label.to,
-                  ease,
-                },
-                0
-              );
-            }
-  
-            if (mobile && headlineRef.current) {
-              tl.fromTo(
-                headlineRef.current,
-                animation.headline.from,
-                {
-                  ...animation.headline.to,
-                  ease,
-                },
-                0.08
-              );
-            }
-  
-            if (mobile && descRef.current) {
-              tl.fromTo(
-                descRef.current,
-                animation.description.from,
-                {
-                  ...animation.description.to,
-                  ease,
-                },
-                0.22
-              );
-            }
-  
-            /*
-              MOBILE FLOW
-            */
-  
-            if (mobile) {
-              tl.fromTo(
-                [
-                  mobileYachtRef.current,
-                  mobileSpecRef.current,
-                  mobileFeatureARef.current,
-                  mobileFeatureBRef.current,
-                  mobileFeatureCRef.current,
-                ].filter(Boolean),
-                animation.mobileCards.from,
-                {
-                  ...animation.mobileCards.to,
-                  ease,
-                },
-                0.5
-              );
-  
-              if (mobileCtaRef.current) {
-                tl.fromTo(
-                  mobileCtaRef.current,
-                  animation.cta.from,
-                  {
-                    ...animation.cta.to,
-                    ease,
-                  },
-                  "-=0.3"
-                );
-              }
-  
-              return;
-            }
-  
-            /*
-              DESKTOP FLOW
-            */
-  
-            if (yachtGlowRef.current) {
-              tl.fromTo(
-                yachtGlowRef.current,
-                {
-                  opacity: 0,
-                  scale: 0.98,
-                },
-                {
-                  opacity: 0.92,
-                  scale: 1,
-                  duration: 1.3,
-                  ease,
-                },
-                0
-              );
-            }
-  
-            if (yachtParallaxRef.current) {
-              tl.fromTo(
-                yachtParallaxRef.current,
-                animation.desktopYacht.from,
-                {
-                  ...animation.desktopYacht.to,
-                  ease,
-                },
-                0.04
-              );
-            }
+              0
+            );
+          }
 
-            if (labelRef.current) {
-              tl.fromTo(
-                labelRef.current,
-                animation.label.from,
-                {
-                  ...animation.label.to,
-                  ease,
-                },
-                0.14
-              );
-            }
-  
-            if (headlineRef.current) {
-              tl.fromTo(
-                headlineRef.current,
-                animation.headline.from,
-                {
-                  ...animation.headline.to,
-                  ease,
-                },
-                0.22
-              );
-            }
-  
-            if (descRef.current) {
-              tl.fromTo(
-                descRef.current,
-                animation.description.from,
-                {
-                  ...animation.description.to,
-                  ease,
-                },
-                0.38
-              );
-            }
-  
+          if (mobile && headlineRef.current) {
+            tl.fromTo(
+              headlineRef.current,
+              animation.headline.from,
+              {
+                ...animation.headline.to,
+                ease,
+              },
+              0.08
+            );
+          }
+
+          if (mobile && descRef.current) {
+            tl.fromTo(
+              descRef.current,
+              animation.description.from,
+              {
+                ...animation.description.to,
+                ease,
+              },
+              0.22
+            );
+          }
+
+          /*
+            MOBILE FLOW
+          */
+
+          if (mobile) {
             tl.fromTo(
               [
-                desktopCardARef.current,
-                desktopCardBRef.current,
-                desktopCardCRef.current,
-                desktopMicroRef.current,
+                mobileYachtRef.current,
+                mobileSpecRef.current,
+                mobileFeatureARef.current,
+                mobileFeatureBRef.current,
+                mobileFeatureCRef.current,
               ].filter(Boolean),
-              animation.desktopCards.from,
+              animation.mobileCards.from,
               {
-                ...animation.desktopCards.to,
+                ...animation.mobileCards.to,
                 ease,
               },
-              0.76
+              0.5
             );
-  
-            if (desktopCtaRef.current) {
+
+            if (mobileCtaRef.current) {
               tl.fromTo(
-                desktopCtaRef.current,
+                mobileCtaRef.current,
                 animation.cta.from,
                 {
                   ...animation.cta.to,
                   ease,
                 },
-                1.12
+                "-=0.3"
               );
             }
-  
-            /*
-              CONNECTOR LINES
-            */
-  
-            if (svgRef.current) {
-              const paths = svgRef.current.querySelectorAll("path");
-  
-              paths.forEach((path) => {
-                const length = path.getTotalLength();
-  
-                gsap.set(path, {
-                  strokeDasharray: length,
-                  strokeDashoffset: length,
-                  opacity: 0,
-                });
-              });
-  
-              gsap.to(paths, {
-                strokeDashoffset: 0,
-                opacity: 0.16,
-                duration: 2,
-                stagger: 0.24,
+
+            return;
+          }
+
+          /*
+            DESKTOP FLOW
+          */
+
+          if (yachtGlowRef.current) {
+            tl.fromTo(
+              yachtGlowRef.current,
+              {
+                opacity: 0,
+                scale: 0.98,
+              },
+              {
+                opacity: 0.92,
+                scale: 1,
+                duration: 1.3,
                 ease,
-  
-                scrollTrigger: {
-                  trigger: sectionRef.current,
-                  start: "top 68%",
-                  once: true,
-                },
+              },
+              0
+            );
+          }
+
+          if (yachtParallaxRef.current) {
+            tl.fromTo(
+              yachtParallaxRef.current,
+              animation.desktopYacht.from,
+              {
+                ...animation.desktopYacht.to,
+                ease,
+              },
+              0.04
+            );
+          }
+
+          if (labelRef.current) {
+            tl.fromTo(
+              labelRef.current,
+              animation.label.from,
+              {
+                ...animation.label.to,
+                ease,
+              },
+              0.14
+            );
+          }
+
+          if (headlineRef.current) {
+            tl.fromTo(
+              headlineRef.current,
+              animation.headline.from,
+              {
+                ...animation.headline.to,
+                ease,
+              },
+              0.22
+            );
+          }
+
+          if (descRef.current) {
+            tl.fromTo(
+              descRef.current,
+              animation.description.from,
+              {
+                ...animation.description.to,
+                ease,
+              },
+              0.38
+            );
+          }
+
+          tl.fromTo(
+            [
+              desktopCardARef.current,
+              desktopCardBRef.current,
+              desktopCardCRef.current,
+              desktopMicroRef.current,
+            ].filter(Boolean),
+            animation.desktopCards.from,
+            {
+              ...animation.desktopCards.to,
+              ease,
+            },
+            0.76
+          );
+
+          if (desktopCtaRef.current) {
+            tl.fromTo(
+              desktopCtaRef.current,
+              animation.cta.from,
+              {
+                ...animation.cta.to,
+                ease,
+              },
+              1.12
+            );
+          }
+
+          /*
+            CONNECTOR LINES
+          */
+
+          if (svgRef.current) {
+            const paths = svgRef.current.querySelectorAll("path");
+
+            paths.forEach((path) => {
+              const length = path.getTotalLength();
+
+              gsap.set(path, {
+                strokeDasharray: length,
+                strokeDashoffset: length,
+                opacity: 0,
               });
-            }
-  
-            /*
-              PARALLAX — STRUCTURAL, NOT FLOATING CARDS
-            */
-  
-            if (yachtParallaxRef.current) {
-              gsap.to(yachtParallaxRef.current, {
-                y: -24,
-                ease: "none",
-  
-                scrollTrigger: {
-                  trigger: sectionRef.current,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: 1,
-                },
-              });
-            }
-  
-            /*
-              SINGLE AMBIENT LOOP — YACHT ONLY
-            */
-  
-            if (yachtFloatRef.current) {
-              gsap.to(yachtFloatRef.current, {
-                y: "+=4",
-                duration: 7.2,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-              });
-            }
-          }, sectionRef);
-  
-          return () => ctx.revert();
-        }
-      );
-  
-      return () => mm.revert();
-    }, []);
-  
-    const renderMobileFeatureRow = ({ refProp, image, title, desc }) => {
-      return (
-        <div
-          ref={refProp}
-          className="grid grid-cols-[96px_1fr] items-center gap-5 py-5"
-        >
-          <div className="relative aspect-[4/5] overflow-hidden shadow-[0_18px_42px_rgba(45,60,104,0.075)]">
-            <Image
-              src={image}
-              alt={title}
-              fill
-              sizes="96px"
-              className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-            />
-  
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent" />
-          </div>
-  
-          <div>
-            <h3 className="font-[Gambarino] text-[26px] leading-[1.06] tracking-[-0.02em] text-[#2D3C68]">
-              {title}
-            </h3>
-  
-            <p className="mt-2 text-[13px] leading-[1.7] text-[#2D3C68]/68">
-              {desc}
-            </p>
-          </div>
-        </div>
-      );
-    };
-  
-    const renderDesktopCard = ({ image, title, desc, sizes, large = false }) => {
-      return (
-        <article className="group relative overflow-hidden border border-[#2D3C68]/[0.07] bg-[#F4F5F2]/82 shadow-[0_30px_90px_rgba(20,30,50,0.065)] backdrop-blur-md">
-          <div
-            className={
-              large
-                ? "relative aspect-[4/5] overflow-hidden"
-                : "relative aspect-[4/5] overflow-hidden"
-            }
-          >
-            <Image
-              src={image}
-              alt={title}
-              fill
-              sizes={sizes}
-              className="object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.035]"
-            />
-  
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/30 via-[#2D3C68]/[0.03] to-transparent" />
-          </div>
-  
-          <div className={large ? "px-6 py-6 2xl:px-7 2xl:py-7" : "px-5 py-5 2xl:px-6 2xl:py-6"}>
-            <h3 className={large ? "font-[Gambarino] text-[31px] leading-[1.02] tracking-[-0.025em] text-[#2D3C68] 2xl:text-[36px]" : "font-[Gambarino] text-[27px] leading-[1.04] tracking-[-0.025em] text-[#2D3C68] 2xl:text-[31px]"}>
-              {title}
-            </h3>
-  
-            <p className={large ? "mt-3 text-[13px] leading-[1.75] text-[#2D3C68]/68 2xl:text-[14px] 2xl:leading-[1.78]" : "mt-3 text-[12px] leading-[1.72] text-[#2D3C68]/68 2xl:text-[13px] 2xl:leading-[1.76]"}>
-              {desc}
-            </p>
-          </div>
-        </article>
-      );
-    };
-  
+            });
+
+            gsap.to(paths, {
+              strokeDashoffset: 0,
+              opacity: 0.16,
+              duration: 2,
+              stagger: 0.24,
+              ease,
+
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 68%",
+                once: true,
+              },
+            });
+          }
+
+          /*
+            PARALLAX — STRUCTURAL, NOT FLOATING CARDS
+          */
+
+          if (yachtParallaxRef.current) {
+            gsap.to(yachtParallaxRef.current, {
+              y: -24,
+              ease: "none",
+
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1,
+              },
+            });
+          }
+
+          /*
+            SINGLE AMBIENT LOOP — YACHT ONLY
+          */
+
+          if (yachtFloatRef.current) {
+            gsap.to(yachtFloatRef.current, {
+              y: "+=4",
+              duration: 7.2,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+            });
+          }
+        }, sectionRef);
+
+        return () => ctx.revert();
+      }
+    );
+
+    return () => mm.revert();
+  }, []);
+
+  const renderMobileFeatureRow = ({ refProp, image, title, desc }) => {
     return (
-      <section
-        ref={sectionRef}
-        className="relative w-full overflow-hidden bg-[#F4F5F2] px-5 pb-[120px] pt-[88px] text-[#2D3C68] md:px-6 md:pb-[96px] md:pt-[96px] 2xl:pb-[130px] 2xl:pt-[120px]"
+      <div
+        ref={refProp}
+        className="grid grid-cols-[96px_1fr] items-center gap-5 py-5"
       >
-        {/* ATMOSPHERIC TRANSITIONS */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.07] via-[#2D3C68]/[0.025] to-transparent" />
-  
-        <div className="pointer-events-none absolute bottom-0 left-0 h-[130px] w-full bg-gradient-to-b from-transparent to-[#2D3C68]/[0.05]" />
-  
-        {/* GLOBAL ATMOSPHERE */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,60,104,0.05),transparent_48%)]" />
-  
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(176,141,87,0.05),transparent_38%)]" />
-  
-        <div className="relative mx-auto max-w-[1440px]">
-          {/* HEADER */}
-          <div className="mx-auto mb-14 max-w-[640px] text-center md:mb-[88px] 2xl:mb-32 2xl:max-w-[680px]">
-            <p
-              ref={labelRef}
-              className="text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/56"
-            >
-              {text.label}
+        <div className="relative aspect-[4/5] overflow-hidden shadow-[0_18px_42px_rgba(45,60,104,0.075)]">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes="96px"
+            className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          />
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/12 via-transparent to-transparent" />
+        </div>
+
+        <div>
+          <h3 className="font-[Gambarino] text-[26px] leading-[1.06] tracking-[-0.02em] text-[#2D3C68]">
+            {title}
+          </h3>
+
+          <p className="mt-2 text-[13px] leading-[1.7] text-[#2D3C68]/68">
+            {desc}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDesktopCard = ({ image, title, desc, sizes, large = false }) => {
+    return (
+      <article className="group relative overflow-hidden border border-[#2D3C68]/[0.07] bg-[#F4F5F2]/82 shadow-[0_30px_90px_rgba(20,30,50,0.065)] backdrop-blur-md">
+        <div
+          className={
+            large
+              ? "relative aspect-[4/5] overflow-hidden"
+              : "relative aspect-[4/5] overflow-hidden"
+          }
+        >
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes={sizes}
+            className="object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.035]"
+          />
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2D3C68]/30 via-[#2D3C68]/[0.03] to-transparent" />
+        </div>
+
+        <div className={large ? "px-6 py-6 2xl:px-7 2xl:py-7" : "px-5 py-5 2xl:px-6 2xl:py-6"}>
+          <h3 className={large ? "font-[Gambarino] text-[31px] leading-[1.02] tracking-[-0.025em] text-[#2D3C68] 2xl:text-[36px]" : "font-[Gambarino] text-[27px] leading-[1.04] tracking-[-0.025em] text-[#2D3C68] 2xl:text-[31px]"}>
+            {title}
+          </h3>
+
+          <p className={large ? "mt-3 text-[13px] leading-[1.75] text-[#2D3C68]/68 2xl:text-[14px] 2xl:leading-[1.78]" : "mt-3 text-[12px] leading-[1.72] text-[#2D3C68]/68 2xl:text-[13px] 2xl:leading-[1.76]"}>
+            {desc}
+          </p>
+        </div>
+      </article>
+    );
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full overflow-hidden bg-[#F4F5F2] px-5 pb-[120px] pt-[88px] text-[#2D3C68] md:px-6 md:pb-[96px] md:pt-[96px] 2xl:pb-[130px] 2xl:pt-[120px]"
+    >
+      {/* ATMOSPHERIC TRANSITIONS */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[150px] bg-gradient-to-b from-[#2D3C68]/[0.07] via-[#2D3C68]/[0.025] to-transparent" />
+
+      <div className="pointer-events-none absolute bottom-0 left-0 h-[130px] w-full bg-gradient-to-b from-transparent to-[#2D3C68]/[0.05]" />
+
+      {/* GLOBAL ATMOSPHERE */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,60,104,0.05),transparent_48%)]" />
+
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(176,141,87,0.05),transparent_38%)]" />
+
+      <div className="relative mx-auto max-w-[1440px]">
+        {/* HEADER */}
+        <div className="mx-auto mb-14 max-w-[640px] text-center md:mb-[88px] 2xl:mb-32 2xl:max-w-[680px]">
+          <p
+            ref={labelRef}
+            className="text-[11px] uppercase tracking-[0.34em] text-[#2D3C68]/56"
+          >
+            {text.label}
+          </p>
+
+          <h2
+            ref={headlineRef}
+            className="mt-5 font-[Gambarino] text-[42px] leading-[0.96] tracking-[-0.03em] text-[#2D3C68] md:text-[56px] 2xl:mt-6 2xl:text-[66px]"
+          >
+            {text.headlineLine1}
+            <br />
+            {text.headlineLine2}
+          </h2>
+
+          <p
+            ref={descRef}
+            className="mx-auto mt-4 max-w-[490px] text-[15px] leading-[1.78] text-[#2D3C68]/72 md:leading-[1.82] 2xl:mt-5 2xl:max-w-[520px] 2xl:leading-[1.9]"
+          >
+            {text.description}
+          </p>
+        </div>
+
+        {/* MOBILE — VESSEL BRIEFING */}
+        <div className="mx-auto max-w-[390px] md:hidden">
+          {/* TOP-DOWN YACHT RENDER */}
+          <div ref={mobileYachtRef} className="relative mx-auto flex justify-center pt-2">
+            <div className="pointer-events-none absolute left-1/2 top-[9%] h-[360px] w-[150px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/18 blur-[72px]" />
+
+            <div className="relative h-[430px] w-[122px]">
+              <div className="absolute inset-0 translate-y-[16px] scale-[0.92] rounded-full bg-[#2D3C68]/[0.075] blur-[24px]" />
+
+              <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_58%)]" />
+
+              <div className="relative h-full w-full opacity-[0.985] saturate-[0.95]">
+                <Image
+                  src={images.yacht}
+                  alt="Top down Serenity phinisi yacht"
+                  fill
+                  priority
+                  sizes="122px"
+                  className="object-contain drop-shadow-[0_26px_42px_rgba(18,28,48,0.12)]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* VESSEL SPEC */}
+          <div
+            ref={mobileSpecRef}
+            className="relative mt-9 overflow-hidden border border-[#2D3C68]/[0.08] bg-[#F4F5F2]/82 px-6 py-6 shadow-[0_26px_70px_rgba(20,30,50,0.06)] backdrop-blur-md"
+          >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_56%)]" />
+
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.16] to-transparent" />
+
+            <p className="relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50">
+              {text.microLabel}
             </p>
-  
-            <h2
-              ref={headlineRef}
-              className="mt-5 font-[Gambarino] text-[42px] leading-[0.96] tracking-[-0.03em] text-[#2D3C68] md:text-[56px] 2xl:mt-6 2xl:text-[66px]"
-            >
-              {text.headlineLine1}
-              <br />
-              {text.headlineLine2}
-            </h2>
-  
-            <p
-              ref={descRef}
-              className="mx-auto mt-4 max-w-[490px] text-[15px] leading-[1.78] text-[#2D3C68]/72 md:leading-[1.82] 2xl:mt-5 2xl:max-w-[520px] 2xl:leading-[1.9]"
-            >
-              {text.description}
+
+            <p className="relative mt-2 font-[Gambarino] text-[40px] leading-none tracking-[-0.03em] text-[#2D3C68]">
+              {text.microNumber}
+            </p>
+
+            <p className="relative mt-3 max-w-[280px] text-[13px] leading-[1.72] text-[#2D3C68]/68">
+              {text.microMobileDesc}
             </p>
           </div>
-  
-          {/* MOBILE — VESSEL BRIEFING */}
-          <div className="mx-auto max-w-[390px] md:hidden">
-            {/* TOP-DOWN YACHT RENDER */}
-            <div ref={mobileYachtRef} className="relative mx-auto flex justify-center pt-2">
-              <div className="pointer-events-none absolute left-1/2 top-[9%] h-[360px] w-[150px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/18 blur-[72px]" />
-  
-              <div className="relative h-[430px] w-[122px]">
-                <div className="absolute inset-0 translate-y-[16px] scale-[0.92] rounded-full bg-[#2D3C68]/[0.075] blur-[24px]" />
-  
-                <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),transparent_58%)]" />
-  
-                <div className="relative h-full w-full opacity-[0.985] saturate-[0.95]">
-                  <Image
-                    src={images.yacht}
-                    alt="Top down Serenity phinisi yacht"
-                    fill
-                    priority
-                    sizes="122px"
-                    className="object-contain drop-shadow-[0_26px_42px_rgba(18,28,48,0.12)]"
-                  />
-                </div>
-              </div>
-            </div>
-  
-            {/* VESSEL SPEC */}
-            <div
-              ref={mobileSpecRef}
-              className="relative mt-9 overflow-hidden border border-[#2D3C68]/[0.08] bg-[#F4F5F2]/82 px-6 py-6 shadow-[0_26px_70px_rgba(20,30,50,0.06)] backdrop-blur-md"
-            >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_56%)]" />
-  
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.16] to-transparent" />
-  
-              <p className="relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50">
-                {text.microLabel}
-              </p>
-  
-              <p className="relative mt-2 font-[Gambarino] text-[40px] leading-none tracking-[-0.03em] text-[#2D3C68]">
-                {text.microNumber}
-              </p>
-  
-              <p className="relative mt-3 max-w-[280px] text-[13px] leading-[1.72] text-[#2D3C68]/68">
-                {text.microMobileDesc}
-              </p>
-            </div>
-  
-            {/* FEATURE ROWS */}
-            <div className="mt-10 divide-y divide-[#2D3C68]/10 border-y border-[#2D3C68]/10">
-              {renderMobileFeatureRow({
-                refProp: mobileFeatureARef,
-                image: images.upperDeck,
-                title: text.upperDeckTitle,
-                desc: text.upperDeckDesc,
-              })}
-  
-              {renderMobileFeatureRow({
-                refProp: mobileFeatureBRef,
-                image: images.cabins,
-                title: text.cabinsTitle,
-                desc: text.cabinsDesc,
-              })}
-  
-              {renderMobileFeatureRow({
-                refProp: mobileFeatureCRef,
-                image: images.crew,
-                title: text.crewTitle,
-                desc: text.crewDesc,
-              })}
-            </div>
-  
-            {/* CTA CLUSTER */}
-<div ref={mobileCtaRef} className="pt-14">
-  <div className="mx-auto w-full max-w-[340px]">
-    <div className="mb-5 h-px w-full bg-gradient-to-r from-transparent via-[#B08D57]/36 to-transparent" />
 
-    <div className="overflow-hidden border border-[#2D3C68]/10 bg-[#F4F5F2]/62 backdrop-blur-sm">
-      <TransitionLink
-        href={routes.deckPlan}
-        className="group flex items-center justify-between px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
-      >
-        <span>{text.utilityDeckPlan}</span>
+          {/* FEATURE ROWS */}
+          <div className="mt-10 divide-y divide-[#2D3C68]/10 border-y border-[#2D3C68]/10">
+            {renderMobileFeatureRow({
+              refProp: mobileFeatureARef,
+              image: images.upperDeck,
+              title: text.upperDeckTitle,
+              desc: text.upperDeckDesc,
+            })}
 
-        <FiArrowRight
-          aria-hidden="true"
-          className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
-        />
-      </TransitionLink>
+            {renderMobileFeatureRow({
+              refProp: mobileFeatureBRef,
+              image: images.cabins,
+              title: text.cabinsTitle,
+              desc: text.cabinsDesc,
+            })}
 
-      <a
-        href={routes.brochure}
-        download
-        className="group flex items-center justify-between border-t border-[#2D3C68]/10 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
-      >
-        <span>{text.utilityBrochure}</span>
-
-        <FiArrowDown
-          aria-hidden="true"
-          className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-y-[2px] group-hover:text-[#B08D57]"
-        />
-      </a>
-
-      <TransitionLink
-        href={routes.specifications}
-        className="group flex items-center justify-between border-t border-[#2D3C68]/10 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
-      >
-        <span>{text.utilitySpecs}</span>
-
-        <FiArrowRight
-          aria-hidden="true"
-          className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
-        />
-      </TransitionLink>
-    </div>
-  </div>
-</div>
+            {renderMobileFeatureRow({
+              refProp: mobileFeatureCRef,
+              image: images.crew,
+              title: text.crewTitle,
+              desc: text.crewDesc,
+            })}
           </div>
-  
-          {/* DESKTOP */}
-          <div className="hidden md:block">
-            <div className="relative h-[clamp(940px,74vw,1080px)] 2xl:h-[clamp(1180px,92vw,1320px)]">
-              {/* YACHT GLOW — STATIC / ENTRANCE ONLY */}
-              <div
-                ref={yachtGlowRef}
-                className="pointer-events-none absolute left-1/2 top-[17%] z-10 h-[460px] w-[198px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/15 opacity-0 blur-[76px] 2xl:top-[18%] 2xl:h-[560px] 2xl:w-[240px] 2xl:blur-[92px]"
-              />
-  
-              {/* CONNECTOR LINES */}
-              <svg
-                ref={svgRef}
-                className="pointer-events-none absolute inset-0 z-20 h-full w-full"
-                viewBox="0 0 1440 1320"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M 360,230 C 500,180 580,125 720,112"
-                  fill="none"
-                  stroke="#B08D57"
-                  strokeWidth="0.65"
-                  strokeLinecap="round"
-                />
-  
-                <path
-                  d="M 1080,380 C 980,340 900,325 760,420"
-                  fill="none"
-                  stroke="#B08D57"
-                  strokeWidth="0.65"
-                  strokeLinecap="round"
-                />
-  
-                <path
-                  d="M 320,870 C 470,840 590,830 700,860"
-                  fill="none"
-                  stroke="#B08D57"
-                  strokeWidth="0.65"
-                  strokeLinecap="round"
-                />
-  
-                <path
-                  d="M 1110,960 C 980,940 900,930 780,950"
-                  fill="none"
-                  stroke="#B08D57"
-                  strokeWidth="0.65"
-                  strokeLinecap="round"
-                />
-              </svg>
-  
-              {/* CENTER YACHT */}
-              <div
-                ref={yachtParallaxRef}
-                className="pointer-events-none absolute left-1/2 top-[-3%] z-20 -translate-x-1/2"
-              >
-                <div ref={yachtFloatRef}>
-                  <div className="relative h-[clamp(720px,56vw,820px)] w-[clamp(184px,14.2vw,205px)] 2xl:h-[clamp(900px,72vw,1020px)] 2xl:w-[clamp(224px,17.5vw,252px)]">
-                    <div className="absolute inset-0 translate-y-[22px] scale-[0.94] rounded-full bg-black/[0.07] blur-[36px]" />
-  
-                    <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_58%)]" />
-  
-                    <div className="relative h-full w-full opacity-[0.985] saturate-[0.95]">
-                      <Image
-                        src={images.yacht}
-                        alt="Top down Serenity phinisi yacht"
-                        fill
-                        priority
-                        sizes="(min-width: 768px) 252px, 0px"
-                        className="object-contain drop-shadow-[0_34px_56px_rgba(18,28,48,0.10)]"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-  
-              {/* CARD A */}
-              <div
-                ref={desktopCardARef}
-                className="absolute left-[7%] top-[12%] z-30 w-[clamp(250px,20vw,292px)] 2xl:left-[6.25%] 2xl:top-[12.9%] 2xl:w-[clamp(300px,25vw,360px)]"
-              >
-                {renderDesktopCard({
-                  image: images.upperDeck,
-                  title: text.upperDeckTitle,
-                  desc: text.upperDeckDesc,
-                  sizes: "360px",
-                  large: true,
-                })}
-              </div>
-  
-              {/* CARD B */}
-              <div
-                ref={desktopCardBRef}
-                className="absolute right-[9%] top-[24%] z-30 w-[clamp(210px,17vw,246px)] 2xl:right-[8.33%] 2xl:top-[25%] 2xl:w-[clamp(248px,20.1vw,290px)]"
-              >
-                {renderDesktopCard({
-                  image: images.cabins,
-                  title: text.cabinsTitle,
-                  desc: text.cabinsDesc,
-                  sizes: "290px",
-                })}
-              </div>
-  
-              {/* CARD C */}
-              <div
-                ref={desktopCardCRef}
-                className="absolute left-[9%] top-[61.5%] z-30 w-[clamp(225px,18vw,262px)] 2xl:left-[8.33%] 2xl:top-[62.9%] 2xl:w-[clamp(265px,21.5vw,310px)]"
-              >
-                {renderDesktopCard({
-                  image: images.crew,
-                  title: text.crewTitle,
-                  desc: text.crewDesc,
-                  sizes: "310px",
-                })}
-              </div>
-  
-              {/* MICRO CARD */}
-              <div
-                ref={desktopMicroRef}
-                className="absolute right-[11%] top-[69%] z-30 w-[clamp(188px,14.8vw,212px)] 2xl:right-[10.42%] 2xl:top-[70.5%] 2xl:w-[clamp(220px,17.3vw,250px)]"
-              >
-                <div className="relative overflow-hidden border border-[#2D3C68]/[0.06] bg-[#F4F5F2]/80 px-5 py-5 shadow-[0_28px_70px_rgba(20,30,50,0.05)] backdrop-blur-md md:px-6 md:py-6 md:shadow-[0_30px_80px_rgba(20,30,50,0.05)] 2xl:px-7 2xl:py-7">
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_54%)] md:bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.08),transparent_58%)]" />
-  
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent" />
-  
-                  <p className="relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50">
-                    {text.microLabel}
-                  </p>
-  
-                  <p className="relative mt-2 font-[Gambarino] text-[36px] leading-none text-[#2D3C68] md:mt-2 md:text-[40px] 2xl:mt-3 2xl:text-[44px]">
-                    {text.microNumber}
-                  </p>
-  
-                  <p className="relative mt-2 text-[12px] leading-[1.75] text-[#2D3C68]/68 md:mt-3 md:text-[13px] md:leading-[1.8]">
-                    {text.microDesktopDesc}
-                  </p>
-                </div>
-              </div>
-            </div>
-  
+
           {/* CTA CLUSTER */}
-<div ref={desktopCtaRef} className="mt-16 flex justify-center 2xl:mt-20">
-  <div className="flex overflow-hidden border border-[#2D3C68]/10 bg-[#F4F5F2]/58 backdrop-blur-sm">
+<div ref={mobileCtaRef} className="pt-14">
+<div className="mx-auto w-full max-w-[340px]">
+  <div className="mb-5 h-px w-full bg-gradient-to-r from-transparent via-[#B08D57]/36 to-transparent" />
+
+  <div className="overflow-hidden border border-[#2D3C68]/10 bg-[#F4F5F2]/62 backdrop-blur-sm">
     <TransitionLink
       href={routes.deckPlan}
-      className="group flex min-w-[178px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+      className="group flex items-center justify-between px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
     >
-      {text.utilityDeckPlan}
+      <span>{text.utilityDeckPlan}</span>
 
       <FiArrowRight
         aria-hidden="true"
-        className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
+        className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
       />
     </TransitionLink>
-
-    <span className="w-px bg-[#2D3C68]/10" />
 
     <a
       href={routes.brochure}
       download
-      className="group flex min-w-[198px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+      className="group flex items-center justify-between border-t border-[#2D3C68]/10 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
     >
-      {text.utilityBrochure}
+      <span>{text.utilityBrochure}</span>
 
       <FiArrowDown
         aria-hidden="true"
-        className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-y-[2px] group-hover:text-[#B08D57]"
+        className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-y-[2px] group-hover:text-[#B08D57]"
       />
     </a>
 
-    <span className="w-px bg-[#2D3C68]/10" />
-
     <TransitionLink
       href={routes.specifications}
-      className="group flex min-w-[215px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+      className="group flex items-center justify-between border-t border-[#2D3C68]/10 px-5 py-4 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/66 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
     >
-      {text.utilitySpecs}
+      <span>{text.utilitySpecs}</span>
 
       <FiArrowRight
         aria-hidden="true"
-        className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
+        className="h-[14px] w-[14px] text-[#B08D57]/72 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
       />
     </TransitionLink>
   </div>
 </div>
-          </div>
+</div>
         </div>
-      </section>
-    );
-  }
+
+        {/* DESKTOP */}
+        <div className="hidden md:block">
+          <div className="relative h-[clamp(940px,74vw,1080px)] 2xl:h-[clamp(1180px,92vw,1320px)]">
+            {/* YACHT GLOW — STATIC / ENTRANCE ONLY */}
+            <div
+              ref={yachtGlowRef}
+              className="pointer-events-none absolute left-1/2 top-[17%] z-10 h-[460px] w-[198px] -translate-x-1/2 rounded-full bg-[#D7C3A0]/15 opacity-0 blur-[76px] 2xl:top-[18%] 2xl:h-[560px] 2xl:w-[240px] 2xl:blur-[92px]"
+            />
+
+            {/* CONNECTOR LINES */}
+            <svg
+              ref={svgRef}
+              className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+              viewBox="0 0 1440 1320"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M 360,230 C 500,180 580,125 720,112"
+                fill="none"
+                stroke="#B08D57"
+                strokeWidth="0.65"
+                strokeLinecap="round"
+              />
+
+              <path
+                d="M 1080,380 C 980,340 900,325 760,420"
+                fill="none"
+                stroke="#B08D57"
+                strokeWidth="0.65"
+                strokeLinecap="round"
+              />
+
+              <path
+                d="M 320,870 C 470,840 590,830 700,860"
+                fill="none"
+                stroke="#B08D57"
+                strokeWidth="0.65"
+                strokeLinecap="round"
+              />
+
+              <path
+                d="M 1110,960 C 980,940 900,930 780,950"
+                fill="none"
+                stroke="#B08D57"
+                strokeWidth="0.65"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            {/* CENTER YACHT */}
+            <div
+              ref={yachtParallaxRef}
+              className="pointer-events-none absolute left-1/2 top-[-3%] z-20 -translate-x-1/2"
+            >
+              <div ref={yachtFloatRef}>
+                <div className="relative h-[clamp(720px,56vw,820px)] w-[clamp(184px,14.2vw,205px)] 2xl:h-[clamp(900px,72vw,1020px)] 2xl:w-[clamp(224px,17.5vw,252px)]">
+                  <div className="absolute inset-0 translate-y-[22px] scale-[0.94] rounded-full bg-black/[0.07] blur-[36px]" />
+
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.08),transparent_58%)]" />
+
+                  <div className="relative h-full w-full opacity-[0.985] saturate-[0.95]">
+                    <Image
+                      src={images.yacht}
+                      alt="Top down Serenity phinisi yacht"
+                      fill
+                      priority
+                      sizes="(min-width: 768px) 252px, 0px"
+                      className="object-contain drop-shadow-[0_34px_56px_rgba(18,28,48,0.10)]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CARD A */}
+            <div
+              ref={desktopCardARef}
+              className="absolute left-[7%] top-[12%] z-30 w-[clamp(250px,20vw,292px)] 2xl:left-[6.25%] 2xl:top-[12.9%] 2xl:w-[clamp(300px,25vw,360px)]"
+            >
+              {renderDesktopCard({
+                image: images.upperDeck,
+                title: text.upperDeckTitle,
+                desc: text.upperDeckDesc,
+                sizes: "360px",
+                large: true,
+              })}
+            </div>
+
+            {/* CARD B */}
+            <div
+              ref={desktopCardBRef}
+              className="absolute right-[9%] top-[24%] z-30 w-[clamp(210px,17vw,246px)] 2xl:right-[8.33%] 2xl:top-[25%] 2xl:w-[clamp(248px,20.1vw,290px)]"
+            >
+              {renderDesktopCard({
+                image: images.cabins,
+                title: text.cabinsTitle,
+                desc: text.cabinsDesc,
+                sizes: "290px",
+              })}
+            </div>
+
+            {/* CARD C */}
+            <div
+              ref={desktopCardCRef}
+              className="absolute left-[9%] top-[61.5%] z-30 w-[clamp(225px,18vw,262px)] 2xl:left-[8.33%] 2xl:top-[62.9%] 2xl:w-[clamp(265px,21.5vw,310px)]"
+            >
+              {renderDesktopCard({
+                image: images.crew,
+                title: text.crewTitle,
+                desc: text.crewDesc,
+                sizes: "310px",
+              })}
+            </div>
+
+            {/* MICRO CARD */}
+            <div
+              ref={desktopMicroRef}
+              className="absolute right-[11%] top-[69%] z-30 w-[clamp(188px,14.8vw,212px)] 2xl:right-[10.42%] 2xl:top-[70.5%] 2xl:w-[clamp(220px,17.3vw,250px)]"
+            >
+              <div className="relative overflow-hidden border border-[#2D3C68]/[0.06] bg-[#F4F5F2]/80 px-5 py-5 shadow-[0_28px_70px_rgba(20,30,50,0.05)] backdrop-blur-md md:px-6 md:py-6 md:shadow-[0_30px_80px_rgba(20,30,50,0.05)] 2xl:px-7 2xl:py-7">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.09),transparent_54%)] md:bg-[radial-gradient(circle_at_50%_0%,rgba(176,141,87,0.08),transparent_58%)]" />
+
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/[0.14] to-transparent" />
+
+                <p className="relative text-[10px] uppercase tracking-[0.24em] text-[#2D3C68]/50">
+                  {text.microLabel}
+                </p>
+
+                <p className="relative mt-2 font-[Gambarino] text-[36px] leading-none text-[#2D3C68] md:mt-2 md:text-[40px] 2xl:mt-3 2xl:text-[44px]">
+                  {text.microNumber}
+                </p>
+
+                <p className="relative mt-2 text-[12px] leading-[1.75] text-[#2D3C68]/68 md:mt-3 md:text-[13px] md:leading-[1.8]">
+                  {text.microDesktopDesc}
+                </p>
+              </div>
+            </div>
+          </div>
+
+        {/* CTA CLUSTER */}
+<div ref={desktopCtaRef} className="mt-16 flex justify-center 2xl:mt-20">
+<div className="flex overflow-hidden border border-[#2D3C68]/10 bg-[#F4F5F2]/58 backdrop-blur-sm">
+  <TransitionLink
+    href={routes.deckPlan}
+    className="group flex min-w-[178px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+  >
+    {text.utilityDeckPlan}
+
+    <FiArrowRight
+      aria-hidden="true"
+      className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
+    />
+  </TransitionLink>
+
+  <span className="w-px bg-[#2D3C68]/10" />
+
+  <a
+    href={routes.brochure}
+    download
+    className="group flex min-w-[198px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+  >
+    {text.utilityBrochure}
+
+    <FiArrowDown
+      aria-hidden="true"
+      className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-y-[2px] group-hover:text-[#B08D57]"
+    />
+  </a>
+
+  <span className="w-px bg-[#2D3C68]/10" />
+
+  <TransitionLink
+    href={routes.specifications}
+    className="group flex min-w-[215px] items-center justify-center gap-2.5 px-6 py-3.5 text-[10px] uppercase tracking-[0.18em] text-[#2D3C68]/64 transition-colors duration-300 hover:bg-[#2D3C68]/[0.035] hover:text-[#2D3C68]/88 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#B08D57]"
+  >
+    {text.utilitySpecs}
+
+    <FiArrowRight
+      aria-hidden="true"
+      className="h-[14px] w-[14px] text-[#B08D57]/70 transition-transform duration-300 group-hover:translate-x-[3px] group-hover:text-[#B08D57]"
+    />
+  </TransitionLink>
+</div>
+</div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function MobileFeatureRow({ refProp, image, title, desc, sizes, config }) {
   return (
@@ -3617,12 +3583,7 @@ function OnboardCare() {
         headlineLine2: "Twelve guests.",
 
         description:
-          "Meals, cabins, tender rides, anchorages. The small timing of each day is handled quietly, so the voyage never feels managed.",
-
-        detailLabel: "Small Timing",
-
-        detailText:
-          "Breakfast after the first swim. Dinner when the anchorage settles and the light begins to fade.",
+          "Meals, cabins, tender rides, anchorages. Breakfast after the first swim, dinner as the anchorage settles. Everything is handled quietly, so the voyage never feels managed.",
       },
 
       animation: {
@@ -3667,19 +3628,6 @@ function OnboardCare() {
             opacity: 1,
             y: 0,
             duration: 1.05,
-          },
-        },
-
-        detail: {
-          from: {
-            opacity: 0,
-            y: 6,
-          },
-
-          to: {
-            opacity: 1,
-            y: 0,
-            duration: 0.88,
           },
         },
 
@@ -3742,19 +3690,7 @@ function OnboardCare() {
           "mt-5 max-w-[560px] font-[Gambarino] text-[42px] leading-[0.98] tracking-[-0.035em] text-[#F4F5F2] sm:text-[50px] md:text-[clamp(48px,4.5vw,62px)] 2xl:text-[74px]",
 
         description:
-          "mx-auto mt-5 max-w-[450px] text-[15px] leading-[1.78] text-[#F4F5F2]/74 md:mx-0 md:max-w-[470px] md:text-[15px] md:leading-[1.8] 2xl:mt-6 2xl:max-w-[500px] 2xl:text-[16px] 2xl:leading-[1.86]",
-
-        desktopDetailBlock:
-          "mt-7 hidden max-w-[430px] bg-[#F4F5F2]/[0.055] px-5 py-4 shadow-[0_18px_44px_rgba(5,10,20,0.08)] md:block 2xl:mt-8 2xl:max-w-[460px] 2xl:px-6 2xl:py-5",
-
-        mobileDetailBlock:
-          "order-3 mt-8 bg-[#F4F5F2]/[0.055] px-5 py-4 shadow-[0_18px_44px_rgba(5,10,20,0.08)] md:hidden",
-
-        detailLabel:
-          "text-[10px] uppercase tracking-[0.28em] text-[#F4F5F2]/54",
-
-        detailText:
-          "mt-2 max-w-[390px] text-[14px] leading-[1.76] text-[#F4F5F2]/68",
+          "mx-auto mt-5 max-w-[470px] text-[15px] leading-[1.78] text-[#F4F5F2]/74 md:mx-0 md:max-w-[490px] md:text-[15px] md:leading-[1.8] 2xl:mt-6 2xl:max-w-[520px] 2xl:text-[16px] 2xl:leading-[1.86]",
 
         imageWrap:
           "order-2 mx-auto w-[86%] max-w-[340px] md:relative md:col-span-6 md:col-start-7 md:mx-0 md:w-full md:max-w-none",
@@ -3777,16 +3713,13 @@ function OnboardCare() {
   const config = configRef.current;
 
   const sectionRef = useRef(null);
-
   const labelRef = useRef(null);
   const headlineRef = useRef(null);
   const descRef = useRef(null);
-  const desktopDetailRef = useRef(null);
-  const mobileDetailRef = useRef(null);
   const imageRef = useRef(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current) return undefined;
 
     const mm = gsap.matchMedia();
 
@@ -3805,15 +3738,10 @@ function OnboardCare() {
         const headlineLines =
           headlineRef.current?.querySelectorAll(".line") ?? [];
 
-        const activeDetail = mobile
-          ? mobileDetailRef.current
-          : desktopDetailRef.current;
-
         const allNodes = [
           labelRef.current,
           ...headlineLines,
           descRef.current,
-          activeDetail,
           imageRef.current,
         ].filter(Boolean);
 
@@ -3825,7 +3753,7 @@ function OnboardCare() {
             filter: "blur(0px)",
           });
 
-          return;
+          return undefined;
         }
 
         const ctx = gsap.context(() => {
@@ -3886,18 +3814,6 @@ function OnboardCare() {
               mobile ? 0.46 : 0.04
             );
           }
-
-          if (activeDetail) {
-            tl.fromTo(
-              activeDetail,
-              config.animation.detail.from,
-              {
-                ...config.animation.detail.to,
-                ease,
-              },
-              mobile ? 0.78 : 0.54
-            );
-          }
         }, sectionRef);
 
         return () => ctx.revert();
@@ -3915,28 +3831,55 @@ function OnboardCare() {
         backgroundColor: "#2D3C68",
       }}
     >
-      {/* DESKTOP DEPTH ARCHITECTURE */}
-      <div className={config.classes.rightDepthSlab} />
-      <div className={config.classes.rightDepthEdge} />
-      <div className={config.classes.rightDepthLight} />
+      <div
+        aria-hidden="true"
+        className={config.classes.rightDepthSlab}
+      />
 
-      {/* ATMOSPHERIC BRIDGES */}
-      <div className={config.classes.topBridge} />
-      <div className={config.classes.bottomBridge} />
+      <div
+        aria-hidden="true"
+        className={config.classes.rightDepthEdge}
+      />
 
-      {/* GLOBAL ATMOSPHERE */}
-      <div className={config.classes.depthAtmosphere} />
-      <div className={config.classes.surfaceLight} />
+      <div
+        aria-hidden="true"
+        className={config.classes.rightDepthLight}
+      />
+
+      <div
+        aria-hidden="true"
+        className={config.classes.topBridge}
+      />
+
+      <div
+        aria-hidden="true"
+        className={config.classes.bottomBridge}
+      />
+
+      <div
+        aria-hidden="true"
+        className={config.classes.depthAtmosphere}
+      />
+
+      <div
+        aria-hidden="true"
+        className={config.classes.surfaceLight}
+      />
 
       <div className={config.classes.container}>
         <div className={config.classes.layout}>
-          {/* TEXT */}
           <div className={config.classes.content}>
-            <p ref={labelRef} className={config.classes.label}>
+            <p
+              ref={labelRef}
+              className={config.classes.label}
+            >
               {config.text.label}
             </p>
 
-            <h2 ref={headlineRef} className={config.classes.headline}>
+            <h2
+              ref={headlineRef}
+              className={config.classes.headline}
+            >
               <span className="line block">
                 {config.text.headlineLine1}
               </span>
@@ -3946,28 +3889,22 @@ function OnboardCare() {
               </span>
             </h2>
 
-            <p ref={descRef} className={config.classes.description}>
+            <p
+              ref={descRef}
+              className={config.classes.description}
+            >
               {config.text.description}
             </p>
-
-            {/* DESKTOP DETAIL */}
-            <div
-              ref={desktopDetailRef}
-              className={config.classes.desktopDetailBlock}
-            >
-              <p className={config.classes.detailLabel}>
-                {config.text.detailLabel}
-              </p>
-
-              <p className={config.classes.detailText}>
-                {config.text.detailText}
-              </p>
-            </div>
           </div>
 
-          {/* HUMAN ANCHOR IMAGE */}
-          <figure ref={imageRef} className={config.classes.imageWrap}>
-            <div className={config.classes.imageBackplate} />
+          <figure
+            ref={imageRef}
+            className={config.classes.imageWrap}
+          >
+            <div
+              aria-hidden="true"
+              className={config.classes.imageBackplate}
+            />
 
             <div className={config.classes.imageFrame}>
               <Image
@@ -3978,23 +3915,12 @@ function OnboardCare() {
                 className={config.classes.image}
               />
 
-              <div className={config.classes.imageOverlay} />
+              <div
+                aria-hidden="true"
+                className={config.classes.imageOverlay}
+              />
             </div>
           </figure>
-
-          {/* MOBILE DETAIL */}
-          <div
-            ref={mobileDetailRef}
-            className={config.classes.mobileDetailBlock}
-          >
-            <p className={config.classes.detailLabel}>
-              {config.text.detailLabel}
-            </p>
-
-            <p className={config.classes.detailText}>
-              {config.text.detailText}
-            </p>
-          </div>
         </div>
       </div>
     </section>

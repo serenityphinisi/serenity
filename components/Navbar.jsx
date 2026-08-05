@@ -1,22 +1,37 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import TransitionLink from "@/components/TransitionLink";
 import Image from "next/image";
-import {
-  ArrowUpRight,
-  Menu,
-  X,
-} from "lucide-react";
+import { ArrowUpRight, Menu } from "lucide-react";
 
 /*
   ============================================================
-  NAV ITEMS
-  Each item carries its own contextual image.
-  Replace Unsplash URLs with Cloudinary vessel/destination
-  photos before launch.
+  NAVIGATION DATA
+  ============================================================
+
+  Desktop:
+  - navy drawer;
+  - contextual image blade on hover/focus;
+  - dimmed current page remains visible.
+
+  Tablet:
+  - navy drawer;
+  - dimmed current page remains visible;
+  - no image blade.
+
+  Phone:
+  - full-screen navy navigation;
+  - no contextual image;
+  - no fake touch preview.
+
+  All seven routes remain visually equal.
+
+  TransitionLink remains the sole owner of route navigation and
+  the existing global page-transition system.
   ============================================================
 */
 
@@ -24,742 +39,1480 @@ const NAV_ITEMS = [
   {
     label: "Home",
     href: "/",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331037/ChatGPT_Image_Jun_1_2026_08_27_00_PM_st80e6.png",
-    // REPLACE → vessel exterior, wide ocean shot
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1780331037/ChatGPT_Image_Jun_1_2026_08_27_00_PM_st80e6.png",
+    bladeObjectPosition: "60% center",
   },
-
   {
     label: "The Yacht",
     href: "/yacht",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
-    // REPLACE → deck render or interior — Upper Deck / Living Room
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869887/ChatGPT_Image_Apr_22_2026_09_57_35_PM_1_vwbdwb.png",
+    bladeObjectPosition: "50% center",
   },
-
   {
     label: "Experiences",
     href: "/experiences",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png",
-    // REPLACE → candid ocean activity, natural light
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1776869680/ChatGPT_Image_Apr_22_2026_08_27_54_PM_n8evgp.png",
+    bladeObjectPosition: "50% center",
   },
-
   {
     label: "Destinations",
     href: "/destinations",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331033/ChatGPT_Image_Jun_1_2026_09_10_09_PM_jyycnr.png",
-    // REPLACE → aerial Komodo Island or Raja Ampat landscape
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1780331033/ChatGPT_Image_Jun_1_2026_09_10_09_PM_jyycnr.png",
+    bladeObjectPosition: "62% center",
   },
-
   {
     label: "Rates & Schedule",
     href: "/rates-and-schedule",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png",
-    // REPLACE → aerial vessel shot, route context
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1778922404/ChatGPT_Image_May_16_2026_04_03_53_PM_yqjf6x.png",
+    bladeObjectPosition: "62% center",
   },
-
   {
     label: "About",
     href: "/about",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1780331026/ChatGPT_Image_Jun_1_2026_11_20_51_PM_ycf9qo.png",
-    // REPLACE → crew candid, golden hour on deck
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1780331026/ChatGPT_Image_Jun_1_2026_11_20_51_PM_ycf9qo.png",
+    bladeObjectPosition: "34% center",
   },
-
   {
     label: "Contact",
     href: "/contact",
-    image:
-      "https://res.cloudinary.com/dombq6plz/image/upload/v1780142533/38140754-66e0-4ab7-9cec-c6e690dd7ed6_1_ephzjz.png",
-    // REPLACE → horizon, late light, open ocean
+    image: "https://res.cloudinary.com/dombq6plz/image/upload/v1780142533/38140754-66e0-4ab7-9cec-c6e690dd7ed6_1_ephzjz.png",
+    bladeObjectPosition: "50% center",
   },
 ];
 
 /*
   ============================================================
-  CONSTANTS
+  GLOBAL ASSETS
   ============================================================
 */
 
-const DEFAULT_IMAGE = NAV_ITEMS[0].image;
+const LOGO = "https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_zc65st.png";
 
-const LOGO =
-  "https://res.cloudinary.com/dombq6plz/image/upload/v1777356413/SERENITY_LOGO-02_u1bcf2_1_zc65st.png";
+/*
+  ============================================================
+  MOTION CONSTANTS
+  ============================================================
+*/
 
-const ease = [0.22, 1, 0.36, 1];
+const EASE = [0.22, 1, 0.36, 1];
 
-/* ========================================================== */
-/* COMPONENT                                                   */
-/* ========================================================== */
+const HEADER_DURATION = 0.45;
+
+const MENU_OPEN_DURATION = 0.4;
+
+const MENU_CLOSE_DURATION = 0.32;
+
+const DRAWER_OPEN_DURATION = 0.5;
+
+const DRAWER_CLOSE_DURATION = 0.38;
+
+const BLADE_OPEN_DURATION = 0.46;
+
+const BLADE_CLOSE_DURATION = 0.3;
+
+const IMAGE_CHANGE_DURATION = 0.4;
+
+const ITEM_REVEAL_DURATION = 0.48;
+
+const ITEM_REVEAL_STAGGER = 0.035;
+
+const HOVER_INTENT_DELAY = 65;
+
+/*
+  ============================================================
+  IMAGE PRELOAD CACHE
+  ============================================================
+*/
+
+const preloadedImageUrls = new Set();
+
+/*
+  ============================================================
+  PATH HELPERS
+  ============================================================
+*/
+
+function normalizePathname(value) {
+  if (!value || value === "/") {
+    return "/";
+  }
+
+  return value.replace(/\/+$/, "");
+}
+
+function getCurrentItem(pathname) {
+  const normalizedPathname = normalizePathname(pathname);
+
+  return NAV_ITEMS.find((item) => normalizePathname(item.href) === normalizedPathname) ?? NAV_ITEMS[0];
+}
+
+/*
+  ============================================================
+  CLOUDINARY IMAGE HELPER
+  ============================================================
+*/
+
+function getOptimizedCloudinaryUrl(source, width = 960) {
+  if (!source || !source.includes("/image/upload/")) {
+    return source;
+  }
+
+  return source.replace("/image/upload/", `/image/upload/f_auto,q_auto:good,w_${width}/`);
+}
+
+/*
+  ============================================================
+  DESKTOP IMAGE PRELOAD
+  ============================================================
+*/
+
+function preloadImage(source) {
+  if (typeof window === "undefined" || !source || preloadedImageUrls.has(source)) {
+    return;
+  }
+
+  preloadedImageUrls.add(source);
+
+  const image = new window.Image();
+
+  image.decoding = "async";
+  image.src = source;
+
+  if (typeof image.decode === "function") {
+    image.decode().catch(() => {});
+  }
+}
+
+/*
+  ============================================================
+  CUSTOM CLOSE CONTROL
+  ============================================================
+
+  The visible close mark is drawn with two hairlines.
+
+  It deliberately has:
+  - no Lucide icon;
+  - no visible CLOSE label;
+  - no border;
+  - no circle;
+  - no rotation animation;
+  - no dashboard-style treatment.
+
+  The invisible hit area remains large enough for touch and
+  keyboard interaction.
+  ============================================================
+*/
+
+function CloseControl({
+  buttonRef,
+  onClick,
+  className = "",
+}) {
+  return (
+    <button
+      ref={buttonRef}
+      type="button"
+      onClick={onClick}
+      aria-label="Close navigation menu"
+      className={`group relative grid h-12 w-12 shrink-0 place-items-center rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#F4F5F2]/70 focus-visible:ring-offset-4 focus-visible:ring-offset-[#27375F] ${className}`}
+    >
+      <span aria-hidden="true" className="absolute h-px w-[19px] rotate-45 bg-[#F4F5F2]/70 transition-[width,background-color] duration-300 ease-out group-hover:w-[22px] group-hover:bg-[#F4F5F2]" />
+
+      <span aria-hidden="true" className="absolute h-px w-[19px] -rotate-45 bg-[#F4F5F2]/70 transition-[width,background-color] duration-300 ease-out group-hover:w-[22px] group-hover:bg-[#F4F5F2]" />
+    </button>
+  );
+}
+
+/*
+  ============================================================
+  ROUTE CONTROL
+  ============================================================
+
+  Current route:
+  - rendered as a button;
+  - closes the menu;
+  - does not restart the route transition.
+
+  Other routes:
+  - rendered through TransitionLink;
+  - navigation remains owned by TransitionLink.
+  ============================================================
+*/
+
+function RouteControl({
+  item,
+  isCurrent,
+  closeMenu,
+  className,
+  children,
+}) {
+  if (isCurrent) {
+    return (
+      <button
+        type="button"
+        aria-current="page"
+        aria-label={`${item.label}, current page. Close menu.`}
+        onClick={closeMenu}
+        className={className}
+      >
+        {children}
+
+        <span className="sr-only">
+          Current page
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <TransitionLink
+      href={item.href}
+      transitionImage={item.image}
+      transitionLabel={item.label}
+      className={className}
+    >
+      {children}
+    </TransitionLink>
+  );
+}
+
+/*
+  ============================================================
+  CONTEXTUAL IMAGE VARIANTS
+  ============================================================
+
+  Desktop image movement is user-input driven only.
+
+  There is no:
+  - blur;
+  - continuous zoom;
+  - breathing loop;
+  - cursor tracking;
+  - route-transition takeover.
+  ============================================================
+*/
+
+const contextualImageVariants = {
+  enter: (direction) => ({
+    opacity: 0,
+    y: direction >= 0 ? 10 : -10,
+    scale: 1.012,
+  }),
+
+  active: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+  },
+
+  exit: (direction) => ({
+    opacity: 0,
+    y: direction >= 0 ? -10 : 10,
+    scale: 1,
+  }),
+};
+
+/*
+  ============================================================
+  COMPONENT
+  ============================================================
+*/
 
 export default function Navbar() {
-  const [open, setOpen]         = useState(false);
-  const [show, setShow]         = useState(true);
-  const [scrolled, setScrolled] = useState(false);
-  const [hovered, setHovered]   = useState(null); // item.label | null
   const pathname = usePathname();
-  const isHome = pathname === "/";
 
-  const lastScroll = useRef(0);
+  const reduceMotion = useReducedMotion();
+
+  /*
+    ----------------------------------------------------------
+    COLLAPSED NAVBAR STATE
+    ----------------------------------------------------------
+  */
+
+  const [open, setOpen] = useState(false);
+
+  const [blocking, setBlocking] = useState(false);
+
+  const [show, setShow] = useState(true);
+
+  const [scrolled, setScrolled] = useState(false);
+
+  /*
+    ----------------------------------------------------------
+    DESKTOP PREVIEW STATE
+    ----------------------------------------------------------
+  */
+
+  const [hoveredHref, setHoveredHref] = useState(null);
+
+  const [previewDirection, setPreviewDirection] = useState(1);
+
+  /*
+    ----------------------------------------------------------
+    ENVIRONMENT STATE
+    ----------------------------------------------------------
+  */
+
+  const [portalNode, setPortalNode] = useState(null);
+
+  const [desktopMenuActive, setDesktopMenuActive] = useState(false);
+
+  const [compactHeight, setCompactHeight] = useState(false);
+
+  const [veryCompactHeight, setVeryCompactHeight] = useState(false);
+
+  /*
+    ----------------------------------------------------------
+    REFS
+    ----------------------------------------------------------
+  */
+
+  const lastScrollRef = useRef(0);
+
+  const previousPreviewIndexRef = useRef(0);
+
+  const hoverTimerRef = useRef(null);
+
   const menuRouteRef = useRef(pathname);
 
+  const menuDialogRef = useRef(null);
+
+  const desktopCloseButtonRef = useRef(null);
+
+  const mobileCloseButtonRef = useRef(null);
+
+  const menuTriggerRef = useRef(null);
+
+  const focusedBeforeOpenRef = useRef(null);
+
+  /*
+    ----------------------------------------------------------
+    CURRENT ROUTE
+    ----------------------------------------------------------
+  */
+
+  const normalizedPathname = normalizePathname(pathname);
+
+  const currentItem = getCurrentItem(pathname);
+
+  const currentIndex = Math.max(
+    0,
+    NAV_ITEMS.findIndex((item) => normalizePathname(item.href) === normalizedPathname)
+  );
+
+  const isHome = normalizedPathname === "/";
+
+  /*
+    ----------------------------------------------------------
+    ACTIVE DESKTOP PREVIEW
+    ----------------------------------------------------------
+  */
+
+  const hoveredItem = NAV_ITEMS.find((item) => item.href === hoveredHref) ?? null;
+
+  const homeItem = NAV_ITEMS.find((item) => item.href === "/") ?? NAV_ITEMS[0];
+
+  const contactItem = NAV_ITEMS.find((item) => item.href === "/contact") ?? NAV_ITEMS[NAV_ITEMS.length - 1];
+
+  /*
+    ==========================================================
+    TIMER CONTROL
+    ==========================================================
+  */
+
+  const clearHoverTimer = () => {
+    if (!hoverTimerRef.current) {
+      return;
+    }
+
+    window.clearTimeout(hoverTimerRef.current);
+
+    hoverTimerRef.current = null;
+  };
+
+  /*
+    ==========================================================
+    HIDE DESKTOP PREVIEW
+    ==========================================================
+  */
+
+  const hidePreview = () => {
+    clearHoverTimer();
+
+    previousPreviewIndexRef.current = currentIndex;
+
+    setHoveredHref(null);
+  };
+
+  /*
+    ==========================================================
+    UPDATE DESKTOP PREVIEW
+    ==========================================================
+  */
+
+  const updatePreview = (item) => {
+    if (!item || !desktopMenuActive) {
+      return;
+    }
+
+    const nextIndex = NAV_ITEMS.findIndex((candidate) => candidate.href === item.href);
+
+    if (nextIndex < 0) {
+      return;
+    }
+
+    const optimizedSource = getOptimizedCloudinaryUrl(item.image, 960);
+
+    preloadImage(optimizedSource);
+
+    if (nextIndex !== previousPreviewIndexRef.current) {
+      setPreviewDirection(nextIndex > previousPreviewIndexRef.current ? 1 : -1);
+    }
+
+    previousPreviewIndexRef.current = nextIndex;
+
+    setHoveredHref(item.href);
+  };
+
+  /*
+    ==========================================================
+    DESKTOP HOVER INTENT
+    ==========================================================
+  */
+
+  const handlePreviewEnter = (item) => {
+    if (!desktopMenuActive) {
+      return;
+    }
+
+    clearHoverTimer();
+
+    const optimizedSource = getOptimizedCloudinaryUrl(item.image, 960);
+
+    preloadImage(optimizedSource);
+
+    hoverTimerRef.current = window.setTimeout(() => {
+      updatePreview(item);
+    }, reduceMotion ? 0 : HOVER_INTENT_DELAY);
+  };
+
+  /*
+    ==========================================================
+    KEYBOARD PREVIEW EXIT
+    ==========================================================
+  */
+
+  const handleNavigationBlur = (event) => {
+    if (event.currentTarget.contains(event.relatedTarget)) {
+      return;
+    }
+
+    hidePreview();
+  };
+
+  /*
+    ==========================================================
+    OPEN MENU
+    ==========================================================
+  */
+
+  const openMenu = () => {
+    clearHoverTimer();
+
+    focusedBeforeOpenRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : menuTriggerRef.current;
+
+    previousPreviewIndexRef.current = currentIndex;
+
+    setHoveredHref(null);
+
+    setPreviewDirection(1);
+
+    setShow(true);
+
+    setBlocking(true);
+
+    setOpen(true);
+  };
+
+  /*
+    ==========================================================
+    CLOSE MENU
+    ==========================================================
+  */
+
   const closeMenu = () => {
+    clearHoverTimer();
+
+    setHoveredHref(null);
+
     setOpen(false);
-    setHovered(null);
-  };
-
-  const getPathnameFromHref = (href) => {
-    if (!href || typeof href !== "string") return "";
-
-    try {
-      const url = new URL(href, window.location.origin);
-      return url.pathname;
-    } catch {
-      return href;
-    }
-  };
-
-  const handleFullscreenMenuLinkClick = (href) => {
-    const targetPathname = getPathnameFromHref(href);
-
-    if (targetPathname === pathname) {
-      closeMenu();
-    }
   };
 
   /*
-    ──────────────────────────────────────────────────────────
-    REDUCED MOTION
-    ──────────────────────────────────────────────────────────
+    ==========================================================
+    PORTAL ROOT
+    ==========================================================
   */
 
-  const reduce =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
+  useEffect(() => {
+    const node = document.createElement("div");
+
+    node.setAttribute("data-serenity-menu-portal", "");
+
+    document.body.appendChild(node);
+
+    setPortalNode(node);
+
+    return () => {
+      node.remove();
+    };
+  }, []);
 
   /*
-    ──────────────────────────────────────────────────────────
-    ACTIVE IMAGE
-    Computed from hovered state. Falls back to DEFAULT_IMAGE.
-    This is the key for AnimatePresence — changing it triggers
-    the blur crossfade between contextual images.
-    ──────────────────────────────────────────────────────────
+    ==========================================================
+    VIEWPORT MODE DETECTION
+    ==========================================================
+
+    Desktop:
+    - starts at 1024px;
+    - enables contextual image blade.
+
+    Tablet and phone:
+    - no image blade;
+    - direct one-tap navigation.
+
+    Height states:
+    - compact below 700px;
+    - very compact below 580px.
+    ==========================================================
   */
 
-  const activeImage =
-    hovered !== null
-      ? NAV_ITEMS.find((n) => n.label === hovered)?.image ?? DEFAULT_IMAGE
-      : DEFAULT_IMAGE;
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+
+    const compactHeightQuery = window.matchMedia("(max-height: 699px)");
+
+    const veryCompactHeightQuery = window.matchMedia("(max-height: 579px)");
+
+    const syncViewportState = () => {
+      setDesktopMenuActive(desktopQuery.matches);
+
+      setCompactHeight(compactHeightQuery.matches);
+
+      setVeryCompactHeight(veryCompactHeightQuery.matches);
+    };
+
+    syncViewportState();
+
+    desktopQuery.addEventListener("change", syncViewportState);
+
+    compactHeightQuery.addEventListener("change", syncViewportState);
+
+    veryCompactHeightQuery.addEventListener("change", syncViewportState);
+
+    return () => {
+      desktopQuery.removeEventListener("change", syncViewportState);
+
+      compactHeightQuery.removeEventListener("change", syncViewportState);
+
+      veryCompactHeightQuery.removeEventListener("change", syncViewportState);
+    };
+  }, []);
 
   /*
-    ──────────────────────────────────────────────────────────
-    SCROLL — hide on scroll down past 120px, show on scroll up
-    RAF-throttled for performance.
-    ──────────────────────────────────────────────────────────
+    ==========================================================
+    COLLAPSED NAVBAR SCROLL BEHAVIOR
+    ==========================================================
   */
 
   useEffect(() => {
     let ticking = false;
 
-    const handleScroll = () => {
-      const current = window.scrollY;
+    const updateHeader = () => {
+      const currentScroll = window.scrollY;
 
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(current > 24);
+      setScrolled(currentScroll > 24);
 
-          if (current < 40) {
-            setShow(true);
-            lastScroll.current = current;
-            ticking = false;
-            return;
-          }
-
-          if (current > lastScroll.current && current > 120) {
-            setShow(false);
-          } else {
-            setShow(true);
-          }
-
-          lastScroll.current = current;
-          ticking = false;
-        });
-
-        ticking = true;
+      if (currentScroll < 40) {
+        setShow(true);
+      } else if (currentScroll > lastScrollRef.current && currentScroll > 120) {
+        setShow(false);
+      } else {
+        setShow(true);
       }
+
+      lastScrollRef.current = currentScroll;
+
+      ticking = false;
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const handleScroll = () => {
+      if (ticking || blocking) {
+        return;
+      }
+
+      ticking = true;
+
+      window.requestAnimationFrame(updateHeader);
+    };
+
+    lastScrollRef.current = window.scrollY;
+
+    setScrolled(window.scrollY > 24);
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [blocking]);
 
   /*
-    ──────────────────────────────────────────────────────────
-    BODY LOCK — prevent background scroll when menu is open
-    ──────────────────────────────────────────────────────────
+    ==========================================================
+    SCROLL LOCK
+    ==========================================================
+
+    Lock remains active during the exit animation.
+
+    Scrollbar compensation prevents horizontal page movement.
+    ==========================================================
   */
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
+    if (!blocking) {
+      return;
+    }
+
+    const previousBodyOverflow = document.body.style.overflow;
+
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    const previousBodyOverscroll = document.body.style.overscrollBehavior;
+
+    const previousBodyPaddingRight = document.body.style.paddingRight;
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+
+    document.documentElement.style.overflow = "hidden";
+
+    document.body.style.overscrollBehavior = "none";
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+
+      document.documentElement.style.overflow = previousHtmlOverflow;
+
+      document.body.style.overscrollBehavior = previousBodyOverscroll;
+
+      document.body.style.paddingRight = previousBodyPaddingRight;
+    };
+  }, [blocking]);
+
+  /*
+    ==========================================================
+    INERT BACKGROUND
+    ==========================================================
+
+    The underlying page is removed from keyboard and
+    screen-reader navigation while the menu is mounted.
+
+    The portal itself remains active.
+    ==========================================================
+  */
 
   useEffect(() => {
-    if (menuRouteRef.current === pathname) return;
+    if (!blocking || !portalNode) {
+      return;
+    }
+
+    const snapshots = new Map();
+
+    Array.from(document.body.children).forEach((element) => {
+      if (!(element instanceof HTMLElement)) {
+        return;
+      }
+
+      if (element === portalNode) {
+        return;
+      }
+
+      if (["SCRIPT", "STYLE", "LINK"].includes(element.tagName)) {
+        return;
+      }
+
+      snapshots.set(element, {
+        hadInert: element.hasAttribute("inert"),
+        ariaHidden: element.getAttribute("aria-hidden"),
+      });
+
+      element.setAttribute("inert", "");
+
+      element.setAttribute("aria-hidden", "true");
+    });
+
+    return () => {
+      snapshots.forEach((snapshot, element) => {
+        if (!snapshot.hadInert) {
+          element.removeAttribute("inert");
+        }
+
+        if (snapshot.ariaHidden === null) {
+          element.removeAttribute("aria-hidden");
+        } else {
+          element.setAttribute("aria-hidden", snapshot.ariaHidden);
+        }
+      });
+    };
+  }, [blocking, portalNode]);
+
+  /*
+    ==========================================================
+    KEYBOARD + FOCUS MANAGEMENT
+    ==========================================================
+  */
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      const targetButton = desktopMenuActive ? desktopCloseButtonRef.current : mobileCloseButtonRef.current;
+
+      targetButton?.focus();
+    });
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+
+        closeMenu();
+
+        return;
+      }
+
+      if (event.key !== "Tab" || !menuDialogRef.current) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        menuDialogRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => {
+        return (
+          element instanceof HTMLElement &&
+          element.offsetParent !== null &&
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true"
+        );
+      });
+
+      if (focusableElements.length === 0) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+
+        lastElement.focus();
+
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+
+        firstElement.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, desktopMenuActive]);
+
+  /*
+    ==========================================================
+    FOCUS RESTORATION
+    ==========================================================
+  */
+
+  useEffect(() => {
+    if (blocking || !focusedBeforeOpenRef.current) {
+      return;
+    }
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      focusedBeforeOpenRef.current?.focus?.();
+
+      focusedBeforeOpenRef.current = null;
+    });
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+    };
+  }, [blocking]);
+
+  /*
+    ==========================================================
+    ROUTE CHANGE CLEANUP
+    ==========================================================
+
+    TransitionLink performs route navigation.
+
+    Navbar observes the resulting pathname update and closes the
+    opened menu afterward.
+    ==========================================================
+  */
+
+  useEffect(() => {
+    if (menuRouteRef.current === pathname) {
+      return;
+    }
 
     menuRouteRef.current = pathname;
 
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
-    const id = setTimeout(() => {
+    const closeTimer = window.setTimeout(() => {
       closeMenu();
     }, 0);
 
-    return () => clearTimeout(id);
+    return () => {
+      window.clearTimeout(closeTimer);
+    };
   }, [pathname, open]);
 
-  /* ========================================================= */
-  /* RENDER                                                     */
-  /* ========================================================= */
+  /*
+    ==========================================================
+    COMPONENT CLEANUP
+    ==========================================================
+  */
 
-  return (
-    <>
-      {/* ──────────────────────────────────────────────────── */}
-      {/* NAVBAR — collapsed state                             */}
-      {/* Transparent at top → frosted glass on scroll.        */}
-      {/* Hides on scroll down, shows on scroll up.            */}
-      {/* ──────────────────────────────────────────────────── */}
+  useEffect(() => {
+    return () => {
+      clearHoverTimer();
+    };
+  }, []);
 
-      <motion.header
-        animate={{
-          y:       show ? 0   : -110,
-          opacity: show ? 1   : 0,
-        }}
-        transition={{ duration: 0.45, ease }}
-        className={`
-          fixed left-1/2 top-4 z-50
-          w-[94%] max-w-[1240px]
-          -translate-x-1/2
-          ${isHome ? "md:top-4 2xl:top-5" : "md:top-5"}
-        `}
-      >
-        <div
-          className={`
-            relative overflow-hidden rounded-full border
-            transition-all duration-500
-            ${scrolled
-              ? "border-[#2D3C68]/10 bg-[#F4F5F2]/92 shadow-[0_14px_40px_rgba(0,0,0,0.06)] backdrop-blur-xl"
-              : "border-white/14 bg-white/[0.04] shadow-[0_8px_30px_rgba(255,255,255,0.04)] backdrop-blur-[18px]"
-            }
-          `}
+  /*
+    ==========================================================
+    MENU PORTAL
+    ==========================================================
+  */
+
+  const menuPortal = portalNode
+    ? createPortal(
+        <AnimatePresence
+          mode="wait"
+          onExitComplete={() => {
+            setBlocking(false);
+          }}
         >
-          {/* top edge shimmer */}
-          <div
-            className={`
-              absolute left-0 top-0 h-px w-full
-              transition-all duration-500
-              ${scrolled
-                ? "bg-gradient-to-r from-transparent via-[#B08D57]/26 to-transparent"
-                : "bg-gradient-to-r from-transparent via-white/12 to-transparent"
-              }
-            `}
-          />
-
-          {/* soft radial light */}
-          <div className="
-            pointer-events-none absolute inset-0
-            bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.10),transparent_62%)]
-          " />
-
-          {/* top-down light */}
-          <div className="
-            pointer-events-none absolute inset-0
-            bg-[linear-gradient(to_bottom,rgba(255,255,255,0.08),transparent_52%)]
-          " />
-
-          {/* inner grid */}
-          <div
-            className={`
-              relative z-[2]
-              grid grid-cols-3 items-center
-              px-4 py-[10px]
-              transition-all duration-500
-              ${isHome ? "md:px-6 md:py-3 2xl:px-7 2xl:py-4" : "md:px-7 md:py-4"}
-              ${scrolled ? "text-[#2D3C68]" : "text-[#F4F5F2]"}
-            `}
-          >
-            {/* LEFT — menu trigger */}
-            <div className="flex items-center justify-start">
-              <button
-                onClick={() => setOpen(true)}
-                className={`group inline-flex items-center gap-2.5 transition-all duration-300 ${
-                  isHome ? "md:gap-2.5 2xl:gap-3" : "md:gap-3"
-                }`}
-              >
-                <Menu
-                  strokeWidth={1.5}
-                  className={`opacity-[0.86] ${
-                    isHome ? "h-[15px] w-[15px] md:h-[14px] md:w-[14px] 2xl:h-[15px] 2xl:w-[15px]" : "h-[15px] w-[15px]"
-                  }`}
-                />
-                <span className={`hidden uppercase opacity-[0.88] sm:block ${
-                  isHome ? "text-[11px] tracking-[0.32em] md:text-[10px] md:tracking-[0.28em] 2xl:text-[11px] 2xl:tracking-[0.32em]" : "text-[11px] tracking-[0.32em]"
-                }`}>
-                  Menu
-                </span>
-              </button>
-            </div>
-
-            {/* CENTER — wordmark, light + dark versions */}
-            <div className="flex justify-center">
-              <TransitionLink
-                href="/"
-                transitionImage={NAV_ITEMS.find((item) => item.href === "/")?.image}
-                transitionLabel="Home"
-                className={`relative block h-[28px] w-[122px] ${
-                  isHome ? "md:h-[34px] md:w-[154px] 2xl:h-[40px] 2xl:w-[180px]" : "md:h-[40px] md:w-[180px]"
-                }`}
-              >
-                <Image
-                  src={LOGO}
-                  alt="Serenity"
-                  fill
-                  priority
-                  className={`
-                    object-contain transition-opacity duration-500
-                    ${scrolled ? "opacity-0" : "opacity-[0.95]"}
-                  `}
-                />
-                <Image
-                  src={LOGO}
-                  alt="Serenity"
-                  fill
-                  priority
-                  className={`
-                    object-contain brightness-0 transition-opacity duration-500
-                    ${scrolled ? "opacity-[0.9]" : "opacity-0"}
-                  `}
-                />
-              </TransitionLink>
-            </div>
-
-            {/* RIGHT — reserve CTA */}
-            <div className="flex justify-end">
-              {/* mobile */}
-              <TransitionLink
-                href="/contact"
-                transitionImage={NAV_ITEMS.find((item) => item.href === "/contact")?.image}
-                transitionLabel="Contact"
-                className={`
-                  group inline-flex items-center gap-1.5
-                  text-[10px] uppercase tracking-[0.28em]
-                  transition-all duration-300 md:hidden
-                  ${scrolled ? "text-[#2D3C68]/84" : "text-[#F4F5F2]/82"}
-                `}
-              >
-                <span>Enquire</span>
-                <ArrowUpRight strokeWidth={1.5} className="h-[11px] w-[11px]" />
-              </TransitionLink>
-
-              {/* desktop */}
-              <TransitionLink
-                href="/contact"
-                transitionImage={NAV_ITEMS.find((item) => item.href === "/contact")?.image}
-                transitionLabel="Contact"
-                className={`
-                  group hidden items-center gap-2 rounded-full border
-                  uppercase
-                  transition-all duration-300 md:inline-flex
-                  ${isHome ? "px-4 py-1.5 text-[11px] tracking-[0.24em] 2xl:px-5 2xl:py-2 2xl:text-[12px] 2xl:tracking-[0.28em]" : "px-5 py-2 text-[12px] tracking-[0.28em]"}
-                  ${scrolled
-                    ? "border-[#2D3C68]/14 bg-[#2D3C68] text-[#F4F5F2]"
-                    : "border-[#F4F5F2]/32 text-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#2D3C68]"
-                  }
-                `}
-              >
-                <span>Reserve</span>
-                <ArrowUpRight strokeWidth={1.5} className={isHome ? "h-[12px] w-[12px] 2xl:h-[13px] 2xl:w-[13px]" : "h-[13px] w-[13px]"} />
-              </TransitionLink>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* ──────────────────────────────────────────────────── */}
-      {/* FULLSCREEN MENU                                      */}
-      {/* ──────────────────────────────────────────────────── */}
-
-      <AnimatePresence mode="wait">
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.45, ease }}
-            className="
-              fixed inset-0 z-[100]
-              overflow-hidden
-              bg-[#24345A] text-[#F4F5F2]
-              md:bg-[#27375F]
-            "
-          >
-            {/* ── ATMOSPHERE — three layers ─────────────────── */}
-
-            {/* warm brass radial — top right */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_68%_22%,rgba(176,141,87,0.08),transparent_50%)]" />
-
-            {/* cool light radial — mid left */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_45%,rgba(255,255,255,0.03),transparent_55%)]" />
-
-            {/* depth gradient — top + bottom darkening */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.10] via-transparent to-black/[0.24]" />
-
-            {/* ── IMAGE PRELOAD — hidden, forces browser cache ─── */}
-            {/*
-              All nav images preloaded on mount so crossfade is
-              instant with no flicker on first hover per item.
-              pointer-events-none + aria-hidden ensures no a11y impact.
-            */}
-            <div aria-hidden="true" className="pointer-events-none absolute opacity-0">
-              {NAV_ITEMS.map((item) => (
-                <Image
-                  key={item.label}
-                  src={item.image}
-                  alt=""
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              ))}
-            </div>
-
-            {/* ── CONTENT WRAPPER ──────────────────────────────── */}
-
-            <div
-              className="
-                relative flex h-full flex-col
-                px-6
-                pt-[max(env(safe-area-inset-top),24px)]
-                pb-[max(env(safe-area-inset-bottom),24px)]
-                md:px-0 md:py-0
-              "
+          {open && (
+            <motion.div
+              id="serenity-main-menu"
+              ref={menuDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Main navigation"
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{
+                opacity: 0,
+                transition: {
+                  duration: reduceMotion ? 0 : MENU_CLOSE_DURATION,
+                  ease: EASE,
+                },
+              }}
+              transition={{
+                duration: reduceMotion ? 0 : MENU_OPEN_DURATION,
+                ease: EASE,
+              }}
+              className="fixed inset-0 z-[100] h-[100dvh] overflow-hidden"
+              style={{
+                "--drawer-width": "clamp(430px, 35vw, 560px)",
+                "--blade-width": "clamp(250px, 22vw, 360px)",
+              }}
             >
+              {/*
+                ================================================
+                DIMMED CURRENT PAGE
+                ================================================
+              */}
 
-              {/* ================================================ */}
-              {/* MOBILE MENU                                       */}
-              {/* ================================================ */}
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#07111C]/76" />
 
-              <div className="flex flex-1 flex-col md:hidden">
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(39,55,95,0.07),rgba(3,8,15,0.14))]" />
 
-                {/* mobile top bar */}
-                <div className="flex items-center justify-between border-b border-white/[0.08] pb-5">
-                  <div className="relative h-[22px] w-[96px]">
-                    <Image
-                      src={LOGO}
-                      alt="Serenity"
-                      fill
-                      className="object-contain opacity-[0.92]"
-                    />
-                  </div>
+              <div aria-hidden="true" onPointerDown={closeMenu} className="absolute inset-0 z-0 cursor-default" />
 
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="group inline-flex items-center gap-3 text-white/56 transition-all duration-300 hover:text-white/90"
-                  >
-                    <span className="text-[10px] uppercase tracking-[0.32em]">Close</span>
-                    <X strokeWidth={1.4} className="h-[15px] w-[15px] transition-transform duration-500 group-hover:rotate-90" />
-                  </button>
-                </div>
+              {/*
+                ================================================
+                DESKTOP NAVY DRAWER
+                ================================================
+              */}
 
-                {/* mobile nav list */}
-                <div className="flex flex-1 items-center">
-                  <div className="w-full">
-                    {NAV_ITEMS.map((item, i) => (
-                      <motion.div
-                        key={item.label}
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          duration: 0.55,
-                          delay: 0.06 + i * 0.06,
-                          ease,
-                        }}
-                        className="border-b border-white/[0.08]"
-                      >
-                        <TransitionLink
-                          href={item.href}
-                          transitionImage={item.image}
-                          transitionLabel={item.label}
-                          onClick={() => handleFullscreenMenuLinkClick(item.href)}
-                          className="group flex items-center justify-between py-5"
-                        >
-                          <span className="font-[Gambarino] text-[34px] leading-none tracking-[-0.04em]">
-                            {item.label}
-                          </span>
-                          <ArrowUpRight
-                            strokeWidth={1.4}
-                            className="h-[15px] w-[15px] text-white/28 transition-opacity duration-300 group-hover:text-white/72"
-                          />
-                        </TransitionLink>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
+              <motion.aside
+                initial={
+                  reduceMotion
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        x: "-100%",
+                        opacity: 0.98,
+                      }
+                }
+                animate={{
+                  x: 0,
+                  opacity: 1,
+                }}
+                exit={
+                  reduceMotion
+                    ? {
+                        opacity: 0,
+                      }
+                    : {
+                        x: "-100%",
+                        opacity: 0.98,
+                        transition: {
+                          duration: DRAWER_CLOSE_DURATION,
+                          ease: EASE,
+                        },
+                      }
+                }
+                transition={{
+                  duration: reduceMotion ? 0 : DRAWER_OPEN_DURATION,
+                  ease: EASE,
+                }}
+                className="pointer-events-auto absolute inset-y-0 left-0 z-30 hidden w-[var(--drawer-width)] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden border-r border-white/[0.08] bg-[#27375F] text-[#F4F5F2] lg:grid"
+              >
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_74%_18%,rgba(176,141,87,0.09),transparent_46%)]" />
 
-                {/* mobile bottom — single label, passes tone filter */}
-                <div className="border-t border-white/[0.08] pt-6 text-[10px] uppercase tracking-[0.2em] text-white/34">
-                  Indonesia Archipelago
-                </div>
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_48%,rgba(255,255,255,0.035),transparent_56%)]" />
 
-              </div>
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.05] via-transparent to-black/[0.14]" />
 
-              {/* ================================================ */}
-              {/* DESKTOP MENU                                      */}
-              {/* 42% nav left · 58% image right                   */}
-              {/* Image dominant — more cinematic than nav dominant */}
-              {/* ================================================ */}
-
-              <div className="hidden h-full md:grid md:grid-cols-[42fr_58fr]">
-
-                {/* ── LEFT COLUMN — navigation ─────────────────── */}
-
-                <div className={`relative flex flex-col justify-between border-r border-white/[0.06] ${
-                  isHome ? "px-10 py-8 2xl:px-12 2xl:py-10" : "px-12 py-10"
-                }`}>
-
-                  {/* desktop top bar */}
-                  <div className="relative flex items-center justify-between">
-
-                    {/* logo */}
-                    <div className={`relative ${
-                      isHome ? "h-[23px] w-[106px] 2xl:h-[26px] 2xl:w-[120px]" : "h-[26px] w-[120px]"
-                    }`}>
-                      <Image
-                        src={LOGO}
-                        alt="Serenity"
-                        fill
-                        className="object-contain opacity-[0.92]"
-                      />
-                    </div>
-
-                    {/* close */}
-                    <button
-                      onClick={() => setOpen(false)}
-                      className="group inline-flex items-center gap-3 text-white/56 transition-all duration-300 hover:text-white/90"
-                    >
-                      <span className="text-[10px] uppercase tracking-[0.32em]">Close</span>
-                      <X strokeWidth={1.4} className="h-[15px] w-[15px] transition-transform duration-500 group-hover:rotate-90" />
-                    </button>
-
-                    {/*
-                      ── BRASS DRAW LINE ──────────────────────────
-                      Single 1px signature line that draws
-                      left→right below the top bar on menu open.
-                      scaleX: 0 → 1, originX: left, delay: 0.25s.
-                      Gradient fades to transparent at right edge.
-                    */}
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 1.0, delay: 0.25, ease }}
-                      style={{ originX: 0 }}
-                      className="
-                        absolute -bottom-5 left-0
-                        h-px w-full
-                        bg-gradient-to-r
-                        from-[#B08D57]/50
-                        via-[#B08D57]/25
-                        to-transparent
-                      "
-                    />
-                  </div>
-
-                  {/* desktop nav list */}
-                  <nav
-                    className="flex flex-1 flex-col justify-center"
-                    onMouseLeave={() => setHovered(null)}
-                  >
-                    <div className="w-full">
-                      {NAV_ITEMS.map((item, i) => (
-                        <motion.div
-                          key={item.label}
-                          initial={reduce
-                            ? { opacity: 1, y: 0 }
-                            : { opacity: 0, y: 28 }
-                          }
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.65,
-                            delay: reduce ? 0 : 0.05 + i * 0.04,
-                            ease,
-                          }}
-                        >
-                          {/*
-                            ── SIBLING FADE ──────────────────────
-                            Framer Motion animate — real animation.
-                            Hovered item  → opacity 1
-                            Siblings      → opacity 0.18
-                            Idle          → all opacity 1
-                          */}
-                          <motion.div
-                            animate={{
-                              opacity:
-                                hovered === null || hovered === item.label
-                                  ? 1
-                                  : 0.18,
-                            }}
-                            transition={{ duration: 0.4, ease }}
-                          >
-                            <TransitionLink
-                              href={item.href}
-                              transitionImage={item.image}
-                              transitionLabel={item.label}
-                              onClick={() => handleFullscreenMenuLinkClick(item.href)}
-                              onMouseEnter={() => setHovered(item.label)}
-                              className={`group flex items-center border-b border-white/[0.05] ${
-                                isHome ? "py-[14px] 2xl:py-[18px]" : "py-[18px]"
-                              }`}
-                            >
-                              {/*
-                                ── LABEL ───────────────────────────
-                                Font: Gambarino 46px — H3 range,
-                                commanding without overwhelming.
-                                Hover: text transitions to brass
-                                (#C7A36A) over 600ms.
-                                transition-colors (not transition-all)
-                                — specific, performant.
-                              */}
-                              <span
-                                className={`
-                                  font-[Gambarino]
-                                  ${isHome ? "text-[40px] 2xl:text-[46px]" : "text-[46px]"}
-                                  leading-[0.88]
-                                  tracking-[-0.05em]
-                                  text-[#E9E5DD]
-                                  transition-colors
-                                  duration-600
-                                  group-hover:text-[#C7A36A]
-                                `}
-                              >
-                                {item.label}
-                              </span>
-                            </TransitionLink>
-                          </motion.div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </nav>
-
-                  {/* desktop bottom — single label */}
-                  <div className={`border-t border-white/[0.08] text-[10px] uppercase tracking-[0.2em] text-white/34 ${
-                    isHome ? "pt-5 2xl:pt-6" : "pt-6"
-                  }`}>
-                    Indonesia Archipelago
-                  </div>
-
-                </div>
-
-                {/* ── RIGHT COLUMN — image panel ───────────────── */}
                 {/*
-                  Three layers:
-                  1. AnimatePresence crossfade (blur + scale + opacity)
-                  2. Ambient motion loop inside each image (scale + y)
-                  3. Gradient overlays for blending and depth
+                  ----------------------------------------------
+                  DESKTOP CUSTOM CLOSE
+                  ----------------------------------------------
                 */}
 
-                <div className="relative overflow-hidden">
+                <div className={`relative z-10 flex items-center px-9 2xl:px-12 ${compactHeight ? "pb-2 pt-4" : "pb-4 pt-6"}`}>
+                  <CloseControl buttonRef={desktopCloseButtonRef} onClick={closeMenu} className="-ml-3" />
+                </div>
 
-                  <AnimatePresence mode="sync">
-                    <motion.div
-                      key={activeImage}
-                      initial={reduce
-                        ? { opacity: 1, scale: 1, filter: "blur(0px)" }
-                        : { opacity: 0, scale: 1.05, filter: "blur(10px)" }
-                      }
-                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 1.0, ease }}
-                      className="absolute inset-0"
-                    >
-                      {/*
-                        ── AMBIENT IMAGE MOTION ─────────────────────
-                        Slow breathing loop — scale + y drift over 20s.
-                        Image feels alive without any user interaction.
-                        reduce motion: disabled entirely.
-                      */}
+                {/*
+                  ----------------------------------------------
+                  DESKTOP NAVIGATION
+
+                  Spacing is controlled by one nav-level gap,
+                  rather than small padding on every link.
+                  ----------------------------------------------
+                */}
+
+                <div className={`relative z-10 min-h-0 overflow-y-auto overscroll-contain px-9 2xl:px-12 ${compactHeight ? "py-1" : "py-3"}`}>
+                  <div className={`flex min-h-full flex-col py-2 ${compactHeight ? "justify-start" : "justify-center"}`}>
+                    {!veryCompactHeight && (
+                      <div className={`text-[10px] uppercase tracking-[0.3em] text-[#F4F5F2]/38 ${compactHeight ? "mb-4" : "mb-[clamp(18px,2.5vh,28px)]"}`}>
+                        Menu
+                      </div>
+                    )}
+
+                    <nav onMouseLeave={hidePreview} onBlur={handleNavigationBlur} className={`flex w-full flex-col ${compactHeight ? "gap-[clamp(7px,1.2vh,10px)]" : "gap-[clamp(11px,1.45vh,17px)]"}`}>
+                      {NAV_ITEMS.map((item, index) => {
+                        const isCurrent = normalizePathname(item.href) === normalizedPathname;
+
+                        const isPreviewed = hoveredHref === item.href;
+
+                        const hasPreview = hoveredHref !== null;
+
+                        const itemOpacity = hasPreview
+                          ? isPreviewed
+                            ? 1
+                            : 0.26
+                          : isCurrent
+                            ? 1
+                            : 0.76;
+
+                        return (
+                          <motion.div
+                            key={item.href}
+                            initial={
+                              reduceMotion
+                                ? {
+                                    opacity: 1,
+                                    y: 0,
+                                  }
+                                : {
+                                    opacity: 0,
+                                    y: 16,
+                                  }
+                            }
+                            animate={{
+                              opacity: 1,
+                              y: 0,
+                            }}
+                            transition={{
+                              duration: reduceMotion ? 0 : ITEM_REVEAL_DURATION,
+                              delay: reduceMotion ? 0 : 0.07 + index * ITEM_REVEAL_STAGGER,
+                              ease: EASE,
+                            }}
+                            onMouseEnter={() => handlePreviewEnter(item)}
+                            onFocus={() => updatePreview(item)}
+                            className="relative"
+                          >
+                            <RouteControl item={item} isCurrent={isCurrent} closeMenu={closeMenu} className="group relative flex w-full items-center text-left">
+                              <motion.span
+                                initial={false}
+                                animate={{
+                                  opacity: itemOpacity,
+                                  x: isPreviewed && !reduceMotion ? 8 : 0,
+                                }}
+                                transition={{
+                                  duration: reduceMotion ? 0 : 0.34,
+                                  ease: EASE,
+                                }}
+                                className={`max-w-[92%] font-[Gambarino] tracking-[-0.04em] text-[#F4F5F2] ${compactHeight ? "text-[clamp(34px,5.3vh,44px)] leading-[0.96]" : "text-[clamp(40px,5vh,53px)] leading-[0.95]"}`}
+                              >
+                                {item.label}
+                              </motion.span>
+
+                              <motion.span
+                                initial={false}
+                                animate={{
+                                  opacity: isCurrent ? 0.76 : 0,
+                                  scale: isCurrent ? 1 : 0.68,
+                                }}
+                                transition={{
+                                  duration: reduceMotion ? 0 : 0.28,
+                                  ease: EASE,
+                                }}
+                                aria-hidden="true"
+                                className="absolute right-0 top-1/2 h-[6px] w-[6px] -translate-y-1/2 rounded-full bg-[#B08D57]"
+                              />
+                            </RouteControl>
+                          </motion.div>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                </div>
+
+                {/*
+                  ----------------------------------------------
+                  DESKTOP CHARTER UTILITY BAR
+                  ----------------------------------------------
+                */}
+
+                <motion.div
+                  initial={
+                    reduceMotion
+                      ? {
+                          opacity: 1,
+                          y: 0,
+                        }
+                      : {
+                          opacity: 0,
+                          y: 10,
+                        }
+                  }
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.44,
+                    delay: reduceMotion ? 0 : 0.2,
+                    ease: EASE,
+                  }}
+                  onMouseEnter={hidePreview}
+                  onFocus={hidePreview}
+                  className={`relative z-10 border-t border-white/[0.10] px-9 2xl:px-12 ${compactHeight ? "pb-5 pt-4" : "pb-8 pt-6"}`}
+                >
+                  <div className="flex items-center justify-between gap-6">
+                    <div className="text-[9px] uppercase tracking-[0.27em] text-[#F4F5F2]/40">
+                      Private charter
+                    </div>
+
+                    <RouteControl item={contactItem} isCurrent={normalizedPathname === "/contact"} closeMenu={closeMenu} className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[#F4F5F2]/24 px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-[#F4F5F2] transition-[background-color,color,border-color] duration-300 hover:border-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#27375F]">
+                      <span>
+                        Reserve
+                      </span>
+
+                      <ArrowUpRight strokeWidth={1.3} className="h-[12px] w-[12px]" />
+                    </RouteControl>
+                  </div>
+                </motion.div>
+              </motion.aside>
+
+              {/*
+                ================================================
+                DESKTOP CONTEXTUAL IMAGE BLADE
+                ================================================
+              */}
+
+              <AnimatePresence>
+                {desktopMenuActive && hoveredItem && (
+                  <motion.section
+                    key="serenity-contextual-image-blade"
+                    aria-hidden="true"
+                    initial={
+                      reduceMotion
+                        ? {
+                            opacity: 1,
+                          }
+                        : {
+                            opacity: 0,
+                            x: -28,
+                          }
+                    }
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: -20,
+                      transition: {
+                        duration: reduceMotion ? 0 : BLADE_CLOSE_DURATION,
+                        ease: EASE,
+                      },
+                    }}
+                    transition={{
+                      duration: reduceMotion ? 0 : BLADE_OPEN_DURATION,
+                      ease: EASE,
+                    }}
+                    className="pointer-events-none absolute inset-y-0 left-[var(--drawer-width)] z-20 hidden w-[var(--blade-width)] overflow-hidden border-r border-white/[0.08] bg-[#101923] lg:block"
+                  >
+                    <AnimatePresence initial={false} mode="sync" custom={previewDirection}>
                       <motion.div
-                        animate={reduce ? {} : {
-                          scale: [1.02, 1.05, 1.02],
-                          y: [0, -10, 0],
-                        }}
+                        key={hoveredItem.href}
+                        custom={previewDirection}
+                        variants={contextualImageVariants}
+                        initial={reduceMotion ? "active" : "enter"}
+                        animate="active"
+                        exit={reduceMotion ? "active" : "exit"}
                         transition={{
-                          duration: 20,
-                          repeat: Infinity,
-                          ease: "easeInOut",
+                          duration: reduceMotion ? 0 : IMAGE_CHANGE_DURATION,
+                          ease: EASE,
                         }}
                         className="absolute inset-0"
                       >
                         <Image
-                          src={activeImage}
-                          alt="Serenity"
+                          src={getOptimizedCloudinaryUrl(hoveredItem.image, 960)}
+                          alt=""
                           fill
-                          priority
+                          unoptimized
+                          sizes="22vw"
                           className="object-cover"
+                          style={{
+                            objectPosition: hoveredItem.bladeObjectPosition,
+                          }}
                         />
+
+                        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07111C]/36 via-transparent to-[#07111C]/8" />
+
+                        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(7,17,28,0.02),transparent_58%,rgba(7,17,28,0.13))]" />
                       </motion.div>
+                    </AnimatePresence>
+                  </motion.section>
+                )}
+              </AnimatePresence>
 
-                      {/*
-                        ── GRADIENT OVERLAYS ────────────────────────
-                        Left: hard blend from nav bg (#27375F) to
-                        transparent at 42% — ensures text always
-                        readable against any image content.
+              {/*
+                ================================================
+                PHONE + TABLET NAVY PANEL
+                ================================================
+              */}
 
-                        Bottom + top: subtle darkening for depth.
-                      */}
+              <motion.aside
+                initial={
+                  reduceMotion
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        x: "-100%",
+                        opacity: 0.98,
+                      }
+                }
+                animate={{
+                  x: 0,
+                  opacity: 1,
+                }}
+                exit={
+                  reduceMotion
+                    ? {
+                        opacity: 0,
+                      }
+                    : {
+                        x: "-100%",
+                        opacity: 0.98,
+                        transition: {
+                          duration: DRAWER_CLOSE_DURATION,
+                          ease: EASE,
+                        },
+                      }
+                }
+                transition={{
+                  duration: reduceMotion ? 0 : DRAWER_OPEN_DURATION,
+                  ease: EASE,
+                }}
+                className="pointer-events-auto absolute inset-y-0 left-0 z-30 grid w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden bg-[#24345A] text-[#F4F5F2] sm:w-[88vw] sm:max-w-[680px] md:w-[84vw] lg:hidden"
+              >
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_16%,rgba(176,141,87,0.09),transparent_46%)]" />
 
-                      {/* left blend — nav bg color match */}
-                      <div
-                        className="
-                          absolute inset-0
-                          bg-[linear-gradient(to_right,
-                            rgba(39,55,95,0.96)_0%,
-                            rgba(39,55,95,0.78)_12%,
-                            rgba(39,55,95,0.38)_24%,
-                            rgba(0,0,0,0)_42%
-                          )]
-                        "
-                      />
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_48%,rgba(255,255,255,0.035),transparent_56%)]" />
 
-                      {/* vertical depth gradient */}
-                      <div
-                        className="
-                          absolute inset-0
-                          bg-gradient-to-t
-                          from-black/[0.24]
-                          via-transparent
-                          to-black/[0.08]
-                        "
-                      />
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.05] via-transparent to-black/[0.14]" />
 
-                    </motion.div>
-                  </AnimatePresence>
+                {/*
+                  ----------------------------------------------
+                  PHONE + TABLET CUSTOM CLOSE
+                  ----------------------------------------------
+                */}
 
+                <div className={`relative z-10 flex items-center justify-between px-6 md:px-9 ${compactHeight ? "pb-2 pt-[max(env(safe-area-inset-top),10px)]" : "pb-3 pt-[max(env(safe-area-inset-top),16px)] md:pt-6"}`}>
+                  <CloseControl buttonRef={mobileCloseButtonRef} onClick={closeMenu} className="-ml-3" />
+
+                  <div className="relative h-[24px] w-[106px]">
+                    <Image src={LOGO} alt="Serenity" fill priority sizes="106px" className="object-contain opacity-[0.88]" />
+                  </div>
                 </div>
-                {/* end right column */}
 
+                {/*
+                  ----------------------------------------------
+                  PHONE + TABLET NAVIGATION
+
+                  Spacing is controlled at the nav level.
+                  ----------------------------------------------
+                */}
+
+                <div className={`relative z-10 min-h-0 overflow-y-auto overscroll-contain px-6 md:px-9 ${compactHeight ? "py-1" : "py-3"}`}>
+                  <div className={`flex min-h-full flex-col py-2 ${compactHeight ? "justify-start" : "justify-center"}`}>
+                    {!veryCompactHeight && (
+                      <div className={`text-[9px] uppercase tracking-[0.28em] text-[#F4F5F2]/38 ${compactHeight ? "mb-4" : "mb-5"}`}>
+                        Menu
+                      </div>
+                    )}
+
+                    <nav className={`flex w-full flex-col ${compactHeight ? "gap-[clamp(6px,1.1vh,8px)]" : "gap-[clamp(9px,1.45vh,14px)]"}`}>
+                      {NAV_ITEMS.map((item, index) => {
+                        const isCurrent = normalizePathname(item.href) === normalizedPathname;
+
+                        return (
+                          <motion.div
+                            key={item.href}
+                            initial={
+                              reduceMotion
+                                ? {
+                                    opacity: 1,
+                                    y: 0,
+                                  }
+                                : {
+                                    opacity: 0,
+                                    y: 14,
+                                  }
+                            }
+                            animate={{
+                              opacity: 1,
+                              y: 0,
+                            }}
+                            transition={{
+                              duration: reduceMotion ? 0 : ITEM_REVEAL_DURATION,
+                              delay: reduceMotion ? 0 : 0.06 + index * ITEM_REVEAL_STAGGER,
+                              ease: EASE,
+                            }}
+                          >
+                            <RouteControl item={item} isCurrent={isCurrent} closeMenu={closeMenu} className="group relative flex w-full items-center justify-between text-left">
+                              <span className={`max-w-[88%] font-[Gambarino] tracking-[-0.04em] text-[#F4F5F2] ${compactHeight ? "text-[clamp(28px,7.6vw,36px)] leading-[0.97]" : "text-[clamp(31px,8.4vw,43px)] leading-[0.96]"}`}>
+                                {item.label}
+                              </span>
+
+                              {isCurrent ? (
+                                <span aria-hidden="true" className="h-[5px] w-[5px] shrink-0 rounded-full bg-[#B08D57]" />
+                              ) : (
+                                <ArrowUpRight strokeWidth={1.25} className="h-[13px] w-[13px] shrink-0 text-[#F4F5F2]/24 transition-[opacity,transform] duration-300 group-hover:translate-x-0.5 group-hover:text-[#F4F5F2]/58" />
+                              )}
+                            </RouteControl>
+                          </motion.div>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                </div>
+
+                {/*
+                  ----------------------------------------------
+                  COMPACT CHARTER UTILITY BAR
+                  ----------------------------------------------
+                */}
+
+                <motion.div
+                  initial={
+                    reduceMotion
+                      ? {
+                          opacity: 1,
+                          y: 0,
+                        }
+                      : {
+                          opacity: 0,
+                          y: 8,
+                        }
+                  }
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.4,
+                    delay: reduceMotion ? 0 : 0.18,
+                    ease: EASE,
+                  }}
+                  className={`relative z-10 border-t border-white/[0.10] px-6 md:px-9 ${compactHeight ? "pb-[max(env(safe-area-inset-bottom),14px)] pt-3" : "pb-[max(env(safe-area-inset-bottom),20px)] pt-4"}`}
+                >
+                  <div className="flex min-h-[42px] items-center justify-between gap-5">
+                    <div className="text-[8px] uppercase tracking-[0.25em] text-[#F4F5F2]/42 sm:text-[9px]">
+                      Private charter
+                    </div>
+
+                    <RouteControl item={contactItem} isCurrent={normalizedPathname === "/contact"} closeMenu={closeMenu} className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-[#F4F5F2]/24 px-4 py-2 text-[9px] uppercase tracking-[0.22em] text-[#F4F5F2] transition-[background-color,color,border-color] duration-300 hover:border-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#24345A]">
+                      <span>
+                        Reserve
+                      </span>
+
+                      <ArrowUpRight strokeWidth={1.3} className="h-[11px] w-[11px]" />
+                    </RouteControl>
+                  </div>
+                </motion.div>
+              </motion.aside>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        portalNode
+      )
+    : null;
+
+  /*
+    ==========================================================
+    COLLAPSED NAVBAR
+    ==========================================================
+  */
+
+  return (
+    <>
+      <header className={`fixed inset-x-0 z-50 flex justify-center ${isHome ? "top-4 2xl:top-5" : "top-4 md:top-5"}`}>
+        <motion.div
+          initial={false}
+          animate={{
+            y: show ? 0 : -110,
+            opacity: show ? 1 : 0,
+          }}
+          transition={{
+            duration: reduceMotion ? 0 : HEADER_DURATION,
+            ease: EASE,
+          }}
+          className="w-[94%] max-w-[1240px] transform-gpu"
+          style={{
+            willChange: "transform, opacity",
+          }}
+        >
+          <div className={`relative isolate overflow-hidden rounded-full border transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 ${scrolled ? "border-[#2D3C68]/10 bg-[#F4F5F2]/92 shadow-[0_14px_40px_rgba(0,0,0,0.06)] backdrop-blur-xl" : "border-white/14 bg-white/[0.04] shadow-[0_8px_30px_rgba(255,255,255,0.04)] backdrop-blur-none"}`}>
+            <div className={`pointer-events-none absolute left-0 top-0 h-px w-full transition-opacity duration-500 ${scrolled ? "bg-gradient-to-r from-transparent via-[#B08D57]/26 to-transparent" : "bg-gradient-to-r from-transparent via-white/12 to-transparent"}`} />
+
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.10),transparent_62%)]" />
+
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.08),transparent_52%)]" />
+
+            <div className={`relative z-[2] grid grid-cols-3 items-center px-4 py-[10px] transition-colors duration-500 ${isHome ? "md:px-6 md:py-3 2xl:px-7 2xl:py-4" : "md:px-7 md:py-4"} ${scrolled ? "text-[#2D3C68]" : "text-[#F4F5F2]"}`}>
+              <div className="flex items-center justify-start">
+                <button
+                  ref={menuTriggerRef}
+                  type="button"
+                  onClick={openMenu}
+                  aria-label="Open navigation menu"
+                  aria-expanded={open}
+                  aria-controls="serenity-main-menu"
+                  className={`group inline-flex items-center gap-2.5 transition-opacity duration-300 hover:opacity-70 ${isHome ? "md:gap-2.5 2xl:gap-3" : "md:gap-3"}`}
+                >
+                  <Menu strokeWidth={1.5} className={`opacity-[0.86] ${isHome ? "h-[15px] w-[15px] md:h-[14px] md:w-[14px] 2xl:h-[15px] 2xl:w-[15px]" : "h-[15px] w-[15px]"}`} />
+
+                  <span className={`hidden uppercase opacity-[0.88] sm:block ${isHome ? "text-[11px] tracking-[0.32em] md:text-[10px] md:tracking-[0.28em] 2xl:text-[11px] 2xl:tracking-[0.32em]" : "text-[11px] tracking-[0.32em]"}`}>
+                    Menu
+                  </span>
+                </button>
               </div>
-              {/* end desktop grid */}
 
+              <div className="flex justify-center">
+                <TransitionLink
+                  href="/"
+                  transitionImage={homeItem.image}
+                  transitionLabel="Home"
+                  className={`relative block ${isHome ? "h-[28px] w-[122px] md:h-[34px] md:w-[154px] 2xl:h-[40px] 2xl:w-[180px]" : "h-[28px] w-[122px] md:h-[40px] md:w-[180px]"}`}
+                >
+                  <Image src={LOGO} alt="Serenity" fill priority sizes="180px" className={`object-contain transition-[filter,opacity] duration-500 ${scrolled ? "brightness-0 opacity-90" : "brightness-100 opacity-95"}`} />
+                </TransitionLink>
+              </div>
+
+              <div className="flex justify-end">
+                <TransitionLink
+                  href="/contact"
+                  transitionImage={contactItem.image}
+                  transitionLabel="Contact"
+                  className={`group inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.28em] transition-colors duration-300 md:hidden ${scrolled ? "text-[#2D3C68]/84" : "text-[#F4F5F2]/82"}`}
+                >
+                  <span>
+                    Enquire
+                  </span>
+
+                  <ArrowUpRight strokeWidth={1.5} className="h-[11px] w-[11px]" />
+                </TransitionLink>
+
+                <TransitionLink
+                  href="/contact"
+                  transitionImage={contactItem.image}
+                  transitionLabel="Contact"
+                  className={`group hidden items-center gap-2 rounded-full border uppercase transition-[background-color,color,border-color] duration-300 md:inline-flex ${isHome ? "px-4 py-1.5 text-[11px] tracking-[0.24em] 2xl:px-5 2xl:py-2 2xl:text-[12px] 2xl:tracking-[0.28em]" : "px-5 py-2 text-[12px] tracking-[0.28em]"} ${scrolled ? "border-[#2D3C68]/14 bg-[#2D3C68] text-[#F4F5F2]" : "border-[#F4F5F2]/32 text-[#F4F5F2] hover:bg-[#F4F5F2] hover:text-[#2D3C68]"}`}
+                >
+                  <span>
+                    Reserve
+                  </span>
+
+                  <ArrowUpRight strokeWidth={1.5} className={isHome ? "h-[12px] w-[12px] 2xl:h-[13px] 2xl:w-[13px]" : "h-[13px] w-[13px]"} />
+                </TransitionLink>
+              </div>
             </div>
-            {/* end content wrapper */}
+          </div>
+        </motion.div>
+      </header>
 
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {menuPortal}
     </>
   );
 }
