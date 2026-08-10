@@ -82,8 +82,6 @@ const FOOTER_CONFIG = {
 
   stats: ["12 Guests", "4 Cabins", "10 Crew", SITE_BRAND.name],
 
-  legal: ["Privacy Policy", "Terms & Conditions"],
-
   social: {
     instagram: SITE_SOCIAL.instagramHref,
     whatsapp: SITE_CONTACT.whatsappHref,
@@ -978,19 +976,6 @@ export default function ClosingSuite() {
               lg:justify-end
             "
           >
-            {config.legal.map((item) => (
-              <span
-                key={item}
-                className="
-                  transition-colors
-                  duration-300
-                  hover:text-[#F4F5F2]/76
-                "
-              >
-                {item}
-              </span>
-            ))}
-
             <a
               href={config.social.instagram}
               aria-label="Instagram"

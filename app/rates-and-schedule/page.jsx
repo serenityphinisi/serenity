@@ -1916,7 +1916,7 @@ function HowItWorks() {
       id: '03',
       title: 'Confirm with Deposit',
       duration: '50% of charter rate',
-      desc: 'A deposit secures your window. Balance is due 60 days before departure.',
+      desc: 'A deposit secures your window. Balance is due 90 days before departure.',
       primary: false,
     },
     {
@@ -3382,7 +3382,7 @@ function CharterRates() {
 
           <p className="mt-4 text-[14px] text-[#0F172A]/60 max-w-[520px] leading-relaxed">
             A fifty percent non-refundable deposit is required at the time of
-            booking. The remaining balance is due sixty days prior to departure.
+            booking. The remaining balance is due 90 days before departure.
           </p>
 
         </div>
