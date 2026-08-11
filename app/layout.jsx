@@ -1,5 +1,6 @@
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
 import Providers from "./providers";
 import { SITE_BRAND, SITE_CONTACT } from "@/lib/siteConfig";
 
@@ -157,6 +158,7 @@ export default function RootLayout({ children }) {
           {/* GLOBAL CONTACT BUTTON */}
           <WhatsAppButton />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
